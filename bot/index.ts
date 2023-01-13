@@ -20,7 +20,7 @@ bot.on("message", (ctx) => ctx.reply("Got another message!"));
 
 bot.start({
     onStart: async (info: UserFromGetMe) => {
-        let _text = `<b>${info.first_name} ${info.last_name}</b> is running ...\n`
+        let _text = `<b>${info.first_name}(${info.username})</b> is running ...\n`
         try {
             await sequelize.authenticate();
             _text += `<b>Database:</b> connected & running well`
