@@ -19,7 +19,7 @@ async function Authentication(ctx: Context, next: NextFunction) {
             is_bot: user.is_bot ? 1 : 0,
             is_premium: user.is_premium ? 1 : 0,
             is_active: 1,
-            servers: "[]"
+            servers: []
         })
     }
     // ctx.user = User;
