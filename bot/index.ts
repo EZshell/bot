@@ -19,11 +19,7 @@ bot.command("start", async (ctx) => {
     // } catch (error) {
     //     console.log("err", error)
     // }
-    sequelize.authenticate().then(() => {
-        ctx.reply('Connection has been established successfully.');
-    }).catch((error) => {
-        ctx.reply('Unable to connect to the database: ' + error);
-    });
+
 
 
 
@@ -66,12 +62,13 @@ bot.catch((err) => {
 
 bot.start({
     onStart: async (info: UserFromGetMe) => {
-        let _text = `<b>${info.first_name}(@${info.username})</b> is running well\n`
+        let _text = `<b>${info.first_name}(@${info.username}):</b> Updated & lunched\n`
         try {
             await sequelize.authenticate();
-            _text += `<b>Database:</b> Connected & running well`
+            await sequelize.sync()
+            _text += `<b>Database:</b> Connected & synced`
         } catch (error) {
-            _text += `<b>Database:</b> Unable to connect to the database (${error})`
+            _text += `<b>Database:</b>\nUnable to connect (${error})`
         }
         bot.api.sendMessage(SuperAdmin, _text, { parse_mode: 'HTML' })
     }
