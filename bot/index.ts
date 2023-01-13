@@ -20,12 +20,12 @@ bot.command("start", async (ctx) => {
     // });
     await ctx.reply("Hello Jigar! Up and running.")
     // await ctx.reply(JSON.stringify(jane))
-    try {
-        const users = await User.findAll();
-        await ctx.reply(JSON.stringify(users))
-    } catch (error) {
-        console.log("err", error)
-    }
+    // try {
+    //     const users = await User.findAll();
+    //     await ctx.reply(JSON.stringify(users))
+    // } catch (error) {
+    //     console.log("err", error)
+    // }
 
 });
 
