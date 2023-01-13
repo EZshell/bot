@@ -1,54 +1,67 @@
-import { DataTypes } from "sequelize";
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import sequelize from "..";
 
-const Data = {
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    description: {
-        type: DataTypes.STRING,
-    },
-    ip: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        length: 100,
-    },
-    username: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        length: 100,
-        default: 'root'
-    },
-    password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        length: 100,
-    },
-    port: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        length: 5,
-        default: 22
-    },
-    country: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        length: 100
-    },
-    created_by: {
-        type: DataTypes.INTEGER,
-    },
+class Server extends Model<InferAttributes<Server>, InferCreationAttributes<Server>> {
+    declare id: CreationOptional<number>;
+    declare name: string
+    declare description: string | null;
+    declare ip: string;
+    declare username: string;
+    declare password: string;
+    declare port: number;
+    declare country: string;
+    declare created_by: number;
 }
 
-const options = {
-    createdAt: 'created_at',
-    deletedAt: 'deleted_at',
-    updatedAt: 'updated_at',
-    paranoid: true,
-}
+Server.init(
+    {
+        id: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            autoIncrement: true,
+            primaryKey: true
+        },
+        name: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        description: {
+            type: DataTypes.STRING,
+        },
+        ip: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        username: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'root'
+        },
+        password: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        port: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 22
+        },
+        country: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        created_by: {
+            type: DataTypes.INTEGER,
+        },
+    },
+    {
+        tableName: 'server',
+        createdAt: 'created_at',
+        deletedAt: 'deleted_at',
+        updatedAt: 'updated_at',
+        paranoid: true,
+        sequelize
+    }
+)
 
-
-const Server = sequelize.define('servers', Data, options);
 
 export default Server

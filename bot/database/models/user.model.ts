@@ -1,17 +1,5 @@
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, Optional } from "sequelize";
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import sequelize from "..";
-
-
-export type UserAttributes = {
-    id: number,
-    first_name: string
-    last_name: string;
-    username: string
-    is_bot: boolean;
-    is_premium: boolean;
-    is_active: boolean;
-    servers: string;
-}
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare id: CreationOptional<number>;
@@ -33,7 +21,7 @@ User.init(
         },
         first_name: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
         },
         last_name: {
             type: DataTypes.STRING,
@@ -65,6 +53,10 @@ User.init(
     },
     {
         tableName: 'users',
+        createdAt: 'created_at',
+        deletedAt: 'deleted_at',
+        updatedAt: 'updated_at',
+        paranoid: true,
         sequelize
     }
 );

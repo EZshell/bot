@@ -5,6 +5,7 @@ import { BotToken, SuperAdmin } from "./config";
 import sequelize from "./database";
 import User from "./database/models/user.model";
 import Authentication from "./middleware/authentication";
+import MenuService from "./service/menu";
 
 
 
@@ -34,6 +35,8 @@ const bot = new Bot<MyContext>(BotToken);
 bot.use(session({ initial }));
 bot.use(Authentication);
 
+new MenuService(bot).run();
+
 
 // Handle the /start command.
 bot.command("start", async (ctx) => {
@@ -51,13 +54,6 @@ bot.command("start", async (ctx) => {
     await ctx.reply(_text, { parse_mode: "HTML" })
 });
 
-
-// bot.command("hunger", async (ctx) => {
-//     const count = ctx.session.pizzaCount;
-//     await ctx.reply(`Your hunger level is ${count}!`);
-// });
-
-// bot.hears(/.*🍕.*/, (ctx) => ctx.session.pizzaCount++);
 
 // Handle other messages.
 bot.on("message", (ctx) => ctx.reply("🤫"));
