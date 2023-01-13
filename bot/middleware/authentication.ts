@@ -1,28 +1,30 @@
-import { Context, NextFunction } from "grammy";
+import { NextFunction } from "grammy";
+import { MyContext } from "..";
 import User from "../database/models/user.model";
 
-async function Authentication(ctx: Context, next: NextFunction) {
+async function Authentication(ctx: MyContext, next: NextFunction) {
     const { user } = await ctx.getAuthor()
-    const IUser = await User.findByPk(user.id)
-    if (IUser) {
-        await IUser.update({
+    let _user = await User.findByPk(user.id)
+    if (_user) {
+        await _user.update({
             first_name: user.first_name,
             last_name: user.last_name,
             username: user.username,
         })
     } else {
-        await User.create({
+        _user = await User.create({
             id: user.id,
             first_name: user.first_name,
             last_name: user.last_name,
             username: user.username,
-            is_bot: user.is_bot ? 1 : 0,
-            is_premium: user.is_premium ? 1 : 0,
-            is_active: 1,
+            is_bot: user.is_bot,
+            is_premium: user.is_premium || false,
+            is_active: true,
             servers: []
         })
     }
-    // ctx.user = User;
+
+    ctx.session.user = _user;
     await next();
 }
 

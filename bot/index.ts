@@ -11,17 +11,22 @@ import Authentication from "./middleware/authentication";
 
 // Define the shape of our session.
 interface SessionData {
-    pizzaCount: number;
+    user: User | null;
 }
-// Flavor the context type to include sessions.
-type MyContext = Context & SessionFlavor<SessionData>;
+export type MyContext = Context & SessionFlavor<SessionData>;
 
-const bot = new Bot<MyContext>(BotToken);
+
 
 // Install session middleware, and define the initial session value.
 function initial(): SessionData {
-    return { pizzaCount: 0 };
+    return { user: null };
 }
+
+
+// ###################################################
+
+const bot = new Bot<MyContext>(BotToken);
+
 bot.use(session({ initial }));
 bot.use(Authentication);
 
@@ -33,12 +38,12 @@ bot.command("start", async (ctx) => {
 });
 
 
-bot.command("hunger", async (ctx) => {
-    const count = ctx.session.pizzaCount;
-    await ctx.reply(`Your hunger level is ${count}!`);
-});
+// bot.command("hunger", async (ctx) => {
+//     const count = ctx.session.pizzaCount;
+//     await ctx.reply(`Your hunger level is ${count}!`);
+// });
 
-bot.hears(/.*🍕.*/, (ctx) => ctx.session.pizzaCount++);
+// bot.hears(/.*🍕.*/, (ctx) => ctx.session.pizzaCount++);
 
 // Handle other messages.
 bot.on("message", (ctx) => ctx.reply("🤫"));

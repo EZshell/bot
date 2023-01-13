@@ -1,46 +1,73 @@
-import { DataTypes } from "sequelize";
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, Optional } from "sequelize";
 import sequelize from "..";
 
-const Data = {
-    first_name: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    last_name: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    username: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    is_bot: {
-        type: DataTypes.BOOLEAN,
-        default: 0,
-        allowNull: false
-    },
-    is_premium: {
-        type: DataTypes.BOOLEAN,
-        default: 0,
-        allowNull: false
-    },
-    is_active: {
-        type: DataTypes.BOOLEAN,
-        default: 1,
-        allowNull: false
-    },
-    servers: {
-        type: DataTypes.JSON,
-        default: "[]",
-    },
+
+export type UserAttributes = {
+    id: number,
+    first_name: string
+    last_name: string;
+    username: string
+    is_bot: boolean;
+    is_premium: boolean;
+    is_active: boolean;
+    servers: string;
 }
 
-const options = {
-    createdAt: 'created_at',
-    deletedAt: 'deleted_at',
-    updatedAt: 'updated_at',
-    paranoid: true,
+class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+    declare id: CreationOptional<number>;
+    declare first_name: string
+    declare last_name: string | null;
+    declare username: string | null;
+    declare is_bot: boolean;
+    declare is_premium: boolean;
+    declare is_active: boolean;
+    declare servers: object;
 }
-const User = sequelize.define('users', Data, options);
+
+User.init(
+    {
+        id: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            autoIncrement: true,
+            primaryKey: true
+        },
+        first_name: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        last_name: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        username: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        is_bot: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: 0,
+            allowNull: false
+        },
+        is_premium: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: 0,
+            allowNull: false
+        },
+        is_active: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: 1,
+            allowNull: false
+        },
+        servers: {
+            type: DataTypes.JSON,
+            defaultValue: [],
+        },
+    },
+    {
+        tableName: 'users',
+        sequelize
+    }
+);
+
 
 export default User
