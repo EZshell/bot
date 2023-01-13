@@ -6,5 +6,11 @@
 		"grammy": "^1.13.0",
 		"mysql2": "^3.0.1",
 		"sequelize": "^6.28.0"
+	},
+	"scripts": {
+		"start": "node build/index.js",
+		"build": "npx tsc",
+		"pull": "git pull",
+		"auto": "npm run pull && npm run build && npm run start"
 	}
 }
