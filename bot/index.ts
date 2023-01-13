@@ -44,9 +44,21 @@ bot.command("start", async (ctx) => {
 
     sequelize.sync().then(() => {
         ctx.reply('Book table created successfully!');
+        Book.create({
+            title: "Clean Code",
+            author: "Robert Cecil Martin",
+            release_date: "2021-12-14",
+            subject: 3
+        }).then(res => {
+            ctx.reply(JSON.stringify(res))
+        }).catch((error) => {
+            ctx.reply('Failed to create a new record : ' + error);
+        });
     }).catch((error) => {
         ctx.reply('Unable to create table : ', error);
     });
+
+
 });
 
 // Handle other messages.
