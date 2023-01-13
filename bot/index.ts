@@ -1,50 +1,47 @@
-import { Bot, GrammyError, HttpError } from "grammy";
+import { Bot, GrammyError, session, HttpError, Context, SessionFlavor } from "grammy";
 import { UserFromGetMe } from "grammy/out/types";
 import { DataTypes } from "sequelize";
 import { BotToken, SuperAdmin } from "./config";
 import sequelize from "./database";
-import Book from "./database/models/book.model";
-// import User from "./database/models/user.model";
+import User from "./database/models/user.model";
+import Authentication from "./middleware/authentication";
 
-const bot = new Bot(BotToken);
+
+
+
+// Define the shape of our session.
+interface SessionData {
+    pizzaCount: number;
+}
+// Flavor the context type to include sessions.
+type MyContext = Context & SessionFlavor<SessionData>;
+
+const bot = new Bot<MyContext>(BotToken);
+
+// Install session middleware, and define the initial session value.
+function initial(): SessionData {
+    return { pizzaCount: 0 };
+}
+bot.use(session({ initial }));
+bot.use(Authentication);
 
 
 // Handle the /start command.
 bot.command("start", async (ctx) => {
-    await ctx.reply("Hi Rasoul! Up and running.")
-    // await ctx.reply(JSON.stringify(jane))
-    // try {
-    //     const users = await User.findAll();
-    //     await ctx.reply(JSON.stringify(users))
-    // } catch (error) {
-    //     console.log("err", error)
-    // }
-
-
-
-
-
-    // sequelize.sync().then(() => {
-    // ctx.reply('Book table created successfully!');
-    Book.create({
-        title: "YESSSS Code",
-        author: "Robert Cecil Martin",
-        release_date: "2021-12-14",
-        subject: 3
-    }).then(res => {
-        ctx.reply(JSON.stringify(res))
-    }).catch((error) => {
-        ctx.reply('Failed to create a new record : ' + error);
-    });
-    // }).catch((error) => {
-    //     ctx.reply('Unable to create table : ', error);
-    // });
-
-
+    let _text = ''
+    await ctx.reply(_text, { parse_mode: "HTML" })
 });
 
+
+bot.command("hunger", async (ctx) => {
+    const count = ctx.session.pizzaCount;
+    await ctx.reply(`Your hunger level is ${count}!`);
+});
+
+bot.hears(/.*🍕.*/, (ctx) => ctx.session.pizzaCount++);
+
 // Handle other messages.
-bot.on("message", (ctx) => ctx.reply("Got another message!"));
+bot.on("message", (ctx) => ctx.reply("🤫"));
 
 
 bot.catch((err) => {

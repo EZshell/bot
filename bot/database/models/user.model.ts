@@ -1,15 +1,36 @@
-// import { DataTypes } from "sequelize";
-// import sequelize from "..";
+import { DataTypes } from "sequelize";
+import sequelize from "..";
 
-// const Data = {
-//     id: DataTypes.INTEGER,
-//     first_name: DataTypes.CHAR({ length: 256 }),
-//     last_name: DataTypes.CHAR({ length: 256 }),
-//     username: DataTypes.CHAR({ length: 256 }),
-//     is_bot: DataTypes.BOOLEAN,
-//     is_premium: DataTypes.BOOLEAN,
-//     is_active: DataTypes.BOOLEAN,
-// }
-// const User = sequelize.define('users', Data);
+const Data = {
+    first_name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    last_name: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    username: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    is_bot: {
+        type: DataTypes.BOOLEAN,
+        default: false,
+    },
+    is_premium: {
+        type: DataTypes.BOOLEAN,
+        default: false,
+    },
+    is_active: {
+        type: DataTypes.BOOLEAN,
+        default: true,
+    },
+    my_servers: {
+        type: DataTypes.JSON,
+        default: [],
+    }
+}
+const User = sequelize.define('users', Data);
 
-// export default User
+export default User
