@@ -1,23 +1,15 @@
 import { Bot, GrammyError, HttpError } from "grammy";
 import { UserFromGetMe } from "grammy/out/types";
+import { DataTypes } from "sequelize";
 import { BotToken, SuperAdmin } from "./config";
 import sequelize from "./database";
-import User from "./database/models/user.model";
+// import User from "./database/models/user.model";
 
 const bot = new Bot(BotToken);
 
 
 // Handle the /start command.
 bot.command("start", async (ctx) => {
-    const jane = await User.create({
-        id: ctx.from?.id,
-        first_name: ctx.from?.first_name,
-        last_name: ctx.from?.last_name,
-        username: ctx.from?.username,
-        is_bot: ctx.from?.is_bot,
-        is_premium: ctx.from?.is_premium,
-        is_active: true,
-    });
     await ctx.reply("Hello Rasoul! Up and running.")
     // await ctx.reply(JSON.stringify(jane))
     // try {
@@ -26,7 +18,35 @@ bot.command("start", async (ctx) => {
     // } catch (error) {
     //     console.log("err", error)
     // }
+    sequelize.authenticate().then(() => {
+        ctx.reply('Connection has been established successfully.');
+    }).catch((error) => {
+        ctx.reply('Unable to connect to the database: ' + error);
+    });
 
+
+    const Book = sequelize.define("books", {
+        title: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        author: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        release_date: {
+            type: DataTypes.DATEONLY,
+        },
+        subject: {
+            type: DataTypes.INTEGER,
+        }
+    });
+
+    sequelize.sync().then(() => {
+        ctx.reply('Book table created successfully!');
+    }).catch((error) => {
+        ctx.reply('Unable to create table : ', error);
+    });
 });
 
 // Handle other messages.
