@@ -20,8 +20,8 @@ bot.command("start", async (ctx) => {
     // });
     await ctx.reply("Hello Jigar! Up and running.")
     // await ctx.reply(JSON.stringify(jane))
-    const users = await User.findAll();
-    await ctx.reply(JSON.stringify(users))
+    // const users = await User.findAll();
+    // await ctx.reply(JSON.stringify(users))
 });
 
 // Handle other messages.
