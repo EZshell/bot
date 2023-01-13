@@ -18,7 +18,7 @@ bot.command("start", async (ctx) => {
     //     is_premium: ctx.from?.is_premium,
     //     is_active: true,
     // });
-    await ctx.reply("Hello Jigar! Up and running.")
+    await ctx.reply("Hello Rasoul! Up and running.")
     // await ctx.reply(JSON.stringify(jane))
     // try {
     //     const users = await User.findAll();
@@ -36,7 +36,7 @@ bot.on("message", (ctx) => ctx.reply("Got another message!"));
 
 bot.start({
     onStart: async (info: UserFromGetMe) => {
-        let _text = `<b>${info.first_name}(@${info.username})</b> is running ...\n`
+        let _text = `<b>${info.first_name}(@${info.username})</b> is running well\n`
         try {
             await sequelize.authenticate();
             _text += `<b>Database:</b> Connected & running well`
