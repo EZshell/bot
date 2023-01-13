@@ -11,6 +11,6 @@
 		"start": "node build/index.js",
 		"build": "npx tsc",
 		"pull": "git pull",
-		"auto": "npm run pull && npm run build && npm run start"
+		"auto": "npm run build && npm run start"
 	}
 }
