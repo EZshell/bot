@@ -1,11 +1,11 @@
-import { Sequelize, Model, DataTypes } from 'sequelize';
+import { Sequelize, } from 'sequelize';
 
 const sequelize = new Sequelize(
     'ezshell',
     'ezshell',
     'FdG6FTH2aHkF5BTX',
     {
-        host: '116.203.75.185',
+        host: 'localhost',
         dialect: 'mysql'
     }
 );
