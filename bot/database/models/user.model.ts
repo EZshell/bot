@@ -31,12 +31,16 @@ const Data = {
     },
     my_servers: {
         type: DataTypes.JSON,
-        default: [],
+        default: "[]",
     },
-    last_online: {
-        type: DataTypes.DATE,
-    }
 }
-const User = sequelize.define('users', Data);
+
+const options = {
+    createdAt: 'created_at',
+    deletedAt: 'deleted_at',
+    updatedAt: 'updated_at',
+    paranoid: true,
+}
+const User = sequelize.define('users', Data, options);
 
 export default User

@@ -36,14 +36,19 @@ const Data = {
         allowNull: false,
         length: 100
     },
-
-    deletedAt: {
-        type: DataTypes.DATE,
-    },
-    createdBy: {
+    created_by: {
         type: DataTypes.INTEGER,
     },
 }
-const Server = sequelize.define('servers', Data);
+
+const options = {
+    createdAt: 'created_at',
+    deletedAt: 'deleted_at',
+    updatedAt: 'updated_at',
+    paranoid: true,
+}
+
+
+const Server = sequelize.define('servers', Data, options);
 
 export default Server

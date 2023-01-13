@@ -10,8 +10,6 @@ async function Authentication(ctx: Context, next: NextFunction) {
             first_name: user.first_name,
             last_name: user.last_name,
             username: user.username,
-            last_online: Date.now(),
-            updatedAt: IUser.dataValues.updatedAt,
         })
     } else {
         await User.create({
@@ -22,7 +20,6 @@ async function Authentication(ctx: Context, next: NextFunction) {
             is_bot: user.is_bot ? 1 : 0,
             is_premium: user.is_premium ? 1 : 0,
             is_active: 1,
-            last_online: Date.now()
         })
     }
     // ctx.user = User;
