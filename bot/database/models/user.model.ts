@@ -29,7 +29,7 @@ const Data = {
         default: 1,
         allowNull: false
     },
-    my_servers: {
+    servers: {
         type: DataTypes.JSON,
         default: "[]",
     },
