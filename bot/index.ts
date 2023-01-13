@@ -3,6 +3,7 @@ import { UserFromGetMe } from "grammy/out/types";
 import { DataTypes } from "sequelize";
 import { BotToken, SuperAdmin } from "./config";
 import sequelize from "./database";
+import Book from "./database/models/book.model";
 // import User from "./database/models/user.model";
 
 const bot = new Bot(BotToken);
@@ -25,27 +26,12 @@ bot.command("start", async (ctx) => {
     });
 
 
-    const Book = sequelize.define("books", {
-        title: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        author: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        release_date: {
-            type: DataTypes.DATEONLY,
-        },
-        subject: {
-            type: DataTypes.INTEGER,
-        }
-    });
+
 
     sequelize.sync().then(() => {
         ctx.reply('Book table created successfully!');
         Book.create({
-            title: "Clean Code",
+            title: "Hello Code",
             author: "Robert Cecil Martin",
             release_date: "2021-12-14",
             subject: 3
