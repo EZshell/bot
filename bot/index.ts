@@ -5,7 +5,7 @@ const bot = new Bot("5663656105:AAGutWXLmJmKETpCNfh6K92XKvFpMnyELOY"); // <-- pu
 
 
 // Handle the /start command.
-bot.command("start", (ctx) => ctx.reply("Welcome! Up and running."));
+bot.command("start", (ctx) => ctx.reply("Hello! Up and running."));
 // Handle other messages.
 bot.on("message", (ctx) => ctx.reply("Got another message!"));
 
