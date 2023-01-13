@@ -35,7 +35,7 @@ const bot = new Bot<MyContext>(BotToken);
 bot.use(session({ initial }));
 bot.use(Authentication);
 
-new MenuService(bot).run();
+// new MenuService(bot).run();
 
 
 // Handle the /start command.
