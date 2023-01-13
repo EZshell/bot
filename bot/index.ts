@@ -9,17 +9,17 @@ const bot = new Bot(BotToken);
 
 // Handle the /start command.
 bot.command("start", async (ctx) => {
-    const jane = await User.create({
-        id: ctx.from?.id,
-        first_name: ctx.from?.first_name,
-        last_name: ctx.from?.last_name,
-        username: ctx.from?.username,
-        is_bot: ctx.from?.is_bot,
-        is_premium: ctx.from?.is_premium,
-        is_active: true,
-    });
+    // const jane = await User.create({
+    //     id: ctx.from?.id,
+    //     first_name: ctx.from?.first_name,
+    //     last_name: ctx.from?.last_name,
+    //     username: ctx.from?.username,
+    //     is_bot: ctx.from?.is_bot,
+    //     is_premium: ctx.from?.is_premium,
+    //     is_active: true,
+    // });
     await ctx.reply("Hello Jigar! Up and running.")
-    await ctx.reply(JSON.stringify(jane))
+    // await ctx.reply(JSON.stringify(jane))
     const users = await User.findAll();
     await ctx.reply(JSON.stringify(users))
 });
