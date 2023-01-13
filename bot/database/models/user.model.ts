@@ -21,7 +21,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare is_bot: boolean;
     declare is_premium: boolean;
     declare is_active: boolean;
-    declare servers: object;
+    declare servers: number[];
 }
 
 User.init(

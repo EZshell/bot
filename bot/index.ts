@@ -12,6 +12,7 @@ import Authentication from "./middleware/authentication";
 // Define the shape of our session.
 interface SessionData {
     user: User | null;
+    isNew: boolean;
 }
 export type MyContext = Context & SessionFlavor<SessionData>;
 
@@ -19,7 +20,10 @@ export type MyContext = Context & SessionFlavor<SessionData>;
 
 // Install session middleware, and define the initial session value.
 function initial(): SessionData {
-    return { user: null };
+    return {
+        user: null,
+        isNew: true
+    };
 }
 
 
@@ -33,7 +37,17 @@ bot.use(Authentication);
 
 // Handle the /start command.
 bot.command("start", async (ctx) => {
-    let _text = 'Hello'
+    const { user, isNew } = ctx.session
+    let _text = ``
+    if (isNew) {
+        _text = `Hello Dear <b>${user?.first_name}</b>!`
+        _text += `\nWelcome, Hope to have a good experience`
+    } else {
+        _text = `Dear <b>${user?.first_name}</b>!`
+        _text += `\nWelcome back ;)`
+    }
+
+    _text += `\n\nPress /menu`
     await ctx.reply(_text, { parse_mode: "HTML" })
 });
 
