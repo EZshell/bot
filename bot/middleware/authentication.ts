@@ -9,6 +9,7 @@ async function Authentication(ctx: Context, next: NextFunction) {
             first_name: user.first_name,
             last_name: user.last_name,
             username: user.username,
+            last_online: Date.now()
         })
     } else {
         await User.create({
@@ -18,6 +19,7 @@ async function Authentication(ctx: Context, next: NextFunction) {
             username: user.username,
             is_bot: user.is_bot,
             is_premium: user.is_premium,
+            last_online: Date.now()
         })
     }
     // ctx.user = User;

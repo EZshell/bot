@@ -16,19 +16,22 @@ const Data = {
     },
     is_bot: {
         type: DataTypes.BOOLEAN,
-        default: false,
+        default: 0,
     },
     is_premium: {
         type: DataTypes.BOOLEAN,
-        default: false,
+        default: 0,
     },
     is_active: {
-        type: DataTypes.BOOLEAN,
-        default: true,
+        type: DataTypes.TINYINT,
+        default: 1,
     },
     my_servers: {
         type: DataTypes.JSON,
         default: [],
+    },
+    last_online: {
+        type: DataTypes.DATE,
     }
 }
 const User = sequelize.define('users', Data);
