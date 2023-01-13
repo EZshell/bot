@@ -28,7 +28,7 @@ bot.use(Authentication);
 
 // Handle the /start command.
 bot.command("start", async (ctx) => {
-    let _text = ''
+    let _text = 'Hello'
     await ctx.reply(_text, { parse_mode: "HTML" })
 });
 
