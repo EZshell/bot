@@ -23,9 +23,9 @@ bot.start({
         let _text = `<b>${info.first_name} ${info.last_name}</b> is running ...\n`
         try {
             await sequelize.authenticate();
-            _text = `<b>Database:</b> is connected & running well`
+            _text += `<b>Database:</b> connected & running well`
         } catch (error) {
-            _text = `<b>Database:</b> Unable to connect to the database (${error})`
+            _text += `<b>Database:</b> Unable to connect to the database (${error})`
         }
         bot.api.sendMessage(SuperAdmin, _text, { parse_mode: 'HTML' })
     }

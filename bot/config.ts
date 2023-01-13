@@ -1,2 +1,2 @@
-export const BotToken = "5817494017:AAE--FH-fCndLpZzrBDg_quJxuRa29SVVzc"
+export const BotToken = "5663656105:AAGutWXLmJmKETpCNfh6K92XKvFpMnyELOY"
 export const SuperAdmin = 115025624
