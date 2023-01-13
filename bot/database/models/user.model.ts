@@ -17,14 +17,17 @@ const Data = {
     is_bot: {
         type: DataTypes.BOOLEAN,
         default: 0,
+        allowNull: false
     },
     is_premium: {
         type: DataTypes.BOOLEAN,
         default: 0,
+        allowNull: false
     },
     is_active: {
-        type: DataTypes.TINYINT,
+        type: DataTypes.BOOLEAN,
         default: 1,
+        allowNull: false
     },
     my_servers: {
         type: DataTypes.JSON,
