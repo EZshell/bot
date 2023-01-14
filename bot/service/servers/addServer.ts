@@ -11,7 +11,7 @@ class AddServerService {
     }
 
     public run() {
-        this.bot.inlineQuery(/^servers:add:\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)$/, this.response)
+        // this.bot.inlineQuery(/^servers:add:\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)$/, this.response)
         this.bot.on("message:text", this.saveServer)
     }
 
