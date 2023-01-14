@@ -13,6 +13,8 @@ class Server extends Model<InferAttributes<Server>, InferCreationAttributes<Serv
     declare created_by: number;
 }
 
+
+
 Server.init(
     {
         id: {
@@ -65,3 +67,13 @@ Server.init(
 
 
 export default Server
+
+
+export type ServerInfoType = {
+    name: string,
+    description: string,
+    ip: string,
+    username: string,
+    password: string,
+    port: number,
+}

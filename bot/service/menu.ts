@@ -13,7 +13,7 @@ class MenuService {
         this.bot.callbackQuery("menu", this.response)
     }
 
-    // ############################3
+    // ############################
 
     private keyboard = async (ctx: MyContext) => {
         const keyboard = new InlineKeyboard()

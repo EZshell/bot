@@ -3,9 +3,11 @@ import { UserFromGetMe } from "grammy/out/types";
 import { DataTypes } from "sequelize";
 import { BotToken, SuperAdmin } from "./config";
 import sequelize from "./database";
+import { ServerInfoType } from "./database/models/server.model";
 import User from "./database/models/user.model";
 import Authentication from "./middleware/authentication";
 import MenuService from "./service/menu";
+import ServersService from "./service/servers/servers";
 
 
 
@@ -14,6 +16,7 @@ import MenuService from "./service/menu";
 interface SessionData {
     user: User | null;
     isNew: boolean;
+    addServer: ServerInfoType | null;
 }
 export type MyContext = Context & SessionFlavor<SessionData>;
 
@@ -23,7 +26,8 @@ export type MyContext = Context & SessionFlavor<SessionData>;
 function initial(): SessionData {
     return {
         user: null,
-        isNew: true
+        isNew: true,
+        addServer: null
     };
 }
 
@@ -37,7 +41,7 @@ bot.use(Authentication);
 
 // services
 new MenuService(bot).run();
-
+new ServersService(bot).run();
 
 // Handle the /start command.
 bot.command("start", async (ctx) => {
@@ -58,7 +62,8 @@ bot.command("start", async (ctx) => {
 
 // Handle other messages.
 bot.on("message", (ctx) => ctx.reply("🤫"));
-
+bot.on("inline_query", (ctx) => ctx.answerInlineQuery([]));
+bot.on("callback_query", (ctx) => ctx.answerCallbackQuery("Sorry :("));
 
 bot.catch((err) => {
     const ctx = err.ctx;
