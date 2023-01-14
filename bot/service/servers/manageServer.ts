@@ -38,7 +38,8 @@ class ManageServerService {
     private serverID: number | undefined;
     private server: Server | null = null;
     private keyboard = async (ctx: MyContext) => {
-        const server = this.server!
+        const server = this.server
+        if (!server) return new InlineKeyboard()
         const keyboard = new InlineKeyboard()
             .text("❌ Delete", "server:" + this.serverID + ":delete")
 
@@ -67,7 +68,8 @@ class ManageServerService {
     }
 
     private text = async (ctx: MyContext) => {
-        const server = this.server!
+        const server = this.server
+        if (!server) return '<i>Server deleted or not found</i>'
         return ` <b>${server.name}</b>
 <b>IP:</b> <code>${server.ip}</code>
 <b>Username:</b> <code>${server.username}</code>
@@ -98,6 +100,7 @@ __ <pre>${server.description}</pre>`
         this.serverID = parseInt(ctx.match![1]);
         await this.setServer(ctx)
         await this.server?.destroy()
+        await this.setServer(ctx)
         await ctx.answerCallbackQuery(`Deleted`)
         await _next()
     }
@@ -105,6 +108,7 @@ __ <pre>${server.description}</pre>`
         this.serverID = parseInt(ctx.match![1]);
         await this.setServer(ctx)
         await this.server?.update({ is_active: false })
+        await this.setServer(ctx)
         await ctx.answerCallbackQuery(`Inactivated`)
         await _next()
     }
@@ -113,6 +117,7 @@ __ <pre>${server.description}</pre>`
         this.serverID = parseInt(ctx.match![1]);
         await this.setServer(ctx)
         await this.server?.update({ is_active: true })
+        await this.setServer(ctx)
         await ctx.answerCallbackQuery(`Activated`)
         await _next()
     }
@@ -132,6 +137,7 @@ __ <pre>${server.description}</pre>`
             category: 'server',
             subID: this.serverID!,
             parameter: param,
+            messageID: ctx.message?.message_id!
         };
         await ctx.reply(`Send me <b>${param}</b> parameter for <b>${this.server?.name}</b>:`, { parse_mode: 'HTML' })
     }
@@ -140,7 +146,7 @@ __ <pre>${server.description}</pre>`
             await _next()
             return
         }
-        const { category, subID, parameter } = ctx.session.inputState
+        const { category, subID, parameter, messageID } = ctx.session.inputState
         if (category !== 'server') {
             await _next()
             return
@@ -149,6 +155,9 @@ __ <pre>${server.description}</pre>`
         await this.setServer(ctx)
         await this.server?.update({ [parameter]: ctx.message?.text })
         await ctx.reply(`Done`)
+        // 
+        await this.setServer(ctx)
+        await ctx.api.editMessageText(ctx.chat?.id!, messageID!, await this.text(ctx), { reply_markup: await this.keyboard(ctx) })
     }
 }
 

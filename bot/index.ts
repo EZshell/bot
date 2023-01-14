@@ -14,6 +14,7 @@ interface InputState {
     category: string;
     subID: number,
     parameter: string;
+    messageID: number | null;
 }
 
 // Define the shape of our session.
