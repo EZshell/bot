@@ -159,8 +159,13 @@ __ <pre>${server.description}</pre>`
         await server?.update({ [parameter]: ctx.message?.text })
         await ctx.reply(`Done`)
         // 
-        // const server = await Server.findByPk(this.serverID)
-        await ctx.api.editMessageText(ctx.chat?.id!, messageID!, await this.text(ctx), { reply_markup: await this.keyboard(ctx) })
+        this.server = await Server.findByPk(serverID)
+        await ctx.api.editMessageText(
+            ctx.chat?.id!,
+            messageID!,
+            await this.text(ctx),
+            { reply_markup: await this.keyboard(ctx) }
+        )
     }
 }
 
