@@ -131,7 +131,7 @@ __ <pre>${server.description}</pre>`
         const match = ctx.match!
 
 
-        this.serverID = parseInt(match[1]);
+        // this.serverID = parseInt(match[1]);
         const param = match[2]
         // await this.setServer(ctx)
         // await ctx.answerCallbackQuery()
