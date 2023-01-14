@@ -28,63 +28,55 @@ class AddServerService {
     }
 
     private response = async (ctx: MyContext) => {
-        try {
-            const match = ctx.match!
+        const match = ctx.match!
 
-            this.server = {
-                name: match[1],
-                description: match[5],
-                ip: match[2],
-                username: match[3],
-                password: match[4],
-                port: 22,
-            }
-
-            // ctx.session.addServer = this.server
-
-            await ctx.answerInlineQuery(
-                [
-                    {
-                        type: "article",
-                        id: "new_server",
-                        title: this.server.name,
-                        input_message_content: {
-                            message_text: await this.text(ctx),
-                            parse_mode: "HTML",
-                        },
-                        description: `${this.server.username}@${this.server.ip} -p ${this.server.port} \n` + `${this.server.description || ""}`,
-                    },
-                ],
-                { cache_time: 0, },
-            );
-        } catch (error) {
-            console.log("%%%%%%%%%%%%")
-            console.log(error)
+        this.server = {
+            name: match[1],
+            description: match[5],
+            ip: match[2],
+            username: match[3],
+            password: match[4],
+            port: 22,
         }
+
+        await ctx.answerInlineQuery(
+            [
+                {
+                    type: "article",
+                    id: "new_server",
+                    title: this.server.name,
+                    input_message_content: {
+                        message_text: await this.text(ctx),
+                        parse_mode: "HTML",
+                    },
+                    description: `${this.server.username}@${this.server.ip} -p ${this.server.port} \n` + `${this.server.description || ""}`,
+                },
+            ],
+            { cache_time: 0, },
+        );
 
     }
 
 
     private async saveServer(ctx: MyContext, _next: NextFunction) {
         if (!ctx!.message!.via_bot) return await _next()
-        else if (!ctx.session.addServer) {
-            await ctx.reply("❌ Getting data error" + JSON.stringify(ctx.match), { reply_to_message_id: ctx.message?.message_id })
+        else if (ctx.match?.length === 7) {
+            await ctx.reply("❌ Getting data error", { reply_to_message_id: ctx.message?.message_id })
         }
         else {
-            const server = ctx.session.addServer;
+            const mch = ctx.match!
             const d = await Server.create({
-                name: server.name,
-                ip: server.ip,
-                username: server.username,
-                password: server.password,
-                port: server.port,
-                description: server.description,
+                name: mch[1],
+                ip: mch[3],
+                username: mch[2],
+                password: mch[5],
+                port: parseInt(mch[4]),
+                description: mch[6],
                 country: "Unknown",
                 created_by: ctx.session.user!.id!,
             })
             ctx.session.user?.servers.push(d.id)
             await ctx.session.user?.save()
-            ctx.session.addServer = null
             await ctx.reply("Server added successfully", { reply_to_message_id: ctx.message?.message_id })
         }
     }
