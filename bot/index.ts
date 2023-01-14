@@ -43,7 +43,7 @@ const bot = new Bot<MyContext>(BotToken);
 
 // services
 new MenuService(bot).run();
-new ServersService(bot).run();
+// new ServersService(bot).run();
 
 // Handle the /start command.
 bot.command("start", async (ctx) => {
