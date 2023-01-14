@@ -74,10 +74,11 @@ class AddServerService {
                 description: mch[6],
                 country: "Unknown",
                 created_by: ctx.session.user!.id!,
+                is_active: true
             })
-            ctx.session.user?.servers.push(d.id)
-            await ctx.session.user?.save()
-            await ctx.reply("Server added successfully", { reply_to_message_id: ctx.message?.message_id })
+            console.log(ctx.session.user!.servers)
+            // await ctx.session.user?.save()
+            await ctx.reply("✅ Server added:\n/servers", { reply_to_message_id: ctx.message?.message_id })
         }
     }
 

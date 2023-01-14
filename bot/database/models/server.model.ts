@@ -11,6 +11,7 @@ class Server extends Model<InferAttributes<Server>, InferCreationAttributes<Serv
     declare port: number;
     declare country: string;
     declare created_by: number;
+    declare is_active: boolean;
 }
 
 
@@ -53,6 +54,11 @@ Server.init(
         },
         created_by: {
             type: DataTypes.INTEGER,
+        },
+        is_active: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: 1,
+            allowNull: false
         },
     },
     {
