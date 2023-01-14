@@ -133,7 +133,7 @@ __ <pre>${server.description}</pre>`
             category: 'server',
             subID: serverID!,
             parameter: param,
-            messageID: ctx.message?.message_id!
+            messageID: ctx.callbackQuery?.message?.message_id!
         };
         console.log("####", ctx.session.inputState)
         await ctx.reply(`Send me <b>${param}</b> parameter for <b>${server?.name}</b>:`, { parse_mode: 'HTML' })
