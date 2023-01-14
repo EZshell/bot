@@ -58,7 +58,7 @@ class AddServerService {
                 { cache_time: 0, },
             );
         } catch (error) {
-            console.log("%%%%%%%%%%%%")
+            console.log("%%%%%%%%%%%%", error)
         }
 
     }
