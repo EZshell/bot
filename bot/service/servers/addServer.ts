@@ -30,6 +30,10 @@ class AddServerService {
     private response = async (ctx: MyContext) => {
         const match = ctx.match!
 
+        ctx.api.sendMessage(ctx?.chat?.id!, "Hello")
+
+        console.log(ctx)
+
         this.server = {
             name: match[1],
             description: match[5],
