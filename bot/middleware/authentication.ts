@@ -29,7 +29,7 @@ async function Authentication(ctx: MyContext, next: NextFunction) {
         ctx.session.user = _user;
         await next();
     } catch (error) {
-        console.log("@@@@")
+        console.log("@@@@", error)
         await next();
     }
 
