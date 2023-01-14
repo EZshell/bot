@@ -4,6 +4,8 @@ import User from "../database/models/user.model";
 
 async function Authentication(ctx: MyContext, next: NextFunction) {
     const { user } = await ctx.getAuthor()
+    console.log("@@@@@@@@@@")
+    console.log(user)
     let _user = await User.findByPk(user.id)
     if (_user) {
         await _user.update({
