@@ -40,8 +40,8 @@ bot.use(session({ initial }));
 bot.use(Authentication);
 
 // services
-// new MenuService(bot).run();
-// new ServersService(bot).run();
+new MenuService(bot).run();
+new ServersService(bot).run();
 
 // Handle the /start command.
 bot.command("start", async (ctx) => {
@@ -62,10 +62,7 @@ bot.command("start", async (ctx) => {
 
 // Handle other messages.
 bot.on("message", (ctx) => ctx.reply("🤫"));
-bot.on("inline_query", (ctx) => {
-    console.log(ctx)
-    ctx.answerInlineQuery([])
-});
+bot.on("inline_query", (ctx) => ctx.answerInlineQuery([]));
 bot.on("callback_query", (ctx) => ctx.answerCallbackQuery("Sorry :("));
 
 bot.catch((err) => {
