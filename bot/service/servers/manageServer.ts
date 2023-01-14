@@ -75,6 +75,7 @@ __ <pre>${server.description}</pre>`
 
 
     private response = async (ctx: MyContext) => {
+        console.log("******************", ctx.match)
         const serverID = parseInt(ctx.match![1]);
         const server = await Server.findByPk(serverID)
         if (!server) return await ctx.answerCallbackQuery("Server deleted")
