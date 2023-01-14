@@ -135,6 +135,7 @@ __ <pre>${server.description}</pre>`
             parameter: param,
             messageID: ctx.message?.message_id!
         };
+        console.log("####", ctx.session.inputState)
         await ctx.reply(`Send me <b>${param}</b> parameter for <b>${server?.name}</b>:`, { parse_mode: 'HTML' })
     }
     private editServerFinal = async (ctx: MyContext, _next: NextFunction) => {
@@ -147,6 +148,7 @@ __ <pre>${server.description}</pre>`
             await _next()
             return
         }
+        console.log("****", ctx.session.inputState)
         const serverID = subID;
         const server = await Server.findByPk(serverID)
         await server?.update({ [parameter]: ctx.message?.text })
