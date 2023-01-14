@@ -22,9 +22,9 @@ class ManageServerService {
         this.bot.callbackQuery(
             [
                 /^server:([0-9]+)$/,
-                // /^server:([0-9]+):inactive$/,
-                // /^server:([0-9]+):active$/,
-                // /^server:([0-9]+):delete$/
+                /^server:([0-9]+):inactive$/,
+                /^server:([0-9]+):active$/,
+                /^server:([0-9]+):delete$/
             ],
             this.response
         )
@@ -34,9 +34,7 @@ class ManageServerService {
     // ############################
 
     private serverID: number | undefined;
-    private server: Server | null = null;
-    private keyboard = async (ctx: MyContext) => {
-        const server = this.server
+    private keyboard = async (server: Server) => {
         if (!server) return new InlineKeyboard()
         const keyboard = new InlineKeyboard()
             .text("❌ Delete", "server:" + this.serverID + ":delete")
@@ -65,8 +63,7 @@ class ManageServerService {
         return keyboard
     }
 
-    private text = async (ctx: MyContext) => {
-        const server = this.server
+    private text = async (server: Server) => {
         if (!server) return '<i>Server deleted or not found</i>'
         return ` <b>${server.name}</b>
 <b>IP:</b> <code>${server.ip}</code>
@@ -77,17 +74,15 @@ class ManageServerService {
 __ <pre>${server.description}</pre>`
     }
 
-    private async setServer(ctx: MyContext) {
-        this.server = await Server.findByPk(this.serverID)
-    }
 
     private response = async (ctx: MyContext) => {
-        this.serverID = parseInt(ctx.match![1]);
-        await this.setServer(ctx)
+        const serverID = parseInt(ctx.match![1]);
+        const server = await Server.findByPk(serverID)
+        if (!server) return await ctx.answerCallbackQuery("Server deleted")
 
         await ctx.editMessageText(
-            await this.text(ctx),
-            { reply_markup: await this.keyboard(ctx), parse_mode: "HTML" }
+            await this.text(server),
+            { reply_markup: await this.keyboard(server), parse_mode: "HTML" }
         );
         await ctx.answerCallbackQuery();
         return
@@ -100,7 +95,7 @@ __ <pre>${server.description}</pre>`
         const server = await Server.findByPk(serverID)
         await server?.destroy()
         await ctx.answerCallbackQuery(`Deleted`)
-        // await _next()
+        await _next()
     }
     private async inactiveServer(ctx: MyContext, _next: NextFunction) {
         const match = ctx.match!
@@ -108,16 +103,16 @@ __ <pre>${server.description}</pre>`
         const server = await Server.findByPk(serverID)
         await server?.update({ is_active: false })
         await ctx.answerCallbackQuery(`Inactivated`)
-        // await _next()
+        await _next()
     }
 
     private async activeServer(ctx: MyContext, _next: NextFunction) {
         const match = ctx.match!
         const serverID = parseInt(match[1]);
         const server = await Server.findByPk(serverID)
-        await server?.update({ is_active: false })
+        await server?.update({ is_active: true })
         await ctx.answerCallbackQuery(`Activated`)
-        // await _next()
+        await _next()
     }
 
     private async sshCheck(ctx: MyContext) {
@@ -159,12 +154,12 @@ __ <pre>${server.description}</pre>`
         await server?.update({ [parameter]: ctx.message?.text })
         await ctx.reply(`Done`)
         // 
-        this.server = await Server.findByPk(serverID)
+        const _server = (await Server.findByPk(serverID))!
         await ctx.api.editMessageText(
             ctx.chat?.id!,
             messageID!,
-            await this.text(ctx),
-            { reply_markup: await this.keyboard(ctx) }
+            await this.text(_server),
+            { reply_markup: await this.keyboard(_server) }
         )
     }
 }
