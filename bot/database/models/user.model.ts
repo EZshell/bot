@@ -9,7 +9,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare is_bot: boolean;
     declare is_premium: boolean;
     declare is_active: boolean;
-    declare servers: number[];
+    declare servers: number[] | string;
 }
 
 User.init(
@@ -48,7 +48,12 @@ User.init(
         },
         servers: {
             type: DataTypes.JSON,
-            defaultValue: [],
+            get: function () {
+                return JSON.parse(this.getDataValue('servers').toString());
+            },
+            set: function (value) {
+                this.setDataValue('servers', JSON.stringify(value));
+            },
         },
     },
     {

@@ -42,7 +42,7 @@ class ServersService {
     }
 
     private response = async (ctx: MyContext) => {
-        const servers = ctx.session.user?.servers
+        const servers = ctx.session.user!.servers as number[]
         this.query = await Server.findAndCountAll({ where: { id: { [Op.in]: servers } } })
 
         if (ctx.callbackQuery) {

@@ -76,8 +76,9 @@ class AddServerService {
                 created_by: ctx.session.user!.id!,
                 is_active: true
             })
-            console.log(ctx.session.user!.servers)
-            // await ctx.session.user?.save()
+            const servers = ctx.session.user!.servers as number[]
+            servers.push(d.id)
+            await ctx.session.user?.save()
             await ctx.reply("✅ Server added:\n/servers", { reply_to_message_id: ctx.message?.message_id })
         }
     }
