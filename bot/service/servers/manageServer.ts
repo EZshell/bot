@@ -129,12 +129,10 @@ __ <pre>${server.description}</pre>`
     }
     private async editServer(ctx: MyContext) {
         const match = ctx.match!
-
-
-        // this.serverID = parseInt(match[1]);
+        const serverID = parseInt(match[1]);
         const param = match[2]
-        // await this.setServer(ctx)
-        // await ctx.answerCallbackQuery()
+        await this.setServer(ctx)
+        await ctx.answerCallbackQuery()
 
         // ctx.session.inputState = {
         //     category: 'server',
