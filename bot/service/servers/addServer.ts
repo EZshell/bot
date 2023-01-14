@@ -12,7 +12,7 @@ class AddServerService {
 
     public run() {
         this.bot.inlineQuery(/^servers:add:\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)$/, this.response)
-        this.bot.on("message:text", this.saveServer)
+        this.bot.hears(/(.*)\n(.*)@(.*) -p (.*)\nPassword: (.*)\n(.*)/, this.saveServer)
     }
 
     // ############################
@@ -52,7 +52,7 @@ class AddServerService {
                             message_text: await this.text(ctx),
                             parse_mode: "HTML",
                         },
-                        description: `${this.server.username}@${this.server.ip} -p ${this.server.port} \n` + ` ${this.server.description || ""}`,
+                        description: `${this.server.username}@${this.server.ip} -p ${this.server.port} \n` + `${this.server.description || ""}`,
                     },
                 ],
                 { cache_time: 0, },
@@ -68,7 +68,7 @@ class AddServerService {
     private async saveServer(ctx: MyContext, _next: NextFunction) {
         if (!ctx!.message!.via_bot) return await _next()
         else if (!ctx.session.addServer) {
-            await ctx.reply("❌ Getting data error", { reply_to_message_id: ctx.message?.message_id })
+            await ctx.reply("❌ Getting data error" + JSON.stringify(ctx.match), { reply_to_message_id: ctx.message?.message_id })
         }
         else {
             const server = ctx.session.addServer;
