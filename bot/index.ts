@@ -37,11 +37,11 @@ function initial(): SessionData {
 const bot = new Bot<MyContext>(BotToken);
 
 bot.use(session({ initial }));
-bot.use(Authentication);
+// bot.use(Authentication);
 
 // services
-new MenuService(bot).run();
-new ServersService(bot).run();
+// new MenuService(bot).run();
+// new ServersService(bot).run();
 
 // Handle the /start command.
 bot.command("start", async (ctx) => {
