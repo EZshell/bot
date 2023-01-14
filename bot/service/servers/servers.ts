@@ -3,6 +3,7 @@ import { Op } from "sequelize";
 import { MyContext } from "../..";
 import Server from "../../database/models/server.model";
 import AddServerService from "./addServer";
+import ManageServerService from "./manageServer";
 
 
 class ServersService {
@@ -16,6 +17,7 @@ class ServersService {
         this.bot.callbackQuery("servers", this.response)
         // 
         new AddServerService(this.bot).run()
+        new ManageServerService(this.bot).run()
     }
 
     // ############################
