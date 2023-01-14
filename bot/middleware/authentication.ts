@@ -12,7 +12,7 @@ async function Authentication(ctx: MyContext, next: NextFunction) {
                 last_name: user.last_name,
                 username: user.username,
             })
-            ctx.session.isNew = false
+            if (ctx.session) ctx.session.isNew = false
         } else {
             _user = await User.create({
                 id: user.id,
@@ -24,9 +24,9 @@ async function Authentication(ctx: MyContext, next: NextFunction) {
                 is_active: true,
                 servers: []
             })
-            ctx.session.isNew = true
+            if (ctx.session) ctx.session.isNew = true
         }
-        ctx.session.user = _user;
+        if (ctx.session) ctx.session.user = _user;
         await next();
     } catch (error) {
         console.log("Auth Error", error)
