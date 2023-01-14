@@ -1,4 +1,4 @@
-import { Bot, InlineKeyboard } from "grammy";
+import { Bot, InlineKeyboard, NextFunction } from "grammy";
 import { Op } from "sequelize";
 import { MyContext } from "../..";
 import Server from "../../database/models/server.model";
@@ -12,20 +12,46 @@ class ManageServerService {
     }
 
     public run() {
-        this.bot.callbackQuery(/^server:([0-9]+)$/, this.response)
+        this.bot.callbackQuery(/^server:([0-9]+):delete$/, this.deleteServer)
+        this.bot.callbackQuery(/^server:([0-9]+):inactive$/, this.inactiveServer)
+        this.bot.callbackQuery(/^server:([0-9]+):active$/, this.activeServer)
+        this.bot.callbackQuery(/^server:([0-9]+):sshCheck$/, this.sshCheck)
+        this.bot.callbackQuery(/^server:([0-9]+):openShell$/, this.openShell)
+
+        this.bot.callbackQuery(/^server:([0-9]+):edit:(shell)$/, this.editServer)
+        this.bot.on("message", this.editServerFinal)
+
+        this.bot.callbackQuery(
+            [
+                /^server:([0-9]+)$/,
+                /^server:([0-9]+):inactive$/,
+                /^server:([0-9]+):active$/,
+                /^server:([0-9]+):delete$/
+            ],
+            this.response
+        )
     }
+
 
     // ############################
 
     private serverID: number | undefined;
     private server: Server | null = null;
     private keyboard = async (ctx: MyContext) => {
+        const server = this.server!
         const keyboard = new InlineKeyboard()
             .text("❌ Delete", "server:" + this.serverID + ":delete")
-            .text("💤 Inactive", "server:" + this.serverID + ":inactive")
+
+        if (server.is_active) {
+            keyboard.text("💤 Inactive", "server:" + this.serverID + ":inactive")
+        }
+        else {
+            keyboard.text("🖲 Active", "server:" + this.serverID + ":active")
+        }
+        keyboard
             .row()
-            .text("🕹 Check Connect", "server:" + this.serverID + ":ssh:check")
-            .text("🕹 Open Shell", "server:" + this.serverID + ":ssh:shell")
+            .text("🕹 Check Connect", "server:" + this.serverID + ":sshCheck")
+            .text("🕹 Open Shell", "server:" + this.serverID + ":openShell")
             .row()
             .text("✏️ IP", "server:" + this.serverID + ":edit:ip")
             .text("✏️ Username", "server:" + this.serverID + ":edit:username")
@@ -51,9 +77,13 @@ class ManageServerService {
 __ <pre>${server.description}</pre>`
     }
 
+    private async setServer(ctx: MyContext) {
+        this.server = await Server.findByPk(this.serverID)
+    }
+
     private response = async (ctx: MyContext) => {
         this.serverID = parseInt(ctx.match![1]);
-        this.server = await Server.findByPk(this.serverID)
+        await this.setServer(ctx)
 
         await ctx.editMessageText(
             await this.text(ctx),
@@ -61,6 +91,64 @@ __ <pre>${server.description}</pre>`
         );
         await ctx.answerCallbackQuery();
         return
+    }
+
+    // ########################
+    private async deleteServer(ctx: MyContext, _next: NextFunction) {
+        this.serverID = parseInt(ctx.match![1]);
+        await this.setServer(ctx)
+        await this.server?.destroy()
+        await ctx.answerCallbackQuery(`Deleted`)
+        await _next()
+    }
+    private async inactiveServer(ctx: MyContext, _next: NextFunction) {
+        this.serverID = parseInt(ctx.match![1]);
+        await this.setServer(ctx)
+        await this.server?.update({ is_active: false })
+        await ctx.answerCallbackQuery(`Inactivated`)
+        await _next()
+    }
+
+    private async activeServer(ctx: MyContext, _next: NextFunction) {
+        this.serverID = parseInt(ctx.match![1]);
+        await this.setServer(ctx)
+        await this.server?.update({ is_active: true })
+        await ctx.answerCallbackQuery(`Activated`)
+        await _next()
+    }
+
+    private async sshCheck(ctx: MyContext) {
+        await ctx.answerCallbackQuery()
+    }
+    private async openShell(ctx: MyContext) {
+        await ctx.answerCallbackQuery()
+    }
+    private async editServer(ctx: MyContext) {
+        this.serverID = parseInt(ctx.match![1]);
+        await this.setServer(ctx)
+        await ctx.answerCallbackQuery()
+        const param = ctx.match![2]
+        ctx.session.inputState = {
+            category: 'server',
+            subID: this.serverID!,
+            parameter: param,
+        };
+        await ctx.reply(`Send me <b>${param}</b> parameter for <b>${this.server?.name}</b>:`, { parse_mode: 'HTML' })
+    }
+    private async editServerFinal(ctx: MyContext, _next: NextFunction) {
+        if (!ctx.session.inputState) {
+            await _next()
+            return
+        }
+        const { category, subID, parameter } = ctx.session.inputState
+        if (category !== 'server') {
+            await _next()
+            return
+        }
+        this.serverID = subID;
+        await this.setServer(ctx)
+        await this.server?.update({ [parameter]: ctx.message?.text })
+        await ctx.reply(`Done`)
     }
 }
 

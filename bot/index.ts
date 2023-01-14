@@ -10,13 +10,17 @@ import MenuService from "./service/menu";
 import ServersService from "./service/servers/servers";
 
 
-
+interface InputState {
+    category: string;
+    subID: number,
+    parameter: string;
+}
 
 // Define the shape of our session.
 interface SessionData {
     user: User | null;
     isNew: boolean;
-    addServer: ServerInfoType | null;
+    inputState: InputState | null;
 }
 export type MyContext = Context & SessionFlavor<SessionData>;
 
@@ -27,7 +31,7 @@ function initial(): SessionData {
     return {
         user: null,
         isNew: true,
-        addServer: null
+        inputState: null
     };
 }
 
@@ -41,12 +45,10 @@ bot
     .filter((ctx) => ctx.message !== undefined || ctx.callbackQuery !== undefined)
     .use(Authentication);
 
-// services
-new MenuService(bot).run();
-new ServersService(bot).run();
 
 // Handle the /start command.
 bot.command("start", async (ctx) => {
+    ctx.session.inputState = null
     const { user, isNew } = ctx.session
     let _text = ``
     if (isNew) {
@@ -60,6 +62,12 @@ bot.command("start", async (ctx) => {
     _text += `\n\nPress /menu`
     await ctx.reply(_text, { parse_mode: "HTML" })
 });
+
+// services
+new MenuService(bot).run();
+new ServersService(bot).run();
+
+
 
 
 // Handle other messages.
