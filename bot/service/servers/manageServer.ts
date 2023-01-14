@@ -33,7 +33,7 @@ class ManageServerService {
 
     // ############################
 
-    private keyboard = async (server: Server) => {
+    private keyboard = async (server: Server | null) => {
         if (!server) return new InlineKeyboard()
         const keyboard = new InlineKeyboard()
             .text("❌ Delete", "server:" + server.id + ":delete")
@@ -62,7 +62,7 @@ class ManageServerService {
         return keyboard
     }
 
-    private text = async (server: Server) => {
+    private text = async (server: Server | null) => {
         if (!server) return '<i>Server deleted or not found</i>'
         return ` <b>${server.name}</b>
 <b>IP:</b> <code>${server.ip}</code>
@@ -75,10 +75,8 @@ __ <pre>${server.description}</pre>`
 
 
     private response = async (ctx: MyContext) => {
-        console.log("******************", ctx.match)
         const serverID = parseInt(ctx.match![1]);
         const server = await Server.findByPk(serverID)
-        if (!server) return await ctx.answerCallbackQuery("Server deleted")
 
         await ctx.editMessageText(
             await this.text(server),
