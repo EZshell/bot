@@ -33,29 +33,28 @@ class ManageServerService {
 
     // ############################
 
-    private serverID: number | undefined;
     private keyboard = async (server: Server) => {
         if (!server) return new InlineKeyboard()
         const keyboard = new InlineKeyboard()
-            .text("❌ Delete", "server:" + this.serverID + ":delete")
+            .text("❌ Delete", "server:" + server.id + ":delete")
 
         if (server.is_active) {
-            keyboard.text("💤 Inactive", "server:" + this.serverID + ":inactive")
+            keyboard.text("💤 Inactive", "server:" + server.id + ":inactive")
         }
         else {
-            keyboard.text("🖲 Active", "server:" + this.serverID + ":active")
+            keyboard.text("🖲 Active", "server:" + server.id + ":active")
         }
         keyboard
             .row()
-            .text("🕹 Check Connect", "server:" + this.serverID + ":sshCheck")
-            .text("🕹 Open Shell", "server:" + this.serverID + ":openShell")
+            .text("🕹 Check Connect", "server:" + server.id + ":sshCheck")
+            .text("🕹 Open Shell", "server:" + server.id + ":openShell")
             .row()
-            .text("✏️ IP", "server:" + this.serverID + ":edit:ip")
-            .text("✏️ Username", "server:" + this.serverID + ":edit:username")
-            .text("✏️ Password", "server:" + this.serverID + ":edit:password")
+            .text("✏️ IP", "server:" + server.id + ":edit:ip")
+            .text("✏️ Username", "server:" + server.id + ":edit:username")
+            .text("✏️ Password", "server:" + server.id + ":edit:password")
             .row()
-            .text("✏️ Port", "server:" + this.serverID + ":edit:port")
-            .text("✏️ Desc", "server:" + this.serverID + ":edit:desc")
+            .text("✏️ Port", "server:" + server.id + ":edit:port")
+            .text("✏️ Desc", "server:" + server.id + ":edit:desc")
             .row()
             .text("↪️", "servers")
             .text("🏠", "menu")
