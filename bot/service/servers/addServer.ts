@@ -60,7 +60,7 @@ class AddServerService {
 
     private async saveServer(ctx: MyContext, _next: NextFunction) {
         if (!ctx!.message!.via_bot) return await _next()
-        else if (ctx.match?.length === 7) {
+        else if (ctx.match?.length !== 7) {
             await ctx.reply("❌ Getting data error", { reply_to_message_id: ctx.message?.message_id })
         }
         else {
