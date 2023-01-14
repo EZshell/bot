@@ -37,7 +37,9 @@ function initial(): SessionData {
 const bot = new Bot<MyContext>(BotToken);
 
 bot.use(session({ initial }));
-bot.use(Authentication);
+bot
+    .filter(async (ctx) => ctx.message !== undefined || ctx.callbackQuery !== undefined)
+    .use(Authentication);
 
 // services
 new MenuService(bot).run();
