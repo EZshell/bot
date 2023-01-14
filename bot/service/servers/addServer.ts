@@ -2,6 +2,7 @@ import { Bot, InlineKeyboard, NextFunction } from "grammy";
 import { Op } from "sequelize";
 import { MyContext } from "../..";
 import Server, { ServerInfoType } from "../../database/models/server.model";
+import User from "../../database/models/user.model";
 
 
 class AddServerService {
@@ -78,7 +79,7 @@ class AddServerService {
             })
             const servers = ctx.session.user!.servers as number[]
             servers.push(d.id)
-            await ctx.session.user?.save()
+            ctx.session.user!.update({ servers })
             await ctx.reply("✅ Server added:\n/servers", { reply_to_message_id: ctx.message?.message_id })
         }
     }
