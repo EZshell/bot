@@ -11,7 +11,7 @@ class AddServerService {
     }
 
     public run() {
-        this.bot.inlineQuery(/^servers:add:\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)$/, this.response)
+        // this.bot.inlineQuery(/^servers:add:\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)$/, this.response)
         this.bot.on("message:text", this.saveServer)
     }
 
@@ -64,7 +64,7 @@ class AddServerService {
         else if (!ctx.session.addServer) return await _next()
         else {
             const server = ctx.session.addServer;
-            await Server.create({
+            const d = await Server.create({
                 name: server.name,
                 ip: server.ip,
                 username: server.username,
@@ -74,9 +74,9 @@ class AddServerService {
                 country: "Unknown",
                 created_by: ctx.session.user!.id!,
             })
-
+            ctx.session.user?.servers.push(d.id)
+            await ctx.session.user?.save()
             ctx.session.addServer = null
-
             await ctx.reply("Server added successfully", { reply_to_message_id: ctx.message?.message_id })
         }
     }
