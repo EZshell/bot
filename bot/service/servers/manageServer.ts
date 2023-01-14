@@ -135,7 +135,6 @@ __ <pre>${server.description}</pre>`
             parameter: param,
             messageID: ctx.callbackQuery?.message?.message_id!
         };
-        console.log("####", ctx.session.inputState)
         await ctx.reply(`Send me <b>${param}</b> parameter for <b>${server?.name}</b>:`, { parse_mode: 'HTML' })
     }
     private editServerFinal = async (ctx: MyContext, _next: NextFunction) => {
@@ -148,7 +147,6 @@ __ <pre>${server.description}</pre>`
             await _next()
             return
         }
-        console.log("****", ctx.session.inputState)
         const serverID = subID;
         const server = await Server.findByPk(serverID)
         await server?.update({ [parameter]: ctx.message?.text })
@@ -159,7 +157,7 @@ __ <pre>${server.description}</pre>`
             ctx.chat?.id!,
             messageID!,
             await this.text(_server),
-            { reply_markup: await this.keyboard(_server) }
+            { reply_markup: await this.keyboard(_server), parse_mode: "HTML" }
         )
     }
 }
