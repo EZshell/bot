@@ -181,6 +181,7 @@ __ <pre>${server.description}</pre>`
             if (canConnect) ctx.answerCallbackQuery("Connected! ✅");
         } catch (error) {
             ctx.answerCallbackQuery("Can not connect ❌");
+            ctx.reply("❌ ConnectionError: " + error)
         }
     }
     private async openShell(ctx: MyContext) {
