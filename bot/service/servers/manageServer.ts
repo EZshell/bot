@@ -22,9 +22,9 @@ class ManageServerService {
         this.bot.callbackQuery(
             [
                 /^server:([0-9]+)$/,
-                /^server:([0-9]+):inactive$/,
-                /^server:([0-9]+):active$/,
-                /^server:([0-9]+):delete$/
+                // /^server:([0-9]+):inactive$/,
+                // /^server:([0-9]+):active$/,
+                // /^server:([0-9]+):delete$/
             ],
             this.response
         )
