@@ -45,10 +45,11 @@ class ManageServerService {
         else {
             keyboard.text("🖲 Active", "server:" + server.id + ":active")
         }
+
         keyboard
             .row()
             .text("🔌 Check Connect", "server:" + server.id + ":sshCheck")
-            .text("🕹 Open Shell", "server:" + server.id + ":openShell")
+            .text("📟 Open Shell", "server:" + server.id + ":openShell")
             .row()
             .text("✏️ IP", "server:" + server.id + ":edit:ip")
             .text("✏️ Username", "server:" + server.id + ":edit:username")
