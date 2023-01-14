@@ -100,7 +100,7 @@ __ <pre>${server.description}</pre>`
         await this.server?.destroy()
         await this.setServer(ctx)
         await ctx.answerCallbackQuery(`Deleted`)
-        await _next()
+        // await _next()
     }
     private async inactiveServer(ctx: MyContext, _next: NextFunction) {
         console.log(ctx.match)
@@ -109,7 +109,7 @@ __ <pre>${server.description}</pre>`
         await this.server?.update({ is_active: false })
         await this.setServer(ctx)
         await ctx.answerCallbackQuery(`Inactivated`)
-        await _next()
+        // await _next()
     }
 
     private async activeServer(ctx: MyContext, _next: NextFunction) {
@@ -118,7 +118,7 @@ __ <pre>${server.description}</pre>`
         await this.server?.update({ is_active: true })
         await this.setServer(ctx)
         await ctx.answerCallbackQuery(`Activated`)
-        await _next()
+        // await _next()
     }
 
     private async sshCheck(ctx: MyContext) {
