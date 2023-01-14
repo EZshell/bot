@@ -40,7 +40,7 @@ class AddServerService {
                 port: 22,
             }
 
-            ctx.session.addServer = this.server
+            // ctx.session.addServer = this.server
 
             await ctx.answerInlineQuery(
                 [
@@ -67,7 +67,9 @@ class AddServerService {
 
     private async saveServer(ctx: MyContext, _next: NextFunction) {
         if (!ctx!.message!.via_bot) return await _next()
-        else if (!ctx.session.addServer) return await _next()
+        else if (!ctx.session.addServer) {
+            await ctx.reply("❌ Getting data error", { reply_to_message_id: ctx.message?.message_id })
+        }
         else {
             const server = ctx.session.addServer;
             const d = await Server.create({
