@@ -37,7 +37,7 @@ function initial(): SessionData {
 const bot = new Bot<MyContext>(BotToken);
 
 bot.use(session({ initial }));
-bot.on(["message", "inline_query", "callback_query"], Authentication);
+bot.use(Authentication);
 
 // services
 // new MenuService(bot).run();
