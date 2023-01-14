@@ -144,7 +144,7 @@ __ <pre>${server.description}</pre>`
         };
         await ctx.reply(`Send me <b>${param}</b> parameter for <b>${server?.name}</b>:`, { parse_mode: 'HTML' })
     }
-    private async editServerFinal(ctx: MyContext, _next: NextFunction) {
+    private editServerFinal = async (ctx: MyContext, _next: NextFunction) => {
         if (!ctx.session.inputState) {
             await _next()
             return
