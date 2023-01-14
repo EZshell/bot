@@ -128,17 +128,21 @@ __ <pre>${server.description}</pre>`
         await ctx.answerCallbackQuery()
     }
     private async editServer(ctx: MyContext) {
-        this.serverID = parseInt(ctx.match![1]);
-        await this.setServer(ctx)
-        await ctx.answerCallbackQuery()
-        const param = ctx.match![2]
-        ctx.session.inputState = {
-            category: 'server',
-            subID: this.serverID!,
-            parameter: param,
-            messageID: ctx.message?.message_id!
-        };
-        await ctx.reply(`Send me <b>${param}</b> parameter for <b>${this.server?.name}</b>:`, { parse_mode: 'HTML' })
+        const match = ctx.match!
+
+
+        this.serverID = parseInt(match[1]);
+        const param = match[2]
+        // await this.setServer(ctx)
+        // await ctx.answerCallbackQuery()
+
+        // ctx.session.inputState = {
+        //     category: 'server',
+        //     subID: this.serverID!,
+        //     parameter: param,
+        //     messageID: ctx.message?.message_id!
+        // };
+        await ctx.reply(`Send me <b>${param}</b> parameter for <b></b>:`, { parse_mode: 'HTML' })
     }
     private async editServerFinal(ctx: MyContext, _next: NextFunction) {
         if (!ctx.session.inputState) {
