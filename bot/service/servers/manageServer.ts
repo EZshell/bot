@@ -159,6 +159,7 @@ __ <pre>${server.description}</pre>`
             await this.text(_server),
             { reply_markup: await this.keyboard(_server), parse_mode: "HTML" }
         )
+        ctx.session.inputState = null
     }
 }
 
