@@ -95,28 +95,27 @@ __ <pre>${server.description}</pre>`
 
     // ########################
     private async deleteServer(ctx: MyContext, _next: NextFunction) {
-        this.serverID = parseInt(ctx.match![1]);
-        await this.setServer(ctx)
-        await this.server?.destroy()
-        await this.setServer(ctx)
+        const match = ctx.match!
+        const serverID = parseInt(match[1]);
+        const server = await Server.findByPk(serverID)
+        await server?.destroy()
         await ctx.answerCallbackQuery(`Deleted`)
         // await _next()
     }
     private async inactiveServer(ctx: MyContext, _next: NextFunction) {
-        console.log(ctx.match)
-        this.serverID = parseInt(ctx.match![1]);
-        await this.setServer(ctx)
-        await this.server?.update({ is_active: false })
-        await this.setServer(ctx)
+        const match = ctx.match!
+        const serverID = parseInt(match[1]);
+        const server = await Server.findByPk(serverID)
+        await server?.update({ is_active: false })
         await ctx.answerCallbackQuery(`Inactivated`)
         // await _next()
     }
 
     private async activeServer(ctx: MyContext, _next: NextFunction) {
-        this.serverID = parseInt(ctx.match![1]);
-        await this.setServer(ctx)
-        await this.server?.update({ is_active: true })
-        await this.setServer(ctx)
+        const match = ctx.match!
+        const serverID = parseInt(match[1]);
+        const server = await Server.findByPk(serverID)
+        await server?.update({ is_active: false })
         await ctx.answerCallbackQuery(`Activated`)
         // await _next()
     }
@@ -127,20 +126,23 @@ __ <pre>${server.description}</pre>`
     private async openShell(ctx: MyContext) {
         await ctx.answerCallbackQuery()
     }
+
+
     private async editServer(ctx: MyContext) {
         const match = ctx.match!
         const serverID = parseInt(match[1]);
         const param = match[2]
-        await this.setServer(ctx)
+
+        const server = await Server.findByPk(serverID)
         await ctx.answerCallbackQuery()
 
-        // ctx.session.inputState = {
-        //     category: 'server',
-        //     subID: this.serverID!,
-        //     parameter: param,
-        //     messageID: ctx.message?.message_id!
-        // };
-        await ctx.reply(`Send me <b>${param}</b> parameter for <b></b>:`, { parse_mode: 'HTML' })
+        ctx.session.inputState = {
+            category: 'server',
+            subID: serverID!,
+            parameter: param,
+            messageID: ctx.message?.message_id!
+        };
+        await ctx.reply(`Send me <b>${param}</b> parameter for <b>${server?.name}</b>:`, { parse_mode: 'HTML' })
     }
     private async editServerFinal(ctx: MyContext, _next: NextFunction) {
         if (!ctx.session.inputState) {
@@ -152,12 +154,12 @@ __ <pre>${server.description}</pre>`
             await _next()
             return
         }
-        this.serverID = subID;
-        await this.setServer(ctx)
-        await this.server?.update({ [parameter]: ctx.message?.text })
+        const serverID = subID;
+        const server = await Server.findByPk(serverID)
+        await server?.update({ [parameter]: ctx.message?.text })
         await ctx.reply(`Done`)
         // 
-        await this.setServer(ctx)
+        // const server = await Server.findByPk(this.serverID)
         await ctx.api.editMessageText(ctx.chat?.id!, messageID!, await this.text(ctx), { reply_markup: await this.keyboard(ctx) })
     }
 }
