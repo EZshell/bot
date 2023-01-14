@@ -11,7 +11,7 @@ class AddServerService {
     }
 
     public run() {
-        // this.bot.inlineQuery(/^servers:add:\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)$/, this.response)
+        this.bot.inlineQuery(/^servers:add:\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)$/, this.response)
         this.bot.on("message:text", this.saveServer)
     }
 
@@ -28,40 +28,34 @@ class AddServerService {
     }
 
     private response = async (ctx: MyContext) => {
-        // const match = ctx.match!
+        const match = ctx.match!
 
-        console.log("#######", ctx)
+        this.server = {
+            name: match[1],
+            description: match[5],
+            ip: match[2],
+            username: match[3],
+            password: match[4],
+            port: 22,
+        }
 
-        ctx.api.sendMessage(ctx.chat!.id!, "Hello")
+        ctx.session.addServer = this.server
 
-
-
-        // this.server = {
-        //     name: match[1],
-        //     description: match[5],
-        //     ip: match[2],
-        //     username: match[3],
-        //     password: match[4],
-        //     port: 22,
-        // }
-
-        // ctx.session.addServer = this.server
-
-        // await ctx.answerInlineQuery(
-        //     [
-        //         {
-        //             type: "article",
-        //             id: "new_server",
-        //             title: this.server.name,
-        //             input_message_content: {
-        //                 message_text: await this.text(ctx),
-        //                 parse_mode: "HTML",
-        //             },
-        //             description: `${this.server.username}@${this.server.ip} -p ${this.server.port} \n` + ` ${this.server.description || ""}`,
-        //         },
-        //     ],
-        //     { cache_time: 0, },
-        // );
+        await ctx.answerInlineQuery(
+            [
+                {
+                    type: "article",
+                    id: "new_server",
+                    title: this.server.name,
+                    input_message_content: {
+                        message_text: await this.text(ctx),
+                        parse_mode: "HTML",
+                    },
+                    description: `${this.server.username}@${this.server.ip} -p ${this.server.port} \n` + ` ${this.server.description || ""}`,
+                },
+            ],
+            { cache_time: 0, },
+        );
     }
 
 
