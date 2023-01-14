@@ -5,7 +5,9 @@
 	"dependencies": {
 		"grammy": "^1.13.0",
 		"mysql2": "^3.0.1",
-		"sequelize": "^6.28.0"
+		"node-ssh": "^13.0.0",
+		"sequelize": "^6.28.0",
+		"ssh2": "^1.11.0"
 	},
 	"scripts": {
 		"start": "node build/index.js",

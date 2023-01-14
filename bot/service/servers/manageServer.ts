@@ -1,6 +1,7 @@
 import { Bot, InlineKeyboard, NextFunction } from "grammy";
 import { MyContext } from "../..";
 import Server from "../../database/models/server.model";
+import EZssh from "./ssh";
 
 
 class ManageServerService {
@@ -46,7 +47,7 @@ class ManageServerService {
         }
         keyboard
             .row()
-            .text("🕹 Check Connect", "server:" + server.id + ":sshCheck")
+            .text("🔌 Check Connect", "server:" + server.id + ":sshCheck")
             .text("🕹 Open Shell", "server:" + server.id + ":openShell")
             .row()
             .text("✏️ IP", "server:" + server.id + ":edit:ip")
@@ -91,7 +92,8 @@ __ <pre>${server.description}</pre>`
         const match = ctx.match!
         const serverID = parseInt(match[1]);
         const server = await Server.findByPk(serverID)
-        await server?.destroy()
+        if (!server) return await ctx.answerCallbackQuery("Not Found")
+        await server.destroy()
         await ctx.answerCallbackQuery(`Deleted`)
         await _next()
     }
@@ -99,7 +101,8 @@ __ <pre>${server.description}</pre>`
         const match = ctx.match!
         const serverID = parseInt(match[1]);
         const server = await Server.findByPk(serverID)
-        await server?.update({ is_active: false })
+        if (!server) return await ctx.answerCallbackQuery("Not Found")
+        await server.update({ is_active: false })
         await ctx.answerCallbackQuery(`Inactivated`)
         await _next()
     }
@@ -108,16 +111,10 @@ __ <pre>${server.description}</pre>`
         const match = ctx.match!
         const serverID = parseInt(match[1]);
         const server = await Server.findByPk(serverID)
-        await server?.update({ is_active: true })
+        if (!server) return await ctx.answerCallbackQuery("Not Found")
+        await server.update({ is_active: true })
         await ctx.answerCallbackQuery(`Activated`)
         await _next()
-    }
-
-    private async sshCheck(ctx: MyContext) {
-        await ctx.answerCallbackQuery()
-    }
-    private async openShell(ctx: MyContext) {
-        await ctx.answerCallbackQuery()
     }
 
 
@@ -127,6 +124,7 @@ __ <pre>${server.description}</pre>`
         const param = match[2]
 
         const server = await Server.findByPk(serverID)
+        if (!server) return await ctx.answerCallbackQuery("Not Found")
         await ctx.answerCallbackQuery()
 
         ctx.session.inputState = {
@@ -135,7 +133,7 @@ __ <pre>${server.description}</pre>`
             parameter: param,
             messageID: ctx.callbackQuery?.message?.message_id!
         };
-        await ctx.reply(`Send me <b>${param}</b> parameter for <b>${server?.name}</b>:`, { parse_mode: 'HTML' })
+        await ctx.reply(`Send me <b>${param}</b> parameter for <b>${server.name}</b>:`, { parse_mode: 'HTML' })
     }
     private editServerFinal = async (ctx: MyContext, _next: NextFunction) => {
         if (!ctx.session.inputState) {
@@ -152,7 +150,8 @@ __ <pre>${server.description}</pre>`
         await server?.update({ [parameter]: ctx.message?.text })
         await ctx.reply(`Done`)
         // 
-        const _server = (await Server.findByPk(serverID))!
+        const _server = (await Server.findByPk(serverID))
+
         await ctx.api.editMessageText(
             ctx.chat?.id!,
             messageID!,
@@ -160,6 +159,28 @@ __ <pre>${server.description}</pre>`
             { reply_markup: await this.keyboard(_server), parse_mode: "HTML" }
         )
         ctx.session.inputState = null
+    }
+
+
+    // #############
+    private async sshCheck(ctx: MyContext) {
+        const match = ctx.match!
+        const serverID = parseInt(match[1]);
+        const server = await Server.findByPk(serverID)
+        if (!server) return await ctx.answerCallbackQuery("Not Found")
+        const ssh = new EZssh({
+            host: server.ip,
+            port: server.port,
+            username: server.username,
+            password: server.password,
+        })
+        await ssh.connect()
+        const canConnect = ssh.isConnected()
+        if (canConnect) await ctx.answerCallbackQuery("Connected ✅");
+        else await ctx.answerCallbackQuery("Can not connect ❌");
+    }
+    private async openShell(ctx: MyContext) {
+        await ctx.answerCallbackQuery()
     }
 }
 
