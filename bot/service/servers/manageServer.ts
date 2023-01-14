@@ -175,10 +175,13 @@ __ <pre>${server.description}</pre>`
             username: server.username,
             password: server.password,
         })
-        await ssh.connect()
-        const canConnect = ssh.isConnected()
-        if (canConnect) await ctx.answerCallbackQuery("Connected ✅");
-        else await ctx.answerCallbackQuery("Can not connect ❌");
+        try {
+            await ssh.connect()
+            const canConnect = ssh.isConnected()
+            if (canConnect) ctx.answerCallbackQuery("Connected! ✅");
+        } catch (error) {
+            ctx.answerCallbackQuery("Can not connect ❌");
+        }
     }
     private async openShell(ctx: MyContext) {
         await ctx.answerCallbackQuery()
