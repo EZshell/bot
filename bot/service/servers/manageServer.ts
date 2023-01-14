@@ -1,8 +1,6 @@
 import { Bot, InlineKeyboard, NextFunction } from "grammy";
-import { Op } from "sequelize";
 import { MyContext } from "../..";
 import Server from "../../database/models/server.model";
-import AddServerService from "./addServer";
 
 
 class ManageServerService {
@@ -18,7 +16,7 @@ class ManageServerService {
         this.bot.callbackQuery(/^server:([0-9]+):sshCheck$/, this.sshCheck)
         this.bot.callbackQuery(/^server:([0-9]+):openShell$/, this.openShell)
 
-        this.bot.callbackQuery(/^server:([0-9]+):edit:(shell)$/, this.editServer)
+        this.bot.callbackQuery(/^server:([0-9]+):edit:(ip|username|password|port|desc)$/, this.editServer)
         this.bot.on("message", this.editServerFinal)
 
         this.bot.callbackQuery(
@@ -105,6 +103,7 @@ __ <pre>${server.description}</pre>`
         await _next()
     }
     private async inactiveServer(ctx: MyContext, _next: NextFunction) {
+        console.log(ctx.match)
         this.serverID = parseInt(ctx.match![1]);
         await this.setServer(ctx)
         await this.server?.update({ is_active: false })
