@@ -1,7 +1,7 @@
 import { Bot, InlineKeyboard, NextFunction } from "grammy";
 import { MyContext } from "../..";
 import Server from "../../database/models/server.model";
-import ShellService from "./shell";
+import ShellService from "../shell/shell";
 
 
 class ManageServerService {
@@ -66,7 +66,7 @@ class ManageServerService {
 
     private text = async (server: Server | null) => {
         if (!server) return '<i>Server deleted or not found</i>'
-        return ` <b>${server.name}</b>
+        return `<b>${server.name}</b>
 <b>IP:</b> <code>${server.ip}</code>
 <b>Username:</b> <code>${server.username}</code>
 <b>Password:</b> <code>${server.password}</code>

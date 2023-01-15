@@ -62,7 +62,7 @@ Server.init(
         },
     },
     {
-        tableName: 'server',
+        tableName: 'servers',
         createdAt: 'created_at',
         deletedAt: 'deleted_at',
         updatedAt: 'updated_at',
@@ -75,7 +75,7 @@ Server.init(
 export default Server
 
 
-export type ServerInfoType = {
+export type ServerInputType = {
     name: string,
     description: string,
     ip: string,

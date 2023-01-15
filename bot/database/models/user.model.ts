@@ -10,6 +10,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare is_premium: boolean;
     declare is_active: boolean;
     declare servers: number[] | string;
+    declare snippets: number[] | string;
 }
 
 User.init(
@@ -53,6 +54,15 @@ User.init(
             },
             set: function (value) {
                 this.setDataValue('servers', JSON.stringify(value));
+            },
+        },
+        snippets: {
+            type: DataTypes.JSON,
+            get: function () {
+                return JSON.parse(this.getDataValue('snippets').toString());
+            },
+            set: function (value) {
+                this.setDataValue('snippets', JSON.stringify(value));
             },
         },
     },

@@ -1,8 +1,6 @@
-import { Bot, InlineKeyboard, NextFunction } from "grammy";
-import { Op } from "sequelize";
+import { Bot, NextFunction } from "grammy";
 import { MyContext } from "../..";
-import Server, { ServerInfoType } from "../../database/models/server.model";
-import User from "../../database/models/user.model";
+import Server, { ServerInputType } from "../../database/models/server.model";
 
 
 class AddServerService {
@@ -18,7 +16,7 @@ class AddServerService {
 
     // ############################
 
-    private server: ServerInfoType | undefined;
+    private server: ServerInputType | undefined;
 
     private text = async (ctx: MyContext) => {
         const server = this.server!

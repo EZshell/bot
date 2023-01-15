@@ -6,10 +6,11 @@ import sequelize from "./database";
 import User from "./database/models/user.model";
 import Authentication from "./middleware/authentication";
 import MenuService from "./service/menu";
-import ServersService from "./service/servers/servers";
+import ServersService from "./service/servers";
 import EZssh from "./service/servers/ssh";
 import { apiThrottler, bypassThrottler } from '@grammyjs/transformer-throttler';
 import { run } from "@grammyjs/runner";
+import SnippetsService from "./service/snippets";
 
 
 interface InputState {
@@ -102,7 +103,7 @@ bot.command("start", async (ctx) => {
 // services
 new MenuService(bot).run();
 new ServersService(bot).run();
-
+new SnippetsService(bot).run();
 
 
 

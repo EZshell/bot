@@ -63,7 +63,7 @@ class ShellService {
             .text("⛔️", "shell:cancel")
             .text("🕹", "shell:exit")
             .row()
-            .switchInlineCurrent("TAB", "shell:press:tab tex")
+            .switchInlineCurrent("📌 Snippets", "snippets ")
 
         return _keyboard
     }

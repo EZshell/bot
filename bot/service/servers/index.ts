@@ -2,8 +2,8 @@ import { Bot, InlineKeyboard } from "grammy";
 import { Op } from "sequelize";
 import { MyContext } from "../..";
 import Server from "../../database/models/server.model";
-import AddServerService from "./addServer";
-import ManageServerService from "./manageServer";
+import AddServerService from "./add";
+import ManageServerService from "./manage";
 
 
 class ServersService {
@@ -27,7 +27,7 @@ class ServersService {
         const keyboard = new InlineKeyboard()
         this.query!.rows.forEach(({ name, id }) => {
             keyboard
-                .text(name, "server:" + id)
+                .text(name, "servers:" + id)
                 .row()
         })
 
@@ -44,7 +44,7 @@ class ServersService {
     }
 
     private response = async (ctx: MyContext) => {
-        const servers = ctx.session.user!.servers as number[]
+        const servers = ctx.session.user?.servers as number[]
         this.query = await Server.findAndCountAll({ where: { id: { [Op.in]: servers } } })
 
         if (ctx.callbackQuery) {
