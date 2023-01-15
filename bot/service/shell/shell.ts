@@ -134,6 +134,8 @@ class ShellService {
             const messageID = (await ctx.reply(connectingText, this.shellResponseOptions(ctx))).message_id
             this.openShellSession(ctx, ssh, serverID, messageID)
 
+            await ctx.replyWithChatAction("typing")
+
             await ssh.openShell(async (data) => {
                 try {
                     const _data = this.standardOutput(data)
@@ -148,11 +150,16 @@ class ShellService {
                             { reply_markup: new InlineKeyboard() }
                         )
                         ctx.session.inputState.data = _data
+
+                        await ctx.replyWithChatAction("typing")
+
                         const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState.data}</code>`
                         const messageID = (await ctx.reply(text, this.shellResponseOptions(ctx))).message_id
                         this.openShellSession(ctx, ssh, serverID, messageID)
                     }
                     else {
+                        await ctx.replyWithChatAction("typing")
+
                         await ctx.api.editMessageText(
                             ctx.chat!.id,
                             ctx.session.inputState?.messageID!,
