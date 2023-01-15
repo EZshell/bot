@@ -274,7 +274,7 @@ __ <pre>${server.description}</pre>`
         }
 
         const text = `<b>${server.name}</b> 📟\n\n<i>Response</i>`
-        const shellMID = (await ctx.reply(text, { parse_mode: 'HTML' })).message_id
+        const shellMID = (await ctx.reply(text, {})).message_id
         ctx.session.inputState = {
             category: 'shell',
             subID: serverID,
