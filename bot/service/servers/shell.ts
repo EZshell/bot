@@ -52,11 +52,9 @@ class ShellService {
                 .text("CONNECTING...")
             return _keyboard
         }
-        // if (!ctx.session.ssh.isWritable()) {
-        _keyboard
-            .text("WAIT UNTIL COMPLETED (⛔️|🔚)" + ctx.session.ssh.isWritable() + "**")
-            .row()
-        // }
+        // _keyboard
+        //     .text("WAIT UNTIL COMPLETED (⛔️|🔚)")
+        //     .row()
 
         _keyboard
             .text("📂", "shell:sftp")
@@ -202,9 +200,6 @@ class ShellService {
         if (!server) return;
 
         try {
-            if (!ctx.session.ssh!.isWritable()) {
-                await ctx.deleteMessage()
-            }
             const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n`
             await ctx.api.editMessageReplyMarkup(
                 ctx.chat?.id!,

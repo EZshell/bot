@@ -44,10 +44,6 @@ class EZssh {
         this.shell.close()
     }
 
-    public isWritable() {
-        return this.shell?.writableFinished
-    }
-
     public writeCommand(command: string) {
         if (!this.shell) return false
         this.shell.write(command)
