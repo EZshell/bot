@@ -52,11 +52,11 @@ class ShellService {
                 .text("CONNECTING...")
             return _keyboard
         }
-        if (!ctx.session.ssh.isWritable()) {
-            _keyboard
-                .text("WAIT UNTIL COMPLETED (⛔️|🔚)")
-                .row()
-        }
+        // if (!ctx.session.ssh.isWritable()) {
+        _keyboard
+            .text("WAIT UNTIL COMPLETED (⛔️|🔚)" + ctx.session.ssh.isWritable() + "*")
+            .row()
+        // }
 
         _keyboard
             .text("📂", "shell:sftp")
