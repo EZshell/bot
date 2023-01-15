@@ -54,7 +54,7 @@ class ShellService {
         }
         // if (!ctx.session.ssh.isWritable()) {
         _keyboard
-            .text("WAIT UNTIL COMPLETED (⛔️|🔚)" + ctx.session.ssh.isWritable() + "*")
+            .text("WAIT UNTIL COMPLETED (⛔️|🔚)" + ctx.session.ssh.isWritable() + "**")
             .row()
         // }
 
@@ -214,8 +214,8 @@ class ShellService {
             const messageID = (await ctx.reply(text, this.shellResponseOptions(ctx))).message_id
             this.openShellSession(ctx, ctx.session.ssh!, server.id, messageID)
             // 
-            const canWrite = ctx.session.ssh!.writeCommand(ctx.message?.text! + "\n")
-            if (!canWrite) await ctx.deleteMessage()
+            ctx.session.ssh!.writeCommand(ctx.message?.text! + "\n")
+            // if (!canWrite) await ctx.deleteMessage()
         } catch (error) {
             console.log("writeCommand", error)
         }
