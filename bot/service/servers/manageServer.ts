@@ -308,6 +308,10 @@ __ <pre>${server.description}</pre>`
         }
         await ctx.session.ssh.exitShell()
 
+        const _keyboard = new InlineKeyboard()
+            .text("❌ Closed")
+        await ctx.editMessageReplyMarkup({ reply_markup: _keyboard })
+
         ctx.session.inputState = null
         ctx.session.ssh = null
     }
