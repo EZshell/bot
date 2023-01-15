@@ -85,7 +85,12 @@ class ShellService {
 
 
     private async openShell(ctx: MyContext) {
-        await this.exitCurrentShell(ctx)
+        try {
+            await this.exitCurrentShell(ctx)
+        } catch (error) {
+            console.log("@@@", error)
+        }
+
 
 
         const match = ctx.match!
