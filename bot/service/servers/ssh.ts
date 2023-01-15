@@ -39,13 +39,17 @@ class EZssh {
         return this
     }
 
-    public async exitShell() {
+    public exitShell() {
         if (!this.shell) return false
         this.shell.close()
     }
 
-    public async writeCommand(command: string) {
-        if (!this.shell) return false
+    public isWritable() {
+        return this.shell?.writable
+    }
+
+    public writeCommand(command: string) {
+        if (!this.shell?.writable) return false
         this.shell.write(command)
     }
 

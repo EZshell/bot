@@ -45,10 +45,15 @@ class ShellService {
     }
 
     // ############ shell command
-    shellKeyboard = () => {
+    shellKeyboard = (ctx: MyContext) => {
         const _keyboard = new InlineKeyboard()
-            .text("WAIT UNTIL COMPLETED (🔄/⛔️)")
-            .row()
+        if (!ctx.session.ssh?.isWritable()) {
+            _keyboard
+                .text("WAIT UNTIL COMPLETED (⛔️|🔚)")
+                .row()
+        }
+
+        _keyboard
             .text("📂", "shell:sftp")
             .text("🔄", "shell:reload")
             .text("⛔️", "shell:cancel")
@@ -59,10 +64,10 @@ class ShellService {
         return _keyboard
     }
 
-    shellResponseOptions = () => {
+    shellResponseOptions = (ctx: MyContext) => {
         return {
             // parse_mode: 'HTML',
-            reply_markup: this.shellKeyboard(),
+            reply_markup: this.shellKeyboard(ctx),
             disable_web_page_preview: true
         }
     }
@@ -78,7 +83,7 @@ class ShellService {
         ctx.session.ssh = ssh
     }
     exitCurrentShell = async (ctx: MyContext) => {
-        await ctx.session.ssh?.exitShell()
+        ctx.session.ssh?.exitShell()
         ctx.session.ssh = null
         ctx.session.inputState = null
     }
@@ -122,7 +127,7 @@ class ShellService {
             if (canConnect) ctx.answerCallbackQuery("Now shell is open! ✅");
             // 
             const connectingText = `<b>${server.name}</b> 📟\n\n<i>Connecting...</i>`
-            const messageID = (await ctx.reply(connectingText, this.shellResponseOptions())).message_id
+            const messageID = (await ctx.reply(connectingText, this.shellResponseOptions(ctx))).message_id
             this.openShellSession(ctx, ssh, serverID, messageID)
 
             await ssh.openShell(async (data) => {
@@ -140,7 +145,7 @@ class ShellService {
                         )
                         ctx.session.inputState.data = _data
                         const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState.data}</code>`
-                        const messageID = (await ctx.reply(text, this.shellResponseOptions())).message_id
+                        const messageID = (await ctx.reply(text, this.shellResponseOptions(ctx))).message_id
                         this.openShellSession(ctx, ssh, serverID, messageID)
                     }
                     else {
@@ -148,7 +153,7 @@ class ShellService {
                             ctx.chat!.id,
                             ctx.session.inputState?.messageID!,
                             text,
-                            this.shellResponseOptions()
+                            this.shellResponseOptions(ctx)
                         );
                     }
                 } catch (error) {
@@ -198,10 +203,11 @@ class ShellService {
                 ctx.session.inputState?.messageID!,
                 { reply_markup: new InlineKeyboard() }
             )
-            const messageID = (await ctx.reply(text, this.shellResponseOptions())).message_id
+            const messageID = (await ctx.reply(text, this.shellResponseOptions(ctx))).message_id
             this.openShellSession(ctx, ctx.session.ssh!, server.id, messageID)
             // 
-            ctx.session.ssh!.writeCommand(ctx.message?.text! + "\n")
+            const canWrite = ctx.session.ssh!.writeCommand(ctx.message?.text! + "\n")
+            if (!canWrite) await ctx.deleteMessage()
         } catch (error) {
             console.log("writeCommand", error)
         }
