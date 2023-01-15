@@ -21,8 +21,9 @@ async function Authentication(ctx: MyContext, next: NextFunction) {
             is_bot: user.is_bot,
             is_premium: user.is_premium || false,
             is_active: true,
-            servers: "[]",
-            snippets: "[]"
+            servers: [],
+            snippets: [],
+            groups: [],
         })
         if (ctx.session) ctx.session.isNew = true
     }

@@ -11,6 +11,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare is_active: boolean;
     declare servers: number[] | string;
     declare snippets: number[] | string;
+    declare groups: number[] | string;
 }
 
 User.init(
@@ -46,6 +47,15 @@ User.init(
             type: DataTypes.BOOLEAN,
             defaultValue: 1,
             allowNull: false
+        },
+        groups: {
+            type: DataTypes.JSON,
+            get: function () {
+                return JSON.parse(this.getDataValue('groups').toString());
+            },
+            set: function (value) {
+                this.setDataValue('groups', JSON.stringify(value));
+            },
         },
         servers: {
             type: DataTypes.JSON,

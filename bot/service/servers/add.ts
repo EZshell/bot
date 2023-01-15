@@ -72,7 +72,7 @@ class AddServerService {
                 port: parseInt(mch[4]),
                 description: mch[6],
                 country: "Unknown",
-                created_by: ctx.session.user!.id!,
+                owner: ctx.session.user!.id!,
                 is_active: true
             })
             const servers = ctx.session.user!.servers as number[]

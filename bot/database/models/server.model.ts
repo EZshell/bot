@@ -10,7 +10,7 @@ class Server extends Model<InferAttributes<Server>, InferCreationAttributes<Serv
     declare password: string;
     declare port: number;
     declare country: string;
-    declare created_by: number;
+    declare owner: number;
     declare is_active: boolean;
 }
 
@@ -52,7 +52,7 @@ Server.init(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        created_by: {
+        owner: {
             type: DataTypes.INTEGER,
         },
         is_active: {

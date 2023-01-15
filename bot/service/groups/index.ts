@@ -1,51 +1,50 @@
 import { Bot, InlineKeyboard } from "grammy";
 import { Op } from "sequelize";
 import { MyContext } from "../..";
-import Server from "../../database/models/server.model";
-import AddServerService from "./add";
-import ManageServerService from "./manage";
+import Groups from "../../database/models/groups.model";
+import AddGroupService from "./add";
+import ManageGroupService from "./manage";
 
 
-class ServersService {
+class GroupsService {
     private bot;
     constructor(bot: Bot<MyContext>) {
         this.bot = bot;
     }
 
     public run() {
-        this.bot.command("servers", this.response)
-        this.bot.callbackQuery("servers", this.response)
+        this.bot.command("groups", this.response)
+        this.bot.callbackQuery("groups", this.response)
         // 
-        new AddServerService(this.bot).run()
-        new ManageServerService(this.bot).run()
+        new AddGroupService(this.bot).run()
+        new ManageGroupService(this.bot).run()
     }
 
     // ############################
-
-    private query: { rows: Server[]; count: number; } | undefined;
+    private query: { rows: Groups[]; count: number; } | undefined;
     private keyboard = async (ctx: MyContext) => {
         const keyboard = new InlineKeyboard()
         this.query!.rows.forEach(({ name, id }) => {
             keyboard
-                .text("📟 " + name, "server:" + id)
+                .text("🗂 " + name, "group:" + id)
                 .row()
         })
 
         keyboard
-            .switchInlineCurrent("➕ Add New", "servers:add:\nMyServer\n338.564.25.172\nusername\npassword\nDescription")
+            .switchInlineCurrent("➕ Add New", "groups:add:\nMyGroup")
             .row()
-            .text("🔄", "servers")
+            .text("🔄", "groups")
             .text("🏠", "menu")
         return keyboard
     }
 
     private text = async (ctx: MyContext) => {
-        return `🔻 List of your servers:\nTotal: ${this.query!.count}`
+        return `🔻 List of your Groups:\nTotal: ${this.query!.count}`
     }
 
     private response = async (ctx: MyContext) => {
-        const servers = ctx.session.user?.servers as number[]
-        this.query = await Server.findAndCountAll({ where: { id: { [Op.in]: servers } } })
+        const groups = ctx.session.user?.groups as number[]
+        this.query = await Groups.findAndCountAll({ where: { id: { [Op.in]: groups } } })
 
         if (ctx.callbackQuery) {
             await ctx.editMessageText(
@@ -60,7 +59,8 @@ class ServersService {
             { reply_markup: await this.keyboard(ctx), parse_mode: "HTML" }
         );
     }
+
 }
 
 
-export default ServersService
+export default GroupsService
