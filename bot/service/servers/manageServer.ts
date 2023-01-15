@@ -308,8 +308,8 @@ __ <pre>${server.description}</pre>`
         }
         try {
             await ctx.session.ssh.exitShell()
-            ctx.session.inputState = null
-            ctx.session.ssh = null
+            // ctx.session.inputState = null
+            // ctx.session.ssh = null
         } catch (error) {
 
         }
