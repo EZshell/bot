@@ -87,6 +87,12 @@ class ShellService {
         return data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
     }
 
+    sleep = async (func: () => {}, time = 3000) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(func, time)
+        })
+    }
+
 
     openShell = async (ctx: MyContext) => {
         try {

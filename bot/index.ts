@@ -3,12 +3,12 @@ import { UserFromGetMe } from "grammy/out/types";
 import { DataTypes } from "sequelize";
 import { BotToken, SuperAdmin } from "./config";
 import sequelize from "./database";
-import { ServerInfoType } from "./database/models/server.model";
 import User from "./database/models/user.model";
 import Authentication from "./middleware/authentication";
 import MenuService from "./service/menu";
 import ServersService from "./service/servers/servers";
 import EZssh from "./service/servers/ssh";
+import { apiThrottler, bypassThrottler } from '@grammyjs/transformer-throttler';
 
 
 interface InputState {
@@ -24,7 +24,8 @@ interface SessionData {
     user: User | null;
     isNew: boolean;
     inputState: InputState | null;
-    ssh: EZssh | null
+    ssh: EZssh | null;
+    delay: number
 }
 export type MyContext = Context & SessionFlavor<SessionData>;
 
@@ -36,7 +37,8 @@ function initial(): SessionData {
         user: null,
         isNew: true,
         inputState: null,
-        ssh: null
+        ssh: null,
+        delay: 0
     };
 }
 
@@ -44,6 +46,9 @@ function initial(): SessionData {
 // ###################################################
 
 const bot = new Bot<MyContext>(BotToken);
+
+const throttler = apiThrottler();
+bot.api.config.use(throttler);
 
 bot.use(session({ initial }));
 bot
@@ -110,3 +115,4 @@ bot.start({
         bot.api.sendMessage(SuperAdmin, _text, { parse_mode: 'HTML' })
     }
 });
+
