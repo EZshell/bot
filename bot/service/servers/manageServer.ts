@@ -219,6 +219,7 @@ __ <pre>${server.description}</pre>`
             await ssh.openShell(async (data) => {
                 try {
                     ctx.session.inputState!.data += data
+                    console.log("**", ctx.session.inputState!.data)
                     const _keyboard = new InlineKeyboard()
                         .text("Crtl + C", "shell:cancel_command")
                     ctx.api.editMessageText(
