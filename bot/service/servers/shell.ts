@@ -11,7 +11,7 @@ class ShellService {
         this.bot = bot;
     }
 
-    public run() {
+    run() {
         this.bot.callbackQuery(/^server:([0-9]+):sshCheck$/, this.sshCheck)
         this.bot.callbackQuery(/^server:([0-9]+):openShell$/, this.openShell)
 
@@ -24,7 +24,7 @@ class ShellService {
     // ############################
 
     // ############# sshCheck
-    private async sshCheck(ctx: MyContext) {
+    async sshCheck(ctx: MyContext) {
         const match = ctx.match!
         const serverID = parseInt(match[1]);
         const server = await Server.findByPk(serverID)
@@ -46,7 +46,7 @@ class ShellService {
     }
 
     // ############ shell command
-    private shellKeyboard = () => {
+    shellKeyboard = () => {
         const _keyboard = new InlineKeyboard()
             .text("📂", "shell:sftp")
             .text("⛔️", "shell:cancel")
@@ -55,7 +55,7 @@ class ShellService {
         return _keyboard
     }
 
-    private shellResponseOptions = () => {
+    shellResponseOptions = () => {
         return {
             // parse_mode: 'HTML',
             reply_markup: this.shellKeyboard(),
@@ -63,7 +63,7 @@ class ShellService {
         }
     }
 
-    private openShellSession = (ctx: MyContext, ssh: EZssh, serverID: number, messageID: number) => {
+    openShellSession = (ctx: MyContext, ssh: EZssh, serverID: number, messageID: number) => {
         ctx.session.inputState = {
             category: 'shell',
             subID: serverID,
@@ -73,18 +73,18 @@ class ShellService {
         }
         ctx.session.ssh = ssh
     }
-    private exitCurrentShell = async (ctx: MyContext) => {
+    exitCurrentShell = async (ctx: MyContext) => {
         await ctx.session.ssh?.exitShell()
         ctx.session.ssh = null
         ctx.session.inputState = null
     }
 
-    private standardOutput = (data: string) => {
+    standardOutput = (data: string) => {
         return data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
     }
 
 
-    private async openShell(ctx: MyContext) {
+    async openShell(ctx: MyContext) {
         try {
             await this.exitCurrentShell(ctx)
         } catch (error) {
@@ -149,7 +149,7 @@ class ShellService {
 
 
 
-    private checkShellStatus = async (ctx: MyContext, _next: NextFunction) => {
+    checkShellStatus = async (ctx: MyContext, _next: NextFunction) => {
         if (!ctx.session.inputState) {
             await _next()
             return
@@ -172,7 +172,7 @@ class ShellService {
         }
         return server
     }
-    private writeCommand = async (ctx: MyContext, _next: NextFunction) => {
+    writeCommand = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
 
@@ -187,7 +187,7 @@ class ShellService {
         }
     }
 
-    private shellExit = async (ctx: MyContext, _next: NextFunction) => {
+    shellExit = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
         try {
@@ -200,7 +200,7 @@ class ShellService {
     }
 
 
-    private shellCancel = async (ctx: MyContext, _next: NextFunction) => {
+    shellCancel = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
         try {
