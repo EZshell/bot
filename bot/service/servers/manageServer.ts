@@ -223,19 +223,20 @@ __ <pre>${server.description}</pre>`
             }
             ctx.session.ssh = ssh
             await ssh.openShell(async (data) => {
-                ctx.session.inputState!.data += data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
+                if (!ctx.session.inputState || !ctx.session.ssh) return
+                ctx.session.inputState.data += data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
                 const _keyboard = new InlineKeyboard()
                     .text("Crtl + C", "shell:cancel")
                     .text("Exit", "shell:exit")
                 const _o = { reply_markup: _keyboard, disable_web_page_preview: true }
 
-                const tt = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState!.data}</code>`
+                const tt = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState.data}</code>`
                 if (tt.length > 4096) {
-                    ctx.session.inputState!.data = ""
-                    ctx.session.inputState!.data += data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
-                    const tt = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState!.data}</code>`
+                    ctx.session.inputState.data = ""
+                    ctx.session.inputState.data += data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
+                    const tt = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState.data}</code>`
                     const shellMID = (await ctx.reply(tt, _o)).message_id
-                    ctx.session.inputState!.messageID = shellMID;
+                    ctx.session.inputState.messageID = shellMID;
                 }
                 else {
                     ctx.api.editMessageText(
@@ -306,13 +307,9 @@ __ <pre>${server.description}</pre>`
             await ctx.reply(`<i>Shell not found</i>`, { parse_mode: 'HTML' })
             return
         }
-        try {
-            await ctx.session.ssh.exitShell()
-            // ctx.session.inputState = null
-            // ctx.session.ssh = null
-        } catch (error) {
-
-        }
+        await ctx.session.ssh.exitShell()
+        ctx.session.inputState = null
+        ctx.session.ssh = null
 
 
         const _keyboard = new InlineKeyboard()
