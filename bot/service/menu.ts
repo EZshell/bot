@@ -17,7 +17,7 @@ class MenuService {
 
     private keyboard = async (ctx: MyContext) => {
         const keyboard = new InlineKeyboard()
-            .text("🧩🧩🧩🧩🧩", "")
+            .text("🧩🧩🧩🧩🧩")
             .row()
             .text("🖥 Manage Servers", "servers")
             .row()
