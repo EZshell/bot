@@ -49,7 +49,7 @@ class EZssh {
     }
 
     public writeCommand(command: string) {
-        if (!this.shell?.writable) return false
+        if (!this.shell) return false
         this.shell.write(command)
     }
 
