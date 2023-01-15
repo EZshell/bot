@@ -21,7 +21,7 @@ class ManageServerService {
         this.bot.on("message", this.editServerFinal)
 
         this.bot.on("message:text", this.writeCommand)
-        this.bot.command("exit", this.shellExit)
+        this.bot.callbackQuery("shell:exit", this.shellExit)
 
         this.bot.callbackQuery(
             [
@@ -221,7 +221,8 @@ __ <pre>${server.description}</pre>`
                     ctx.session.inputState!.data += data
                     console.log("**", ctx.session.inputState!.data)
                     const _keyboard = new InlineKeyboard()
-                        .text("Crtl + C", "shell:cancel_command")
+                        .text("Crtl + C", "shell:cancel")
+                        .text("Exit", "shell:exit")
                     ctx.api.editMessageText(
                         ctx.chat!.id,
                         ctx.session.inputState?.messageID!,
@@ -294,6 +295,8 @@ __ <pre>${server.description}</pre>`
             await ctx.reply(`<i>Shell not found</i>`, { parse_mode: 'HTML' })
             return
         }
+
+        await ctx.session.ssh.exitShell()
 
         ctx.session.ssh = null
         ctx.session.inputState = null
