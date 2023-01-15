@@ -287,70 +287,50 @@ __ <pre>${server.description}</pre>`
     }
 
     private shellExit = async (ctx: MyContext, _next: NextFunction) => {
-        try {
-            if (!ctx.session.inputState) {
-                await _next()
-                return
-            }
-            const { category, subID, parameter, messageID } = ctx.session.inputState
-            if (category !== 'shell' && parameter !== 'parameter') {
-                await _next()
-                return
-            }
-            const serverID = subID;
-            const server = await Server.findByPk(serverID)
-
-            if (!server) {
-                await ctx.reply(`<i>Server not found</i>`, { parse_mode: 'HTML' })
-                return
-            }
-            if (!ctx.session.ssh) {
-                await ctx.reply(`<i>Shell not found</i>`, { parse_mode: 'HTML' })
-                return
-            }
-
-            await ctx.session.ssh.exitShell()
-            ctx.session.ssh = null
-            ctx.session.inputState = null
-
-            const text = `<b>${server.name}</b> 🔴\n<i>Shell exited</i>`
-            ctx.reply(text, { parse_mode: "HTML" })
-        } catch (error) {
-            console.log("OoOoO", error)
+        if (!ctx.session.inputState) {
+            await _next()
+            return
         }
+        const { category, subID, parameter, messageID } = ctx.session.inputState
+        if (category !== 'shell' && parameter !== 'parameter') {
+            await _next()
+            return
+        }
+        const serverID = subID;
+        const server = await Server.findByPk(serverID)
+        if (!server) {
+            await ctx.reply(`<i>Server not found</i>`, { parse_mode: 'HTML' })
+            return
+        }
+        if (!ctx.session.ssh) {
+            await ctx.reply(`<i>Shell not found</i>`, { parse_mode: 'HTML' })
+            return
+        }
+        await ctx.session.ssh.writeCommand("\x03")
     }
 
 
     private shellCancel = async (ctx: MyContext, _next: NextFunction) => {
-        try {
-            if (!ctx.session.inputState) {
-                await _next()
-                return
-            }
-            const { category, subID, parameter, messageID } = ctx.session.inputState
-            if (category !== 'shell' && parameter !== 'parameter') {
-                await _next()
-                return
-            }
-            const serverID = subID;
-            const server = await Server.findByPk(serverID)
-
-            if (!server) {
-                await ctx.reply(`<i>Server not found</i>`, { parse_mode: 'HTML' })
-                return
-            }
-            if (!ctx.session.ssh) {
-                await ctx.reply(`<i>Shell not found</i>`, { parse_mode: 'HTML' })
-                return
-            }
-
-            await ctx.session.ssh.writeCommand("\x03")
-
-            const text = `<b>${server.name}</b> 🔴\n<i>Canceled</i>`
-            ctx.reply(text, { parse_mode: "HTML" })
-        } catch (error) {
-            console.log("OoOoO", error)
+        if (!ctx.session.inputState) {
+            await _next()
+            return
         }
+        const { category, subID, parameter, messageID } = ctx.session.inputState
+        if (category !== 'shell' && parameter !== 'parameter') {
+            await _next()
+            return
+        }
+        const serverID = subID;
+        const server = await Server.findByPk(serverID)
+        if (!server) {
+            await ctx.reply(`<i>Server not found</i>`, { parse_mode: 'HTML' })
+            return
+        }
+        if (!ctx.session.ssh) {
+            await ctx.reply(`<i>Shell not found</i>`, { parse_mode: 'HTML' })
+            return
+        }
+        await ctx.session.ssh.writeCommand("\x03")
     }
 }
 
