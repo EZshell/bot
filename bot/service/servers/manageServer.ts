@@ -1,7 +1,7 @@
 import { Bot, InlineKeyboard, NextFunction } from "grammy";
 import { MyContext } from "../..";
 import Server from "../../database/models/server.model";
-import EZssh from "./ssh";
+import ShellService from "./shell";
 
 
 class ManageServerService {
@@ -14,15 +14,9 @@ class ManageServerService {
         this.bot.callbackQuery(/^server:([0-9]+):delete$/, this.deleteServer)
         this.bot.callbackQuery(/^server:([0-9]+):inactive$/, this.inactiveServer)
         this.bot.callbackQuery(/^server:([0-9]+):active$/, this.activeServer)
-        this.bot.callbackQuery(/^server:([0-9]+):sshCheck$/, this.sshCheck)
-        this.bot.callbackQuery(/^server:([0-9]+):openShell$/, this.openShell)
 
         this.bot.callbackQuery(/^server:([0-9]+):edit:(ip|username|password|port|desc)$/, this.editServer)
         this.bot.on("message", this.editServerFinal)
-
-        this.bot.on("message:text", this.writeCommand)
-        this.bot.callbackQuery("shell:exit", this.shellExit)
-        this.bot.callbackQuery("shell:cancel", this.shellCancel)
 
         this.bot.callbackQuery(
             [
@@ -33,6 +27,8 @@ class ManageServerService {
             ],
             this.response
         )
+
+        new ShellService(this.bot).run()
     }
 
 
@@ -168,199 +164,7 @@ __ <pre>${server.description}</pre>`
     }
 
 
-    // #############
-    private async sshCheck(ctx: MyContext) {
-        const match = ctx.match!
-        const serverID = parseInt(match[1]);
-        const server = await Server.findByPk(serverID)
-        if (!server) return await ctx.answerCallbackQuery("Not Found")
-        const ssh = new EZssh({
-            host: server.ip,
-            port: server.port,
-            username: server.username,
-            password: server.password,
-        })
-        try {
-            await ssh.connect()
-            const canConnect = ssh.isConnected()
-            if (canConnect) ctx.answerCallbackQuery("Connected! ✅");
-        } catch (error) {
-            ctx.answerCallbackQuery("Can not connect ❌");
-            ctx.reply("❌ ConnectionError: " + error)
-        }
-    }
 
-
-    private async openShell(ctx: MyContext) {
-        const match = ctx.match!
-        const serverID = parseInt(match[1]);
-        const server = await Server.findByPk(serverID)
-        if (!server) return await ctx.answerCallbackQuery("Not Found")
-        const ssh = new EZssh({
-            host: server.ip,
-            port: server.port,
-            username: server.username,
-            password: server.password,
-        })
-        try {
-            await ctx.session.ssh?.exitShell()
-            ctx.session.ssh = null
-            ctx.session.inputState = null
-
-
-            await ssh.connect()
-            const canConnect = ssh.isConnected()
-            if (canConnect) ctx.answerCallbackQuery("Shell is open! ✅");
-            // 
-            const text = `<b>${server.name}</b> 🟢\n\n<i>Connecting...</i>`
-            const shellMID = (await ctx.reply(text, { parse_mode: 'HTML' })).message_id
-            ctx.session.inputState = {
-                category: 'shell',
-                subID: serverID,
-                parameter: 'command',
-                messageID: shellMID,
-                data: ''
-            }
-            ctx.session.ssh = ssh
-            await ssh.openShell(async (data) => {
-                try {
-                    if (!ctx.session.inputState || !ctx.session.ssh) return
-                    ctx.session.inputState.data += data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
-                    const _keyboard = new InlineKeyboard()
-                        .text("Crtl + C", "shell:cancel")
-                        .text("Exit", "shell:exit")
-                    const _o = { reply_markup: _keyboard, disable_web_page_preview: true }
-
-                    const tt = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState.data}</code>`
-                    if (tt.length > 4096) {
-                        ctx.session.inputState.data = ""
-                        ctx.session.inputState.data += data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
-                        const tt = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState.data}</code>`
-                        const shellMID = (await ctx.reply(tt, _o)).message_id
-                        ctx.session.inputState.messageID = shellMID;
-                    }
-                    else {
-                        ctx.api.editMessageText(
-                            ctx.chat!.id,
-                            ctx.session.inputState?.messageID!,
-                            tt,
-                            _o
-                        );
-                    }
-                } catch (error) {
-                    console.log("openShell:", error)
-                }
-            })
-        } catch (error) {
-            ctx.answerCallbackQuery("Can not connect ❌");
-            ctx.reply("❌ ConnectionError: " + error)
-        }
-    }
-    private writeCommand = async (ctx: MyContext, _next: NextFunction) => {
-        if (!ctx.session.inputState) {
-            await _next()
-            return
-        }
-        const { category, subID, parameter, messageID } = ctx.session.inputState
-        if (category !== 'shell' && parameter !== 'parameter') {
-            await _next()
-            return
-        }
-        const serverID = subID;
-        const server = await Server.findByPk(serverID)
-
-        if (!server) {
-            await ctx.reply(`<i>Server not found</i>`, { parse_mode: 'HTML' })
-            return
-        }
-        if (!ctx.session.ssh) {
-            await ctx.reply(`<i>Shell not found</i>`, { parse_mode: 'HTML' })
-            return
-        }
-
-        try {
-            const text = `<b>${server.name}</b> 📟\n\n<i>Response</i>`
-            const shellMID = (await ctx.reply(text, {})).message_id
-            ctx.session.inputState = {
-                category: 'shell',
-                subID: serverID,
-                parameter: 'command',
-                messageID: shellMID,
-                data: ''
-            }
-
-            ctx.session.ssh.writeCommand(ctx.message?.text!)
-        } catch (error) {
-            console.log("writeCommand", error)
-        }
-
-
-    }
-
-    private shellExit = async (ctx: MyContext, _next: NextFunction) => {
-        if (!ctx.session.inputState) {
-            await _next()
-            return
-        }
-        const { category, subID, parameter, messageID } = ctx.session.inputState
-        if (category !== 'shell' && parameter !== 'parameter') {
-            await _next()
-            return
-        }
-        const serverID = subID;
-        const server = await Server.findByPk(serverID)
-        if (!server) {
-            await ctx.reply(`<i>Server not found</i>`, { parse_mode: 'HTML' })
-            return
-        }
-        if (!ctx.session.ssh) {
-            await ctx.reply(`<i>Shell not found</i>`, { parse_mode: 'HTML' })
-            return
-        }
-
-        try {
-            await ctx.session.ssh.exitShell()
-            ctx.session.inputState = null
-            ctx.session.ssh = null
-
-
-            const _keyboard = new InlineKeyboard()
-                .text("❌ Closed")
-            await ctx.editMessageReplyMarkup({ reply_markup: _keyboard })
-        }
-        catch (error) {
-            console.log("shellExit", error)
-        }
-    }
-
-
-    private shellCancel = async (ctx: MyContext, _next: NextFunction) => {
-        if (!ctx.session.inputState) {
-            await _next()
-            return
-        }
-        const { category, subID, parameter, messageID } = ctx.session.inputState
-        if (category !== 'shell' && parameter !== 'parameter') {
-            await _next()
-            return
-        }
-        const serverID = subID;
-        const server = await Server.findByPk(serverID)
-        if (!server) {
-            await ctx.reply(`<i>Server not found</i>`, { parse_mode: 'HTML' })
-            return
-        }
-        if (!ctx.session.ssh) {
-            await ctx.reply(`<i>Shell not found</i>`, { parse_mode: 'HTML' })
-            return
-        }
-        try {
-            await ctx.session.ssh.writeCommand("\x03")
-        }
-        catch (error) {
-            console.log("shellCancel", error)
-        }
-    }
 }
 
 

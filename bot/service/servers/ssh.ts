@@ -1,5 +1,5 @@
 import { Config, NodeSSH } from 'node-ssh'
-import { ClientChannel } from 'ssh2';
+import { ClientChannel, SFTPWrapper } from 'ssh2';
 
 
 class EZssh {
@@ -7,6 +7,7 @@ class EZssh {
     private client;
     private config;
     private shell: ClientChannel | null = null;
+    private sftp: SFTPWrapper | null = null
 
     constructor(config: Config) {
         this.config = config
@@ -24,7 +25,7 @@ class EZssh {
 
 
     public async openShell(callback: (arg0: string) => void) {
-        this.shell?.exit(1)
+        this.shell?.close()
         this.shell = await this.client.requestShell()
         this.shell.on("data", (data: Buffer) => {
             callback(data.toString())
@@ -46,6 +47,13 @@ class EZssh {
     public async writeCommand(command: string) {
         if (!this.shell) return false
         this.shell.write(command + "\n")
+    }
+
+
+    public async openSftp() {
+        // this.sftp?.close()
+        this.sftp = await this.client.requestSFTP()
+
     }
 }
 
