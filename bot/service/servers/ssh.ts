@@ -46,7 +46,7 @@ class EZssh {
 
     public async writeCommand(command: string) {
         if (!this.shell) return false
-        this.shell.write(command + "\n")
+        this.shell.write(command)
     }
 
 

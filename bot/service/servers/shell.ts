@@ -201,7 +201,7 @@ class ShellService {
             const messageID = (await ctx.reply(text, this.shellResponseOptions())).message_id
             this.openShellSession(ctx, ctx.session.ssh!, server.id, messageID)
             // 
-            ctx.session.ssh!.writeCommand(ctx.message?.text!)
+            ctx.session.ssh!.writeCommand(ctx.message?.text! + "\n")
         } catch (error) {
             console.log("writeCommand", error)
         }
