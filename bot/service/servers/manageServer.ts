@@ -228,7 +228,7 @@ __ <pre>${server.description}</pre>`
                     ctx.chat!.id,
                     ctx.session.inputState?.messageID!,
                     tt,
-                    { parse_mode: 'HTML', reply_markup: _keyboard, disable_web_page_preview: true }
+                    { reply_markup: _keyboard, disable_web_page_preview: true }
                 );
             })
         } catch (error) {
