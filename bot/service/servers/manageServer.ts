@@ -227,11 +227,11 @@ __ <pre>${server.description}</pre>`
                     .text("Crtl + C", "shell:cancel")
                     .text("Exit", "shell:exit")
 
-                const tt = `<b>${server.name}</b> 🟢\n\n<i>Response:</i>\n<code>${ctx.session.inputState!.data}</code>`
+                const tt = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState!.data}</code>`
                 if (tt.length > 4096) {
                     ctx.session.inputState!.data = ""
                     ctx.session.inputState!.data += data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
-                    const tt = `<b>${server.name}</b> 🟢\n\n<i>Response:</i>\n<code>${ctx.session.inputState!.data}</code>`
+                    const tt = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState!.data}</code>`
                     const shellMID = (await ctx.reply(tt, { parse_mode: 'HTML' })).message_id
                     ctx.session.inputState!.messageID = shellMID;
                 }
@@ -271,7 +271,7 @@ __ <pre>${server.description}</pre>`
             return
         }
 
-        const text = `<b>${server.name}</b> 🟢\n\n<i>Response</i>`
+        const text = `<b>${server.name}</b> 📟\n\n<i>Response</i>`
         const shellMID = (await ctx.reply(text, { parse_mode: 'HTML' })).message_id
         ctx.session.inputState = {
             category: 'shell',
