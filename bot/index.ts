@@ -8,6 +8,7 @@ import User from "./database/models/user.model";
 import Authentication from "./middleware/authentication";
 import MenuService from "./service/menu";
 import ServersService from "./service/servers/servers";
+import EZssh from "./service/servers/ssh";
 
 
 interface InputState {
@@ -22,6 +23,7 @@ interface SessionData {
     user: User | null;
     isNew: boolean;
     inputState: InputState | null;
+    ssh: EZssh | null
 }
 export type MyContext = Context & SessionFlavor<SessionData>;
 
@@ -32,7 +34,8 @@ function initial(): SessionData {
     return {
         user: null,
         isNew: true,
-        inputState: null
+        inputState: null,
+        ssh: null
     };
 }
 
