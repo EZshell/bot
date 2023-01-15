@@ -11,6 +11,7 @@ import EZssh from "./service/shell/ssh";
 import { apiThrottler, bypassThrottler } from '@grammyjs/transformer-throttler';
 import { run } from "@grammyjs/runner";
 import SnippetsService from "./service/snippets";
+import GroupsService from "./service/groups";
 
 
 interface InputState {
@@ -122,6 +123,7 @@ bot.command("start", async (ctx) => {
 new MenuService(bot).run();
 new ServersService(bot).run();
 new SnippetsService(bot).run();
+new GroupsService(bot).run();
 
 
 
