@@ -9,6 +9,7 @@ import MenuService from "./service/menu";
 import ServersService from "./service/servers/servers";
 import EZssh from "./service/servers/ssh";
 import { apiThrottler, bypassThrottler } from '@grammyjs/transformer-throttler';
+import { run } from "@grammyjs/runner";
 
 
 interface InputState {
@@ -102,17 +103,18 @@ bot.catch((err) => {
     }
 });
 
-bot.start({
-    onStart: async (info: UserFromGetMe) => {
-        let _text = `<b>${info.first_name}(@${info.username}):</b> Updated & lunched\n`
-        try {
-            await sequelize.authenticate();
-            await sequelize.sync()
-            _text += `<b>Database:</b> Connected & synced`
-        } catch (error) {
-            _text += `<b>Database:</b>\nUnable to connect (${error})`
-        }
-        bot.api.sendMessage(SuperAdmin, _text, { parse_mode: 'HTML' })
-    }
-});
+// bot.start({
+//     onStart: async (info: UserFromGetMe) => {
+//         let _text = `<b>${info.first_name}(@${info.username}):</b> Updated & lunched\n`
+//         try {
+//             await sequelize.authenticate();
+//             await sequelize.sync()
+//             _text += `<b>Database:</b> Connected & synced`
+//         } catch (error) {
+//             _text += `<b>Database:</b>\nUnable to connect (${error})`
+//         }
+//         bot.api.sendMessage(SuperAdmin, _text, { parse_mode: 'HTML' })
+//     }
+// });
 
+run(bot);
