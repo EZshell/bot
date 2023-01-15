@@ -307,6 +307,9 @@ __ <pre>${server.description}</pre>`
             return
         }
         await ctx.session.ssh.exitShell()
+
+        ctx.session.inputState = null
+        ctx.session.ssh = null
     }
 
 
