@@ -202,6 +202,11 @@ __ <pre>${server.description}</pre>`
             password: server.password,
         })
         try {
+            await ctx.session.ssh?.exitShell()
+            ctx.session.ssh = null
+            ctx.session.inputState = null
+
+
             await ssh.connect()
             const canConnect = ssh.isConnected()
             if (canConnect) ctx.answerCallbackQuery("Shell is open! ✅");
@@ -223,13 +228,21 @@ __ <pre>${server.description}</pre>`
                     .text("Exit", "shell:exit")
 
                 const tt = `<b>${server.name}</b> 🟢\n\n<i>Response:</i>\n<code>${ctx.session.inputState!.data}</code>`
-                // if(tt.length)
-                ctx.api.editMessageText(
-                    ctx.chat!.id,
-                    ctx.session.inputState?.messageID!,
-                    tt,
-                    { reply_markup: _keyboard, disable_web_page_preview: true }
-                );
+                if (tt.length > 4096) {
+                    ctx.session.inputState!.data = ""
+                    ctx.session.inputState!.data += data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
+                    const tt = `<b>${server.name}</b> 🟢\n\n<i>Response:</i>\n<code>${ctx.session.inputState!.data}</code>`
+                    const shellMID = (await ctx.reply(tt, { parse_mode: 'HTML' })).message_id
+                    ctx.session.inputState!.messageID = shellMID;
+                }
+                else {
+                    ctx.api.editMessageText(
+                        ctx.chat!.id,
+                        ctx.session.inputState?.messageID!,
+                        tt,
+                        { reply_markup: _keyboard, disable_web_page_preview: true }
+                    );
+                }
             })
         } catch (error) {
             ctx.answerCallbackQuery("Can not connect ❌");
@@ -295,7 +308,6 @@ __ <pre>${server.description}</pre>`
             }
 
             await ctx.session.ssh.exitShell()
-
             ctx.session.ssh = null
             ctx.session.inputState = null
 

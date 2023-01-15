@@ -29,8 +29,11 @@ class EZssh {
         this.shell.on("data", (data: Buffer) => {
             callback(data.toString())
         })
+        this.shell.on("exit", (code: string) => {
+            callback("\nExit: " + code)
+        })
         this.shell.stderr.on("data", (data: Buffer) => {
-            callback("Error: " + data.toString())
+            callback("\nError: " + data.toString())
         })
         return this
     }
