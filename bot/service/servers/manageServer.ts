@@ -226,7 +226,7 @@ __ <pre>${server.description}</pre>`
                         ctx.chat!.id,
                         ctx.session.inputState?.messageID!,
                         `<b>${server.name}</b> 🟢\n\n<i>Response:</i>\n<code>${ctx.session.inputState!.data}</code>`,
-                        { parse_mode: 'HTML', reply_markup: _keyboard }
+                        { reply_markup: _keyboard }
                     );
                 } catch (error) {
                     console.log(">>>>", error)
