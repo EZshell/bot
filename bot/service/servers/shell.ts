@@ -1,4 +1,5 @@
 import { Bot, InlineKeyboard, NextFunction } from "grammy";
+import { ParseMode } from "grammy/out/types";
 import { MyContext } from "../..";
 import Server from "../../database/models/server.model";
 import EZssh from "./ssh";
@@ -69,7 +70,7 @@ class ShellService {
 
     shellResponseOptions = (ctx: MyContext) => {
         return {
-            // parse_mode: 'HTML',
+            parse_mode: "HTML" as ParseMode,
             reply_markup: this.shellKeyboard(ctx),
             disable_web_page_preview: true
         }
