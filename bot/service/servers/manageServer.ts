@@ -217,7 +217,7 @@ __ <pre>${server.description}</pre>`
             }
             ctx.session.ssh = ssh
             await ssh.openShell(async (data) => {
-                ctx.session.inputState!.data += data
+                ctx.session.inputState!.data += data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
                 const _keyboard = new InlineKeyboard()
                     .text("Crtl + C", "shell:cancel")
                     .text("Exit", "shell:exit")
@@ -228,7 +228,7 @@ __ <pre>${server.description}</pre>`
                     ctx.chat!.id,
                     ctx.session.inputState?.messageID!,
                     tt,
-                    { reply_markup: _keyboard, disable_web_page_preview: true }
+                    { parse_mode: 'HTML', reply_markup: _keyboard, disable_web_page_preview: true }
                 );
             })
         } catch (error) {
