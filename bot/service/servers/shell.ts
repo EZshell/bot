@@ -54,7 +54,7 @@ class ShellService {
             .text("⛔️", "shell:cancel")
             .text("🕹", "shell:exit")
             .row()
-            .switchInlineCurrent("shell:press:tab", "shell:press:tab tex")
+            .switchInlineCurrent("TAB", "shell:press:tab tex")
 
         return _keyboard
     }
@@ -127,6 +127,11 @@ class ShellService {
 
                     const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState.data}</code>`
                     if (text.length > 4000) {
+                        await ctx.api.editMessageReplyMarkup(
+                            ctx.chat?.id!,
+                            ctx.session.inputState?.messageID!,
+                            { reply_markup: new InlineKeyboard() }
+                        )
                         ctx.session.inputState.data = _data
                         const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState.data}</code>`
                         const messageID = (await ctx.reply(text, this.shellResponseOptions())).message_id
@@ -182,6 +187,11 @@ class ShellService {
 
         try {
             const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n`
+            await ctx.api.editMessageReplyMarkup(
+                ctx.chat?.id!,
+                ctx.session.inputState?.messageID!,
+                { reply_markup: new InlineKeyboard() }
+            )
             const messageID = (await ctx.reply(text, this.shellResponseOptions())).message_id
             this.openShellSession(ctx, ctx.session.ssh!, server.id, messageID)
             // 
