@@ -21,6 +21,7 @@ class ManageServerService {
         this.bot.on("message", this.editServerFinal)
 
         this.bot.on("message:text", this.writeCommand)
+        this.bot.command("exit", this.shellExit)
 
         this.bot.callbackQuery(
             [
@@ -134,7 +135,8 @@ __ <pre>${server.description}</pre>`
             category: 'server',
             subID: serverID!,
             parameter: param,
-            messageID: ctx.callbackQuery?.message?.message_id!
+            messageID: ctx.callbackQuery?.message?.message_id!,
+            data: null
         };
         await ctx.reply(`Send me <b>${param}</b> parameter for <b>${server.name}</b>:`, { parse_mode: 'HTML' })
     }
@@ -210,16 +212,18 @@ __ <pre>${server.description}</pre>`
                 category: 'shell',
                 subID: serverID,
                 parameter: 'command',
-                messageID: shellMID
+                messageID: shellMID,
+                data: ''
             }
             ctx.session.ssh = ssh
             await ssh.openShell(async (data) => {
+                ctx.session.inputState!.data += data
                 const _keyboard = new InlineKeyboard()
                     .text("Crtl + C", "shell:cancel_command")
                 ctx.api.editMessageText(
                     ctx.chat!.id,
                     ctx.session.inputState?.messageID!,
-                    `<b>${server.name}</b> 🟢\n\n<i>Response:</i>\n<code>${data}</code>`,
+                    `<b>${server.name}</b> 🟢\n\n<i>Response:</i>\n<code>${ctx.session.inputState!.data}</code>`,
                     { parse_mode: 'HTML', reply_markup: _keyboard }
                 );
             })
@@ -256,10 +260,40 @@ __ <pre>${server.description}</pre>`
             category: 'shell',
             subID: serverID,
             parameter: 'command',
-            messageID: shellMID
+            messageID: shellMID,
+            data: ''
         }
 
         ctx.session.ssh.writeCommand(ctx.message?.text!)
+    }
+
+    private shellExit = async (ctx: MyContext, _next: NextFunction) => {
+        if (!ctx.session.inputState) {
+            await _next()
+            return
+        }
+        const { category, subID, parameter, messageID } = ctx.session.inputState
+        if (category !== 'shell' && parameter !== 'parameter') {
+            await _next()
+            return
+        }
+        const serverID = subID;
+        const server = await Server.findByPk(serverID)
+
+        if (!server) {
+            await ctx.reply(`<i>Server not found</i>`, { parse_mode: 'HTML' })
+            return
+        }
+        if (!ctx.session.ssh) {
+            await ctx.reply(`<i>Shell not found</i>`, { parse_mode: 'HTML' })
+            return
+        }
+
+        ctx.session.ssh = null
+        ctx.session.inputState = null
+
+        const text = `<b>${server.name}</b> 🔴\n<i>Shell exited</i>`
+        ctx.reply(text, { parse_mode: "HTML" })
     }
 }
 

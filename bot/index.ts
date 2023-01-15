@@ -16,6 +16,7 @@ interface InputState {
     subID: number,
     parameter: string;
     messageID: number | null;
+    data: string | null;
 }
 
 // Define the shape of our session.
