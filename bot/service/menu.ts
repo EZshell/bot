@@ -25,7 +25,7 @@ class MenuService {
     }
 
     private text = async (ctx: MyContext) => {
-        return `🔻 Choose:`
+        return `🔻 Main menu:`
     }
 
     private response = async (ctx: MyContext) => {

@@ -128,7 +128,7 @@ new SnippetsService(bot).run();
 // Handle other messages.
 bot.on("message", (ctx) => ctx.reply("🤫"));
 bot.on("inline_query", (ctx) => ctx.answerInlineQuery([]));
-bot.on("callback_query", (ctx) => ctx.answerCallbackQuery("Sorry :("));
+bot.on("callback_query", (ctx) => ctx.answerCallbackQuery("Sorry :( " + ctx.callbackQuery.data));
 
 bot.catch((err) => {
     const ctx = err.ctx;

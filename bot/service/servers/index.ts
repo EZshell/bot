@@ -40,7 +40,7 @@ class ServersService {
     }
 
     private text = async (ctx: MyContext) => {
-        return `🔻 Choose:\nCount: ${this.query!.count}`
+        return `🔻 List of your servers:\nTotal: ${this.query!.count}`
     }
 
     private response = async (ctx: MyContext) => {

@@ -39,7 +39,7 @@ class SnippetsService {
     }
 
     private text = async (ctx: MyContext) => {
-        return `🔻 Choose:\nCount: ${this.query!.count}`
+        return `🔻 List of your snippets:\nTotal: ${this.query!.count}`
     }
 
     private response = async (ctx: MyContext) => {
