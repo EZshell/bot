@@ -306,7 +306,7 @@ __ <pre>${server.description}</pre>`
             await ctx.reply(`<i>Shell not found</i>`, { parse_mode: 'HTML' })
             return
         }
-        await ctx.session.ssh.writeCommand("\x03")
+        await ctx.session.ssh.exitShell()
     }
 
 
