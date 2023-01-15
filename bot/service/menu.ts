@@ -17,11 +17,9 @@ class MenuService {
 
     private keyboard = async (ctx: MyContext) => {
         const keyboard = new InlineKeyboard()
-            .text("🧩🧩🧩🧩🧩")
-            .row()
             .text("🖥 Manage Servers", "servers")
-            .text("🗂 Manage Groups", "groups")
             .row()
+            .text("🗂 Manage Groups", "groups")
             .text("📌 Manage Snippets", "snippets")
             .row()
             .url("💬 Support", "EZshellAdmin.t.me")

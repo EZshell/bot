@@ -52,7 +52,7 @@ class ManageGroupService {
 
     private text = async (group: Group | null) => {
         if (!group) return '<i>Group deleted or not found</i>'
-        return `<b>${group.name}</b>`
+        return `🗂 <b>${group.name}</b>`
     }
 
 

@@ -45,7 +45,7 @@ class ManageSnippetService {
 
     private text = async (snippet: Snippet | null) => {
         if (!snippet) return '<i>Snippet deleted or not found</i>'
-        return `<b>${snippet.label}</b>
+        return `📌 <b>${snippet.label}</b>
 <code>${snippet.script}</code>`
     }
 
