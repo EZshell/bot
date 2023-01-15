@@ -18,13 +18,12 @@ class ShellService {
         this.bot.on("message:text", this.writeCommand)
         this.bot.callbackQuery("shell:exit", this.shellExit)
         this.bot.callbackQuery("shell:cancel", this.shellCancel)
-
     }
 
     // ############################
 
     // ############# sshCheck
-    async sshCheck(ctx: MyContext) {
+    sshCheck = async (ctx: MyContext) => {
         const match = ctx.match!
         const serverID = parseInt(match[1]);
         const server = await Server.findByPk(serverID)
@@ -84,7 +83,7 @@ class ShellService {
     }
 
 
-    async openShell(ctx: MyContext) {
+    openShell = async (ctx: MyContext) => {
         try {
             await this.exitCurrentShell(ctx)
         } catch (error) {
