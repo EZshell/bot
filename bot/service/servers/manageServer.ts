@@ -217,22 +217,19 @@ __ <pre>${server.description}</pre>`
             }
             ctx.session.ssh = ssh
             await ssh.openShell(async (data) => {
-                try {
-                    ctx.session.inputState!.data += data
-                    console.log("**", ctx.session.inputState!.data)
-                    const _keyboard = new InlineKeyboard()
-                        .text("Crtl + C", "shell:cancel")
-                        .text("Exit", "shell:exit")
-                    ctx.api.editMessageText(
-                        ctx.chat!.id,
-                        ctx.session.inputState?.messageID!,
-                        `<b>${server.name}</b> 🟢\n\n<i>Response:</i>\n<code>${ctx.session.inputState!.data}</code>`,
-                        { reply_markup: _keyboard, disable_web_page_preview: true }
-                    );
-                } catch (error) {
-                    console.log(">>>>", error)
-                }
+                ctx.session.inputState!.data += data
+                const _keyboard = new InlineKeyboard()
+                    .text("Crtl + C", "shell:cancel")
+                    .text("Exit", "shell:exit")
 
+                const tt = `<b>${server.name}</b> 🟢\n\n<i>Response:</i>\n<code>${ctx.session.inputState!.data}</code>`
+                // if(tt.length)
+                ctx.api.editMessageText(
+                    ctx.chat!.id,
+                    ctx.session.inputState?.messageID!,
+                    tt,
+                    { reply_markup: _keyboard, disable_web_page_preview: true }
+                );
             })
         } catch (error) {
             ctx.answerCallbackQuery("Can not connect ❌");
