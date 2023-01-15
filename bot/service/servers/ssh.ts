@@ -39,7 +39,7 @@ class EZssh {
     }
 
     public async exitShell() {
-        this.shell?.exit(1)
+        this.shell?.close()
     }
 
     public async writeCommand(command: string) {
