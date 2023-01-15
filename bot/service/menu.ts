@@ -20,7 +20,6 @@ class MenuService {
             .text("🧩🧩🧩🧩🧩")
             .row()
             .text("🖥 Manage Servers", "servers")
-            .row()
             .text("🗂 Manage Groups", "groups")
             .row()
             .text("📌 Manage Snippets", "snippets")
