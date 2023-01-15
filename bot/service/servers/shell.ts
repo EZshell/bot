@@ -47,7 +47,12 @@ class ShellService {
     // ############ shell command
     shellKeyboard = (ctx: MyContext) => {
         const _keyboard = new InlineKeyboard()
-        if (!ctx.session.ssh!.isWritable()) {
+        if (!ctx.session.ssh) {
+            _keyboard
+                .text("CONNECTING...")
+            return _keyboard
+        }
+        if (!ctx.session.ssh.isWritable()) {
             _keyboard
                 .text("WAIT UNTIL COMPLETED (⛔️|🔚)")
                 .row()
