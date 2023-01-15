@@ -1,6 +1,9 @@
 import { Bot, InlineKeyboard, NextFunction } from "grammy";
+import { Op } from "sequelize";
 import { MyContext } from "../..";
 import Group from "../../database/models/groups.model";
+import Server from "../../database/models/server.model";
+import User from "../../database/models/user.model";
 
 
 class ManageGroupService {
@@ -22,6 +25,9 @@ class ManageGroupService {
             ],
             this.response
         )
+
+        this.bot.callbackQuery(/^group:([0-9]+):members$/, this.groupMembers)
+        this.bot.callbackQuery(/^group:([0-9]+):servers$/, this.groupServers)
     }
 
 
@@ -31,6 +37,9 @@ class ManageGroupService {
         if (!group) return new InlineKeyboard()
         const keyboard = new InlineKeyboard()
             .text("❌ Delete", "group:" + group.id + ":delete")
+            .row()
+            .text(`👥 Members(${group.members.length})`, "group:" + group.id + ":members")
+            .text(`📟 Servers(${group.servers.length})`, "group:" + group.id + ":servers")
 
         keyboard
             .text("✏️ Name", "group:" + group.id + ":edit:name")
@@ -115,8 +124,61 @@ class ManageGroupService {
         ctx.session.inputState = null
     }
 
+    // #################################################
 
 
+    private async groupMembers(ctx: MyContext) {
+        const match = ctx.match!
+        const groupID = parseInt(match[1]);
+
+        const group = await Group.findByPk(groupID)
+        if (!group) return await ctx.answerCallbackQuery("Not Found")
+        await ctx.answerCallbackQuery()
+
+        const text = `You can see all <b>👥 Members</b> of this group & manage them.
+
+<i>For add people to this group, send bellow link for theme & ask to open it</i>
+t.me/${ctx.me.username}?start=join_group_${group.id}
+<i>After that you must confirm</i>
+`
+
+        const keyboard = new InlineKeyboard()
+        const members = group.members as number[]
+        const query = await User.findAndCountAll({ where: { id: { [Op.in]: members } } })
+        query!.rows.forEach(({ first_name, id }) => {
+            keyboard
+                .text(first_name, "group:" + group.id + ":member:" + id)
+                .row()
+        })
+
+        await ctx.reply(text, { parse_mode: 'HTML', reply_markup: keyboard })
+    }
+
+
+
+    private async groupServers(ctx: MyContext) {
+        const match = ctx.match!
+        const groupID = parseInt(match[1]);
+
+        const group = await Group.findByPk(groupID)
+        if (!group) return await ctx.answerCallbackQuery("Not Found")
+        await ctx.answerCallbackQuery()
+
+        const text = `You can see all <b>📟 Servers</b> of this group & manage them.
+
+<i>For add server to this group, go to server setting</i>`
+
+        const keyboard = new InlineKeyboard()
+        const servers = group.servers as number[]
+        const query = await Server.findAndCountAll({ where: { id: { [Op.in]: servers } } })
+        query!.rows.forEach(({ name, id }) => {
+            keyboard
+                .text(name, "group:" + group.id + ":server:" + id)
+                .row()
+        })
+
+        await ctx.reply(text, { parse_mode: 'HTML', reply_markup: keyboard })
+    }
 }
 
 

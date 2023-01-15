@@ -31,6 +31,7 @@ class ManageSnippetService {
         if (!snippet) return new InlineKeyboard()
         const keyboard = new InlineKeyboard()
             .text("❌ Delete", "snippet:" + snippet.id + ":delete")
+            .row()
 
         keyboard
             .text("✏️ Label", "snippet:" + snippet.id + ":edit:label")
