@@ -47,7 +47,7 @@ class ShellService {
     // ############ shell command
     shellKeyboard = (ctx: MyContext) => {
         const _keyboard = new InlineKeyboard()
-        if (!ctx.session.ssh?.isWritable()) {
+        if (!ctx.session.ssh!.isWritable()) {
             _keyboard
                 .text("WAIT UNTIL COMPLETED (⛔️|🔚)")
                 .row()
@@ -197,6 +197,9 @@ class ShellService {
         if (!server) return;
 
         try {
+            if (!ctx.session.ssh!.isWritable()) {
+                await ctx.deleteMessage()
+            }
             const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n`
             await ctx.api.editMessageReplyMarkup(
                 ctx.chat?.id!,
