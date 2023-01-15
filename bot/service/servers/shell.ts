@@ -1,5 +1,4 @@
 import { Bot, InlineKeyboard, NextFunction } from "grammy";
-import { Other } from "grammy/out/core/api";
 import { MyContext } from "../..";
 import Server from "../../database/models/server.model";
 import EZssh from "./ssh";
