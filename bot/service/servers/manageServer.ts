@@ -223,28 +223,32 @@ __ <pre>${server.description}</pre>`
             }
             ctx.session.ssh = ssh
             await ssh.openShell(async (data) => {
-                if (!ctx.session.inputState || !ctx.session.ssh) return
-                ctx.session.inputState.data += data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
-                const _keyboard = new InlineKeyboard()
-                    .text("Crtl + C", "shell:cancel")
-                    .text("Exit", "shell:exit")
-                const _o = { reply_markup: _keyboard, disable_web_page_preview: true }
-
-                const tt = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState.data}</code>`
-                if (tt.length > 4096) {
-                    ctx.session.inputState.data = ""
+                try {
+                    if (!ctx.session.inputState || !ctx.session.ssh) return
                     ctx.session.inputState.data += data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
+                    const _keyboard = new InlineKeyboard()
+                        .text("Crtl + C", "shell:cancel")
+                        .text("Exit", "shell:exit")
+                    const _o = { reply_markup: _keyboard, disable_web_page_preview: true }
+
                     const tt = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState.data}</code>`
-                    const shellMID = (await ctx.reply(tt, _o)).message_id
-                    ctx.session.inputState.messageID = shellMID;
-                }
-                else {
-                    ctx.api.editMessageText(
-                        ctx.chat!.id,
-                        ctx.session.inputState?.messageID!,
-                        tt,
-                        _o
-                    );
+                    if (tt.length > 4096) {
+                        ctx.session.inputState.data = ""
+                        ctx.session.inputState.data += data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
+                        const tt = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState.data}</code>`
+                        const shellMID = (await ctx.reply(tt, _o)).message_id
+                        ctx.session.inputState.messageID = shellMID;
+                    }
+                    else {
+                        ctx.api.editMessageText(
+                            ctx.chat!.id,
+                            ctx.session.inputState?.messageID!,
+                            tt,
+                            _o
+                        );
+                    }
+                } catch (error) {
+                    console.log("openShell:", error)
                 }
             })
         } catch (error) {
@@ -274,17 +278,23 @@ __ <pre>${server.description}</pre>`
             return
         }
 
-        const text = `<b>${server.name}</b> 📟\n\n<i>Response</i>`
-        const shellMID = (await ctx.reply(text, {})).message_id
-        ctx.session.inputState = {
-            category: 'shell',
-            subID: serverID,
-            parameter: 'command',
-            messageID: shellMID,
-            data: ''
+        try {
+            const text = `<b>${server.name}</b> 📟\n\n<i>Response</i>`
+            const shellMID = (await ctx.reply(text, {})).message_id
+            ctx.session.inputState = {
+                category: 'shell',
+                subID: serverID,
+                parameter: 'command',
+                messageID: shellMID,
+                data: ''
+            }
+
+            ctx.session.ssh.writeCommand(ctx.message?.text!)
+        } catch (error) {
+            console.log("writeCommand", error)
         }
 
-        ctx.session.ssh.writeCommand(ctx.message?.text!)
+
     }
 
     private shellExit = async (ctx: MyContext, _next: NextFunction) => {
@@ -307,16 +317,20 @@ __ <pre>${server.description}</pre>`
             await ctx.reply(`<i>Shell not found</i>`, { parse_mode: 'HTML' })
             return
         }
-        await ctx.session.ssh.exitShell()
-        ctx.session.inputState = null
-        ctx.session.ssh = null
+
+        try {
+            await ctx.session.ssh.exitShell()
+            ctx.session.inputState = null
+            ctx.session.ssh = null
 
 
-        const _keyboard = new InlineKeyboard()
-            .text("❌ Closed")
-        await ctx.editMessageReplyMarkup({ reply_markup: _keyboard })
-
-
+            const _keyboard = new InlineKeyboard()
+                .text("❌ Closed")
+            await ctx.editMessageReplyMarkup({ reply_markup: _keyboard })
+        }
+        catch (error) {
+            console.log("shellExit", error)
+        }
     }
 
 
@@ -340,7 +354,12 @@ __ <pre>${server.description}</pre>`
             await ctx.reply(`<i>Shell not found</i>`, { parse_mode: 'HTML' })
             return
         }
-        await ctx.session.ssh.writeCommand("\x03")
+        try {
+            await ctx.session.ssh.writeCommand("\x03")
+        }
+        catch (error) {
+            console.log("shellCancel", error)
+        }
     }
 }
 
