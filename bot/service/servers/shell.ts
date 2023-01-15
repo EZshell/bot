@@ -17,6 +17,7 @@ class ShellService {
 
         this.bot.on("message:text", this.writeCommand)
         this.bot.callbackQuery("shell:exit", this.shellExit)
+        this.bot.callbackQuery("shell:reload", this.shellReload)
         this.bot.callbackQuery("shell:cancel", this.shellCancel)
     }
 
@@ -47,9 +48,14 @@ class ShellService {
     // ############ shell command
     shellKeyboard = () => {
         const _keyboard = new InlineKeyboard()
+            .text("WAIT UNTIL COMPLETED (🔄/⛔️)")
+            .row()
             .text("📂", "shell:sftp")
+            .text("🔄", "shell:reload")
             .text("⛔️", "shell:cancel")
-            .text("❌", "shell:exit")
+            .text("🕹", "shell:exit")
+            .row()
+            .switchInlineCurrent("shell:press:tab", "shell:press:tab tex")
 
         return _keyboard
     }
@@ -206,6 +212,16 @@ class ShellService {
             ctx.session.ssh!.writeCommand("\x03")
         } catch (error) {
             console.log("shellCancel", error)
+        }
+    }
+
+    shellReload = async (ctx: MyContext, _next: NextFunction) => {
+        const server = await this.checkShellStatus(ctx, _next)
+        if (!server) return;
+        try {
+            ctx.session.ssh!.writeCommand("\n")
+        } catch (error) {
+            console.log("shellReload", error)
         }
     }
 }
