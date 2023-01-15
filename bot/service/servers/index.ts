@@ -27,7 +27,7 @@ class ServersService {
         const keyboard = new InlineKeyboard()
         this.query!.rows.forEach(({ name, id }) => {
             keyboard
-                .text(name, "servers:" + id)
+                .text(name, "server:" + id)
                 .row()
         })
 
