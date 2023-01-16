@@ -4,7 +4,6 @@ import sequelize from "..";
 class Groups extends Model<InferAttributes<Groups>, InferCreationAttributes<Groups>> {
     declare id: CreationOptional<number>;
     declare name: string
-    // declare members: number[] | string;
     declare servers: number[] | string;
     declare owner: number;
 }
@@ -26,22 +25,13 @@ Groups.init(
 
         servers: {
             type: DataTypes.JSON,
-            get: function () {
-                return JSON.parse(this.getDataValue('servers').toString());
-            },
-            set: function (value) {
-                this.setDataValue('servers', JSON.stringify(value));
-            },
+            // get: function () {
+            //     return JSON.parse(this.getDataValue('servers').toString());
+            // },
+            // set: function (value) {
+            //     this.setDataValue('servers', JSON.stringify(value));
+            // },
         },
-        // members: {
-        //     type: DataTypes.JSON,
-        //     get: function () {
-        //         return JSON.parse(this.getDataValue('members').toString());
-        //     },
-        //     set: function (value) {
-        //         this.setDataValue('members', JSON.stringify(value));
-        //     },
-        // },
     },
     {
         tableName: 'groups',

@@ -50,30 +50,30 @@ User.init(
         },
         groups: {
             type: DataTypes.JSON,
-            get: function () {
-                return JSON.parse(this.getDataValue('groups').toString());
-            },
-            set: function (value) {
-                this.setDataValue('groups', JSON.stringify(value));
-            },
+            // get: function () {
+            //     return JSON.parse(this.getDataValue('groups').toString());
+            // },
+            // set: function (value) {
+            //     this.setDataValue('groups', JSON.stringify(value));
+            // },
         },
         servers: {
             type: DataTypes.JSON,
-            get: function () {
-                return JSON.parse(this.getDataValue('servers').toString());
-            },
-            set: function (value) {
-                this.setDataValue('servers', JSON.stringify(value));
-            },
+            // get: function () {
+            //     return JSON.parse(this.getDataValue('servers').toString());
+            // },
+            // set: function (value) {
+            //     this.setDataValue('servers', JSON.stringify(value));
+            // },
         },
         snippets: {
             type: DataTypes.JSON,
-            get: function () {
-                return JSON.parse(this.getDataValue('snippets').toString());
-            },
-            set: function (value) {
-                this.setDataValue('snippets', JSON.stringify(value));
-            },
+            // get: function () {
+            //     return JSON.parse(this.getDataValue('snippets').toString());
+            // },
+            // set: function (value) {
+            //     this.setDataValue('snippets', JSON.stringify(value));
+            // },
         },
     },
     {
