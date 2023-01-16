@@ -187,18 +187,20 @@ __ <pre>${server.description}</pre>`
         const groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: myGroups } } })
 
         const g: InlineQueryResult[] = []
-        groups.rows.forEach(({ id, name }) => {
-            g.push({
-                type: "article",
-                id: "add_to_group_" + id,
-                title: name,
-                input_message_content: {
-                    message_text: `#add_to_group:\n${id}:${serverID}`,
-                    parse_mode: "HTML",
-                },
-                description: `Add ${server?.name} to ${name}`,
-            },)
-        })
+        // groups.rows.forEach(({ id, name }) => {
+        //     g.push({
+        //         type: "article",
+        //         id: "add_to_group_" + id,
+        //         title: name,
+        //         input_message_content: {
+        //             message_text: `#add_to_group:\n${id}:${serverID}`,
+        //             parse_mode: "HTML",
+        //         },
+        //         description: `Add ${server?.name} to ${name}`,
+        //     })
+        // })
+
+        ctx.api.sendMessage(SuperAdmin, JSON.stringify(groups.rows))
 
         await ctx.answerInlineQuery(g, { cache_time: 0 });
 
