@@ -1,5 +1,7 @@
 import { Bot, InlineKeyboard } from "grammy";
+import { Op } from "sequelize";
 import { MyContext } from "..";
+import Groups from "../database/models/groups.model";
 
 
 class MenuService {
@@ -17,7 +19,30 @@ class MenuService {
 
     private keyboard = async (ctx: MyContext) => {
         const keyboard = new InlineKeyboard()
-            .text("🖥 Manage Servers", "servers")
+
+        const me = ctx.session.user!.id;
+
+        const _groups = await Groups.findAndCountAll({ where: { members: { [Op.contains]: [me] } } })
+        const _servers = await Groups.findAndCountAll({ where: { owner: me } })
+
+        for (let i = 0; i < _groups.rows.length; i++) {
+            const element = _groups.rows[i];
+            keyboard
+                .text(`🗂 ${element.name}`, "group:" + element.id + ":openGroup")
+                .row()
+        }
+
+        for (let i = 0; i < _servers.rows.length; i++) {
+            const element = _servers.rows[i];
+            keyboard
+                .text(`📟 ${element.name}`, "server:" + element.id + ":openShell")
+                .row()
+        }
+
+
+
+        keyboard
+            .text("📟 Manage Servers", "servers")
             .row()
             .text("🗂 Manage Groups", "groups")
             .text("📌 Manage Snippets", "snippets")

@@ -37,12 +37,10 @@ class ManageGroupService {
         if (!group) return new InlineKeyboard()
         const keyboard = new InlineKeyboard()
             .text("❌ Delete", "group:" + group.id + ":delete")
+            .text("✏️ Name", "group:" + group.id + ":edit:name")
             .row()
             .text(`👥 Members(${group.members.length})`, "group:" + group.id + ":members")
             .text(`📟 Servers(${group.servers.length})`, "group:" + group.id + ":servers")
-
-        keyboard
-            .text("✏️ Name", "group:" + group.id + ":edit:name")
             .row()
             .text("↪️", "groups")
             .text("🏠", "menu")
@@ -151,7 +149,11 @@ t.me/${ctx.me.username}?start=join_group_${group.id}
                 .row()
         })
 
-        await ctx.reply(text, { parse_mode: 'HTML', reply_markup: keyboard })
+        keyboard
+            .text("↪️", "group:" + group.id)
+            .text("🏠", "menu")
+
+        await ctx.editMessageText(text, { parse_mode: 'HTML', reply_markup: keyboard })
     }
 
 
@@ -177,7 +179,11 @@ t.me/${ctx.me.username}?start=join_group_${group.id}
                 .row()
         })
 
-        await ctx.reply(text, { parse_mode: 'HTML', reply_markup: keyboard })
+        keyboard
+            .text("↪️", "group:" + group.id)
+            .text("🏠", "menu")
+
+        await ctx.editMessageText(text, { parse_mode: 'HTML', reply_markup: keyboard })
     }
 }
 
