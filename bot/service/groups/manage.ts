@@ -140,7 +140,7 @@ class ManageGroupService {
 
 <i>For join people to this group, ask theme to search group name in add group</i>`
 
-        ctx.reply("Hello1")
+        ctx.reply("Hello1 rrr")
         const keyboard = new InlineKeyboard()
         // const members = group.members as number[]
         // SELECT * FROM `users` WHERE groups LIKE '"[1,%' or groups LIKE '%,1,%' or groups LIKE '%,1]"' or groups = "[1]"
@@ -149,9 +149,9 @@ class ManageGroupService {
         // _qu.push({ [Op.like]: `%,1]"` })
         // _qu.push({ [Op.like]: `%,1,%` })
         // _qu.push({ [Op.eq]: "[1]" })
-        ctx.reply("Hello2")
+        ctx.reply("Hello2 ttt")
         try {
-            const query = await User.findAndCountAll({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), '2', '$'), 1) })
+            const query = await User.findAndCountAll({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), '2'), 1) })
         } catch (error) {
             ctx.reply(JSON.stringify(error))
         }
