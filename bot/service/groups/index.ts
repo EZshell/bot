@@ -2,6 +2,7 @@ import { Bot, InlineKeyboard } from "grammy";
 import { Op } from "sequelize";
 import { MyContext } from "../..";
 import Groups from "../../database/models/groups.model";
+import Server from "../../database/models/server.model";
 import AddGroupService from "./add";
 import ManageGroupService from "./manage";
 
@@ -24,9 +25,10 @@ class GroupsService {
     private query: { rows: Groups[]; count: number; } | undefined;
     private keyboard = async (ctx: MyContext) => {
         const keyboard = new InlineKeyboard()
-        this.query!.rows.forEach(({ name, id, servers }) => {
+        this.query!.rows.forEach(async ({ name, id, servers }) => {
+            const serverCount = await Server.count({ where: { id: { [Op.in]: servers as number[] } } })
             keyboard
-                .text(`🗂 ${name} (${servers.length})`, "group:" + id)
+                .text(`🗂 ${name} (${serverCount})`, "group:" + id)
                 .row()
         })
 
