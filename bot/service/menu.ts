@@ -2,6 +2,7 @@ import { Bot, InlineKeyboard } from "grammy";
 import { Op } from "sequelize";
 import { MyContext } from "..";
 import Groups from "../database/models/groups.model";
+import Server from "../database/models/server.model";
 
 
 class MenuService {
@@ -30,7 +31,7 @@ class MenuService {
         //         .row()
         // }
 
-        const _servers = await Groups.findAndCountAll({ where: { owner: me } })
+        const _servers = await Server.findAndCountAll({ where: { owner: me } })
         for (let i = 0; i < _servers.rows.length; i++) {
             const element = _servers.rows[i];
             keyboard
@@ -41,7 +42,7 @@ class MenuService {
 
 
         keyboard
-            .text("📟 Manage Servers", "servers")
+            .text("🖥 Manage Servers", "servers")
             .row()
             .text("🗂 Manage Groups", "groups")
             .text("📌 Manage Snippets", "snippets")
