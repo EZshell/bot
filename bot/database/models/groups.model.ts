@@ -4,7 +4,7 @@ import sequelize from "..";
 class Groups extends Model<InferAttributes<Groups>, InferCreationAttributes<Groups>> {
     declare id: CreationOptional<number>;
     declare name: string
-    declare servers: number[] | string;
+    declare servers: number[];
     declare owner: number;
 }
 
