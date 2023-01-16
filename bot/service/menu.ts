@@ -21,17 +21,17 @@ class MenuService {
     private keyboard = async (ctx: MyContext) => {
         const keyboard = new InlineKeyboard()
 
-        const me = ctx.session.user!.id;
+        const g = ctx.session.user?.groups as number[]
+        const _groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: g } } })
+        for (let i = 0; i < _groups.rows.length; i++) {
+            const element = _groups.rows[i];
+            keyboard
+                .text(`🗂 ${element.name}`, "group:" + element.id + ":openGroup")
+                .row()
+        }
 
-        // const _groups = await Groups.findAndCountAll({ where: { members: { [Op.contains]: [me] } } })
-        // for (let i = 0; i < _groups.rows.length; i++) {
-        //     const element = _groups.rows[i];
-        //     keyboard
-        //         .text(`🗂 ${element.name}`, "group:" + element.id + ":openGroup")
-        //         .row()
-        // }
-
-        const _servers = await Server.findAndCountAll({ where: { owner: me } })
+        const s = ctx.session.user?.servers as number[]
+        const _servers = await Server.findAndCountAll({ where: { id: { [Op.in]: s } } })
         for (let i = 0; i < _servers.rows.length; i++) {
             const element = _servers.rows[i];
             keyboard
