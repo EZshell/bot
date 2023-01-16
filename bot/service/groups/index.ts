@@ -25,12 +25,13 @@ class GroupsService {
     private query: { rows: Groups[]; count: number; } | undefined;
     private keyboard = async (ctx: MyContext) => {
         const keyboard = new InlineKeyboard()
-        this.query!.rows.forEach(async ({ name, id, servers }) => {
-            const serverCount = await Server.count({ where: { id: { [Op.in]: servers as number[] } } })
+        for (let i = 0; i < this.query!.rows.length; i++) {
+            const element = this.query!.rows[i];
+            const serverCount = await Server.count({ where: { id: { [Op.in]: element.servers as number[] } } })
             keyboard
-                .text(`🗂 ${name} (${serverCount})`, "group:" + id)
+                .text(`🗂 ${element.name} (${serverCount})`, "group:" + element.id)
                 .row()
-        })
+        }
 
         keyboard
             .switchInlineCurrent("➕ Add New", "groups:add:\nMyGroup")
