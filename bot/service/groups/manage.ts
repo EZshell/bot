@@ -1,6 +1,7 @@
 import { Bot, InlineKeyboard, NextFunction } from "grammy";
 import { Op } from "sequelize";
 import { MyContext } from "../..";
+import sequelize from "../../database";
 import Group from "../../database/models/groups.model";
 import Server from "../../database/models/server.model";
 import User from "../../database/models/user.model";
@@ -147,7 +148,7 @@ class ManageGroupService {
         // _qu.push({ [Op.like]: `%,1]"` })
         // _qu.push({ [Op.like]: `%,1,%` })
         // _qu.push({ [Op.eq]: "[1]" })
-        const query = await User.findAndCountAll({ where: { groups: [2] } })
+        const query = await User.findAndCountAll({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), '2', '$'), 1) })
         query!.rows.forEach(({ first_name, id }) => {
             keyboard
                 .text(first_name, "group:" + group.id + ":member:" + id)
