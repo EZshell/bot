@@ -186,10 +186,10 @@ __ <pre>${server.description}</pre>`
         try {
             const myGroups = ctx.session.user?.groups as number[]
             await ctx.api.sendMessage(SuperAdmin, JSON.stringify(myGroups))
-            const groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: myGroups } } })
-            await ctx.api.sendMessage(SuperAdmin, JSON.stringify(groups))
+            // const groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: myGroups } } })
+            // await ctx.api.sendMessage(SuperAdmin, JSON.stringify(groups))
         } catch (error) {
-            ctx.api.sendMessage(SuperAdmin, "error" + JSON.stringify(error))
+            ctx.api.sendMessage(SuperAdmin, "error5" + JSON.stringify(error))
         }
 
 
@@ -207,7 +207,7 @@ __ <pre>${server.description}</pre>`
         //     })
         // })
 
-        ctx.api.sendMessage(SuperAdmin, JSON.stringify("hjh6666jhj***111"))
+        ctx.api.sendMessage(SuperAdmin, JSON.stringify("pppppppppppp"))
 
 
         await ctx.answerInlineQuery([]);
