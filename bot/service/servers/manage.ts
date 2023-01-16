@@ -31,7 +31,7 @@ class ManageServerService {
             this.response
         )
 
-        this.bot.inlineQuery(/^server:([0-9]+):addToGroup: (.*)$/, this.addToGroup)
+        this.bot.inlineQuery(/^server:([0-9]+):addToGroup:(.*)$/, this.addToGroup)
         this.bot.hears(/#add_to_group:\n([0-9]+):([0-9]+)/, this.addToGroupFinal)
 
 
@@ -65,7 +65,7 @@ class ManageServerService {
             .text("✏️ Port", "server:" + server.id + ":edit:port")
             .text("✏️ Desc", "server:" + server.id + ":edit:desc")
             .row()
-            .switchInlineCurrent("Add to group", "server:" + server.id + ":addToGroup: ")
+            .switchInlineCurrent("Add to group", "server:" + server.id + ":addToGroup:")
             .row()
             .text("↪️", "servers")
             .text("🏠", "menu")
@@ -179,19 +179,19 @@ __ <pre>${server.description}</pre>`
         const serverID = parseInt(match[1]);
         const search = match[2]
         // ctx.reply("HIIIIII")
-        // try {
-        //     const myGroups = ctx.session.user?.groups as number[]
-        //     const groups = await Groups.findAndCountAll({
-        //         where: {
-        //             [Op.and]: [
-        //                 { id: { [Op.in]: myGroups }, },
-        //                 sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('servers'), serverID.toString()), 0)
-        //             ]
-        //         }
-        //     })
-        // } catch (error) {
-        //     ctx.reply(JSON.stringify(error))
-        // }
+        try {
+            const myGroups = ctx.session.user?.groups as number[]
+            const groups = await Groups.findAndCountAll({
+                where: {
+                    [Op.and]: [
+                        { id: { [Op.in]: myGroups }, },
+                        sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('servers'), serverID.toString()), 0)
+                    ]
+                }
+            })
+        } catch (error) {
+            ctx.api.sendMessage(ctx.chat?.id!, JSON.stringify(error))
+        }
 
         // const g = []
 
