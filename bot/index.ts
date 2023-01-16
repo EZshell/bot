@@ -146,8 +146,6 @@ bot.catch((err) => {
 });
 
 
-bot.start()
-
 
 
 run(bot);
