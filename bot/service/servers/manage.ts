@@ -1,4 +1,5 @@
 import { Bot, InlineKeyboard, NextFunction } from "grammy";
+import { InlineQueryResult } from "grammy/out/types";
 import { Op } from "sequelize";
 import { MyContext } from "../..";
 import { SuperAdmin } from "../../config";
@@ -185,7 +186,7 @@ __ <pre>${server.description}</pre>`
         const myGroups = ctx.session.user?.groups as number[]
         const groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: myGroups } } })
 
-        const g = []
+        const g: InlineQueryResult[] = []
         groups.rows.forEach(({ id, name }) => {
             g.push({
                 type: "article",
