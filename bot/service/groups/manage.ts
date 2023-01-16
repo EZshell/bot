@@ -136,7 +136,7 @@ class ManageGroupService {
         if (!group) return await ctx.answerCallbackQuery("Not Found")
         await ctx.answerCallbackQuery()
 
-        const text = `3You can see all <b>👥 Members</b> of this group & manage them.
+        const text = `4You can see all <b>👥 Members</b> of this group & manage them.
 
 <i>For join people to this group, ask theme to search group name in add group</i>`
 
@@ -149,6 +149,8 @@ class ManageGroupService {
         // _qu.push({ [Op.like]: `%,1,%` })
         // _qu.push({ [Op.eq]: "[1]" })
         const query = await User.findAndCountAll({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), '2', '$'), 1) })
+        ctx.reply("Hello")
+        ctx.reply(JSON.stringify(query))
         query!.rows.forEach(({ first_name, id }) => {
             keyboard
                 .text(first_name, "group:" + group.id + ":member:" + id)
