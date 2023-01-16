@@ -40,7 +40,7 @@ class ManageGroupService {
         if (!group) return new InlineKeyboard()
 
         const membersCount = await User.count({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), group.id), 1) })
-        const serversCount = await Server.findAndCountAll({ where: { id: { [Op.in]: group.servers as number[] } } })
+        const serversCount = await Server.count({ where: { id: { [Op.in]: group.servers as number[] } } })
 
         const keyboard = new InlineKeyboard()
             .text("❌ Delete", "group:" + group.id + ":delete")
@@ -203,18 +203,19 @@ class ManageGroupService {
         await ctx.answerCallbackQuery()
 
 
-
-        const text = `🗂 <b>${group.name}</b>
-🔻 List of your servers:\nTotal: ${group.servers.length}`
-
         const keyboard = new InlineKeyboard()
-        const servers = group.servers as number[]
-        const query = await Server.findAndCountAll({ where: { id: { [Op.in]: servers } } })
+        const query = await Server.findAndCountAll({ where: { id: { [Op.in]: group.servers as number[] } } })
         query!.rows.forEach(({ name, id }) => {
             keyboard
                 .text(`📟 ${name}`, "server:" + id + ":openShell")
                 .row()
         })
+
+
+        const text = `🗂 <b>${group.name}</b>
+🔻 List of servers:\n<b>Total:</b> ${query.count}`
+
+
 
         keyboard
             .text("🏠", "menu")

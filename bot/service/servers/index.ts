@@ -40,12 +40,11 @@ class ServersService {
     }
 
     private text = async (ctx: MyContext) => {
-        return `🔻 List of your servers:\nTotal: ${this.query!.count}`
+        return `🔻 List of your servers:\n<b>Total:</b> ${this.query!.count}`
     }
 
     private response = async (ctx: MyContext) => {
-        const servers = ctx.session.user?.servers as number[]
-        this.query = await Server.findAndCountAll({ where: { id: { [Op.in]: servers } } })
+        this.query = await Server.findAndCountAll({ where: { id: { [Op.in]: ctx.session.user?.servers as number[] } } })
 
         if (ctx.callbackQuery) {
             await ctx.editMessageText(

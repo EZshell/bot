@@ -39,12 +39,11 @@ class SnippetsService {
     }
 
     private text = async (ctx: MyContext) => {
-        return `🔻 List of your snippets:\nTotal: ${this.query!.count}`
+        return `🔻 List of your snippets:\n<b>Total:</b> ${this.query!.count}`
     }
 
     private response = async (ctx: MyContext) => {
-        const snippets = ctx.session.user?.snippets as number[]
-        this.query = await Snippets.findAndCountAll({ where: { id: { [Op.in]: snippets } } })
+        this.query = await Snippets.findAndCountAll({ where: { id: { [Op.in]: ctx.session.user?.snippets as number[] } } })
 
         if (ctx.callbackQuery) {
             await ctx.editMessageText(

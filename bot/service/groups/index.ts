@@ -39,7 +39,7 @@ class GroupsService {
     }
 
     private text = async (ctx: MyContext) => {
-        return `🔻 List of your groups:\nTotal: ${this.query!.count}`
+        return `🔻 List of your groups:\n<b>Total:</b> ${this.query!.count}`
     }
 
     private response = async (ctx: MyContext) => {
