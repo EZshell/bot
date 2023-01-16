@@ -176,7 +176,7 @@ __ <pre>${server.description}</pre>`
     private addToGroup = async (ctx: MyContext) => {
         const match = ctx.match!
         const serverID = parseInt(match[1]);
-
+        ctx.reply("HIIIIII")
         const myGroups = ctx.session.user?.groups as number[]
         try {
             const groups = await Groups.findAndCountAll({
