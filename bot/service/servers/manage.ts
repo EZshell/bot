@@ -197,6 +197,8 @@ __ <pre>${server.description}</pre>`
                     ]
                 }
             })
+            ctx.api.sendMessage(SuperAdmin, JSON.stringify(groups))
+
         } catch (error) {
             ctx.api.sendMessage(SuperAdmin, JSON.stringify(error))
         }
