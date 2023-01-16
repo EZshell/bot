@@ -202,10 +202,7 @@ __ <pre>${server.description}</pre>`
             })
         })
 
-        ctx.api.sendMessage(SuperAdmin, JSON.stringify("pppppppppppp"))
-
-
-        await ctx.answerInlineQuery([]);
+        await ctx.answerInlineQuery(g, { cache_time: 0 });
     }
 
     private async addToGroupFinal(ctx: MyContext, _next: NextFunction) {
