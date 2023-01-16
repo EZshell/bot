@@ -135,7 +135,7 @@ class ManageGroupService {
         if (!group) return await ctx.answerCallbackQuery("Not Found")
         await ctx.answerCallbackQuery()
 
-        const text = `You can see all <b>👥 Members</b> of this group & manage them.
+        const text = `2You can see all <b>👥 Members</b> of this group & manage them.
 
 <i>For join people to this group, ask theme to search group name in add group</i>`
 
@@ -147,7 +147,7 @@ class ManageGroupService {
         // _qu.push({ [Op.like]: `%,1]"` })
         // _qu.push({ [Op.like]: `%,1,%` })
         // _qu.push({ [Op.eq]: "[1]" })
-        const query = await User.findAndCountAll({ where: { groups: "[1]" } })
+        const query = await User.findAndCountAll({ where: { groups: "[2]" } })
         query!.rows.forEach(({ first_name, id }) => {
             keyboard
                 .text(first_name, "group:" + group.id + ":member:" + id)
