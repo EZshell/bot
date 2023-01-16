@@ -168,7 +168,7 @@ t.me/${ctx.me.username}?start=join_group_${group.id}
 
         const text = `You can see all <b>📟 Servers</b> of this group & manage them.
 
-<i>For add server to this group, go to server setting</i>`
+<i>For add server to this group, go to server management</i>`
 
         const keyboard = new InlineKeyboard()
         const servers = group.servers as number[]
