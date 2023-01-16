@@ -35,7 +35,7 @@ class MenuService {
         for (let i = 0; i < _servers.rows.length; i++) {
             const element = _servers.rows[i];
             keyboard
-                .text(`📟6 ${element.name}`, "server:" + element.id + ":openShell")
+                .text(`📟 ${element.name}`, "server:" + element.id + ":openShell")
                 .row()
         }
 
