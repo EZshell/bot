@@ -1,6 +1,7 @@
 import { Bot, InlineKeyboard, NextFunction } from "grammy";
-import { Op } from "sequelize";
+import { CITEXT, Op } from "sequelize";
 import { MyContext } from "../..";
+import { SuperAdmin } from "../../config";
 import sequelize from "../../database";
 import Group from "../../database/models/groups.model";
 import Server from "../../database/models/server.model";
@@ -39,15 +40,19 @@ class ManageGroupService {
     private keyboard = async (group: Group | null) => {
         if (!group) return new InlineKeyboard()
 
-        const membersCount = await User.count({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), group.id), 1) })
-        const serversCount = await Server.count({ where: { id: { [Op.in]: group.servers as number[] } } })
+        try {
+            const membersCount = await User.count({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), group.id), 1) })
+            const serversCount = await Server.count({ where: { id: { [Op.in]: group.servers as number[] } } })
+        } catch (error) {
+            this.bot.api.sendMessage(SuperAdmin, JSON.stringify(error))
+        }
 
         const keyboard = new InlineKeyboard()
             .text("❌ Delete", "group:" + group.id + ":delete")
             .text("✏️ Name", "group:" + group.id + ":edit:name")
             .row()
-            .text(`👥 Members (${membersCount})`, "group:" + group.id + ":members")
-            .text(`📟 Servers (${serversCount})`, "group:" + group.id + ":servers")
+            .text(`👥 Members (${2})`, "group:" + group.id + ":members")
+            .text(`📟 Servers (${2})`, "group:" + group.id + ":servers")
             .row()
             .text("↪️", "groups")
             .text("🏠", "menu")
