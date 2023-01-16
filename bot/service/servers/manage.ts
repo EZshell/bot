@@ -183,10 +183,10 @@ __ <pre>${server.description}</pre>`
 
         const search = match[2]
 
-        const myGroups = ctx.session.user?.groups as number[]
-        const groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: myGroups } } })
+        // const myGroups = ctx.session.user?.groups as number[]
+        // const groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: myGroups } } })
 
-        const g: InlineQueryResult[] = []
+        // const g: InlineQueryResult[] = []
         // groups.rows.forEach(({ id, name }) => {
         //     g.push({
         //         type: "article",
@@ -200,10 +200,9 @@ __ <pre>${server.description}</pre>`
         //     })
         // })
 
-        ctx.api.sendMessage(SuperAdmin, JSON.stringify(groups.rows))
+        ctx.api.sendMessage(SuperAdmin, JSON.stringify("hjhjhj***"))
 
-        await ctx.answerInlineQuery(g, { cache_time: 0 });
-
+        await ctx.answerInlineQuery([]);
     }
 
     private async addToGroupFinal(ctx: MyContext, _next: NextFunction) {
