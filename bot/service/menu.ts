@@ -27,8 +27,9 @@ class MenuService {
         const _groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: g } } })
         for (let i = 0; i < _groups.rows.length; i++) {
             const element = _groups.rows[i];
+            const serverCount = await Server.count({ where: { id: { [Op.in]: element.servers as number[] } } })
             keyboard
-                .text(`🗂 ${element.name} (${element.servers.length})`, "group:" + element.id + ":openGroup")
+                .text(`🗂 ${element.name} (${serverCount})`, "group:" + element.id + ":openGroup")
                 .row()
 
             const __s = element.servers as number[]
