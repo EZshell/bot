@@ -178,44 +178,34 @@ __ <pre>${server.description}</pre>`
     private addToGroup = async (ctx: MyContext) => {
         const match = ctx.match!
         const serverID = parseInt(match[1]);
+        const server = await Server.findByPk(serverID)
+
         const search = match[2]
 
-        try {
-            const myGroups = ctx.session.user?.groups as number[]
-            const groups = await Groups.findAndCountAll({
-                where: {
-                    [Op.and]: [
-                        { id: { [Op.in]: myGroups }, },
-                        sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('servers'), serverID.toString()), 0)
-                    ]
-                }
-            })
-        } catch (error) {
-            ctx.api.sendMessage(SuperAdmin, JSON.stringify(error))
-        }
+        const myGroups = ctx.session.user?.groups as number[]
+        const groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: myGroups } } })
 
-        // const g = []
-
-
-
-        await ctx.answerInlineQuery([
-            {
+        const g = []
+        groups.rows.forEach(({ id, name }) => {
+            g.push({
                 type: "article",
-                id: "add_to_group_",
-                title: "Group 1",
+                id: "add_to_group_" + id,
+                title: name,
                 input_message_content: {
-                    message_text: `#add_to_group:\n2:${serverID}`,
+                    message_text: `#add_to_group:\n${id}:${serverID}`,
                     parse_mode: "HTML",
                 },
-                description: `gggggggggggggg`,
-            },
-        ]);
+                description: `Add ${server?.name} to ${name}`,
+            },)
+        })
+
+        await ctx.answerInlineQuery(g, { cache_time: 0 });
 
     }
 
     private async addToGroupFinal(ctx: MyContext, _next: NextFunction) {
         if (!ctx!.message!.via_bot) return await _next()
-        else if (ctx.match?.length !== 2) {
+        else if (ctx.match?.length !== 3) {
             await ctx.reply("❌ Getting data error", { reply_to_message_id: ctx.message?.message_id })
         }
         else {
