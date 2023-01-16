@@ -58,7 +58,7 @@ class AddGroupService {
             const mch = ctx.match!
             const d = await Groups.create({
                 name: mch[1],
-                members: [ctx.session.user!.id!],
+                // members: [ctx.session.user!.id!],
                 servers: [],
                 owner: ctx.session.user!.id!,
             })

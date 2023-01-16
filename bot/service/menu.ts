@@ -23,13 +23,13 @@ class MenuService {
 
         const me = ctx.session.user!.id;
 
-        // const _groups = await Groups.findAndCountAll({ where: { members: { [Op.contains]: [me] } } })
-        // for (let i = 0; i < _groups.rows.length; i++) {
-        //     const element = _groups.rows[i];
-        //     keyboard
-        //         .text(`🗂 ${element.name}`, "group:" + element.id + ":openGroup")
-        //         .row()
-        // }
+        const _groups = await Groups.findAndCountAll({ where: { members: { [Op.contains]: [me] } } })
+        for (let i = 0; i < _groups.rows.length; i++) {
+            const element = _groups.rows[i];
+            keyboard
+                .text(`🗂 ${element.name}`, "group:" + element.id + ":openGroup")
+                .row()
+        }
 
         const _servers = await Server.findAndCountAll({ where: { owner: me } })
         for (let i = 0; i < _servers.rows.length; i++) {

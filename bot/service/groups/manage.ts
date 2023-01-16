@@ -39,7 +39,7 @@ class ManageGroupService {
             .text("❌ Delete", "group:" + group.id + ":delete")
             .text("✏️ Name", "group:" + group.id + ":edit:name")
             .row()
-            .text(`👥 Members(${group.members.length})`, "group:" + group.id + ":members")
+            .text(`👥 Members()`, "group:" + group.id + ":members")
             .text(`📟 Servers(${group.servers.length})`, "group:" + group.id + ":servers")
             .row()
             .text("↪️", "groups")
@@ -141,8 +141,14 @@ t.me/${ctx.me.username}?start=join_group_${group.id}
 `
 
         const keyboard = new InlineKeyboard()
-        const members = group.members as number[]
-        const query = await User.findAndCountAll({ where: { id: { [Op.in]: members } } })
+        // const members = group.members as number[]
+        // SELECT * FROM `users` WHERE groups LIKE '"[1,%' or groups LIKE '%,1,%' or groups LIKE '%,1]"' or groups = "[1]"
+        const _qu = []
+        _qu.push({ [Op.like]: `"[1,%` })
+        _qu.push({ [Op.like]: `%,1]"` })
+        _qu.push({ [Op.like]: `%,1,%` })
+        _qu.push({ [Op.eq]: "[1]" })
+        const query = await User.findAndCountAll({ where: { groups: { [Op.or]: _qu } } })
         query!.rows.forEach(({ first_name, id }) => {
             keyboard
                 .text(first_name, "group:" + group.id + ":member:" + id)
