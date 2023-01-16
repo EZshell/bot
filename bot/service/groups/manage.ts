@@ -150,14 +150,17 @@ class ManageGroupService {
         // _qu.push({ [Op.like]: `%,1,%` })
         // _qu.push({ [Op.eq]: "[1]" })
         ctx.reply("Hello2")
-        const query = await User.findAndCountAll({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), '2', '$'), 1) })
-        ctx.reply("Hello3")
-        ctx.reply(JSON.stringify(query))
-        query!.rows.forEach(({ first_name, id }) => {
-            keyboard
-                .text(first_name, "group:" + group.id + ":member:" + id)
-                .row()
-        })
+        try {
+            const query = await User.findAndCountAll({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), '2', '$'), 1) })
+        } catch (error) {
+            ctx.reply(JSON.stringify(error))
+        }
+
+        // query!.rows.forEach(({ first_name, id }) => {
+        //     keyboard
+        //         .text(first_name, "group:" + group.id + ":member:" + id)
+        //         .row()
+        // })
 
         keyboard
             .text("↪️", "group:" + group.id)
