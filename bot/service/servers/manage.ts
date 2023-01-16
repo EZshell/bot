@@ -1,6 +1,7 @@
 import { Bot, InlineKeyboard, NextFunction } from "grammy";
 import { Op } from "sequelize";
 import { MyContext } from "../..";
+import { SuperAdmin } from "../../config";
 import sequelize from "../../database";
 import Groups from "../../database/models/groups.model";
 import Server from "../../database/models/server.model";
@@ -178,7 +179,7 @@ __ <pre>${server.description}</pre>`
         const match = ctx.match!
         const serverID = parseInt(match[1]);
         const search = match[2]
-        // ctx.reply("HIIIIII")
+
         try {
             const myGroups = ctx.session.user?.groups as number[]
             const groups = await Groups.findAndCountAll({
@@ -190,7 +191,7 @@ __ <pre>${server.description}</pre>`
                 }
             })
         } catch (error) {
-            ctx.api.sendMessage(ctx.chat?.id!, JSON.stringify(error))
+            ctx.api.sendMessage(SuperAdmin, JSON.stringify(error))
         }
 
         // const g = []
