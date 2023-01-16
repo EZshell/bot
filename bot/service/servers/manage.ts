@@ -183,8 +183,14 @@ __ <pre>${server.description}</pre>`
 
         const search = match[2]
 
-        const myGroups = ctx.session.user?.groups as number[]
-        const groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: myGroups } } })
+        try {
+            const myGroups = ctx.session.user?.groups as number[]
+            const groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: myGroups } } })
+            ctx.api.sendMessage(SuperAdmin, JSON.stringify(groups))
+        } catch (error) {
+            ctx.api.sendMessage(SuperAdmin, JSON.stringify(error))
+        }
+
 
         // const g: InlineQueryResult[] = []
         // groups.rows.forEach(({ id, name }) => {
@@ -201,7 +207,7 @@ __ <pre>${server.description}</pre>`
         // })
 
         ctx.api.sendMessage(SuperAdmin, JSON.stringify("hjhjhj***111"))
-        ctx.api.sendMessage(SuperAdmin, JSON.stringify(groups))
+
 
         await ctx.answerInlineQuery([]);
     }
