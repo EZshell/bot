@@ -185,10 +185,11 @@ __ <pre>${server.description}</pre>`
 
         try {
             const myGroups = ctx.session.user?.groups as number[]
+            ctx.api.sendMessage(SuperAdmin, JSON.stringify(myGroups))
             const groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: myGroups } } })
             ctx.api.sendMessage(SuperAdmin, JSON.stringify(groups))
         } catch (error) {
-            ctx.api.sendMessage(SuperAdmin, JSON.stringify(error))
+            ctx.api.sendMessage(SuperAdmin, "error" + JSON.stringify(error))
         }
 
 
