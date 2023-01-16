@@ -174,22 +174,23 @@ __ <pre>${server.description}</pre>`
 
 
     private addToGroup = async (ctx: MyContext) => {
-        const match = ctx.match!
-        const serverID = parseInt(match[1]);
-        ctx.reply("HIIIIII")
-        const myGroups = ctx.session.user?.groups as number[]
-        try {
-            const groups = await Groups.findAndCountAll({
-                where: {
-                    [Op.and]: [
-                        { id: { [Op.in]: myGroups }, },
-                        sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('servers'), serverID.toString()), 0)
-                    ]
-                }
-            })
-        } catch (error) {
-            ctx.reply(JSON.stringify(error))
-        }
+        // const match = ctx.match!
+        // const serverID = parseInt(match[1]);
+        // ctx.reply("HIIIIII")
+        // try {
+        //     const myGroups = ctx.session.user?.groups as number[]
+
+        //     const groups = await Groups.findAndCountAll({
+        //         where: {
+        //             [Op.and]: [
+        //                 { id: { [Op.in]: myGroups }, },
+        //                 sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('servers'), serverID.toString()), 0)
+        //             ]
+        //         }
+        //     })
+        // } catch (error) {
+        //     ctx.reply(JSON.stringify(error))
+        // }
 
         // this.server = {
         //     name: match[1],
@@ -201,19 +202,21 @@ __ <pre>${server.description}</pre>`
         // }
 
         // const g = []
-        // {
-        //     type: "article",
-        //     id: "group",
-        //     title: this.server.name,
-        //     input_message_content: {
-        //         message_text: await this.text(ctx),
-        //         parse_mode: "HTML",
-        //     },
-        //     description: `${this.server.username}@${this.server.ip} -p ${this.server.port} \n` + `${this.server.description || ""}`,
-        // },
 
 
-        await ctx.answerInlineQuery([], { cache_time: 0, });
+
+        await ctx.answerInlineQuery([
+            {
+                type: "article",
+                id: "group",
+                title: "Group 1",
+                input_message_content: {
+                    message_text: "gfhfgjfgjfgjfgj",
+                    parse_mode: "HTML",
+                },
+                description: `gggggggggggggg`,
+            },
+        ]);
 
     }
 
