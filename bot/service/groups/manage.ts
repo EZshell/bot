@@ -153,9 +153,9 @@ class ManageGroupService {
         const query = await User.findAndCountAll({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), group.id.toString()), 1) })
 
         const text = `You can see all <b>👥 Members</b> of this group & manage them.
-        <b>Total:</b> ${query!.count}
+<b>Total:</b> ${query!.count}
 
-        <i>For join people to this group, ask theme to search group name in add group</i>`
+ℹ️ <i>For join people to this group, ask theme to search group name in add group</i>`
         const keyboard = new InlineKeyboard()
 
         query!.rows.forEach(({ first_name, id }) => {
@@ -187,7 +187,7 @@ class ManageGroupService {
         const text = `You can see all <b>📟 Servers</b> of this group & manage them.
 <b>Total:</b> ${query!.count}
 
-<i>For add server to this group, go to server management</i>`
+ℹ️ <i>For add server to this group, go to server management</i>`
 
         const keyboard = new InlineKeyboard()
         query!.rows.forEach(({ name, id }) => {

@@ -1,6 +1,7 @@
 import { Bot, InlineKeyboard } from "grammy";
 import { Op } from "sequelize";
 import { MyContext } from "../..";
+import Groups from "../../database/models/groups.model";
 import Server from "../../database/models/server.model";
 import AddServerService from "./add";
 import ManageServerService from "./manage";
@@ -44,7 +45,19 @@ class ServersService {
     }
 
     private response = async (ctx: MyContext) => {
-        this.query = await Server.findAndCountAll({ where: { id: { [Op.in]: ctx.session.user?.servers as number[] } } })
+
+        const s = ctx.session.user?.servers as number[]
+        const g = ctx.session.user?.groups as number[]
+
+        const _groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: g } } })
+        for (let i = 0; i < _groups.rows.length; i++) {
+            const __s = _groups.rows[i].servers as number[]
+            __s.forEach((v) => s.push(v))
+        }
+
+
+        this.query = await Server.findAndCountAll({ where: { id: { [Op.in]: s } } })
+
 
         if (ctx.callbackQuery) {
             await ctx.editMessageText(

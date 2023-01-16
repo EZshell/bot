@@ -22,8 +22,8 @@ class MenuService {
         const keyboard = new InlineKeyboard()
 
         const s = ctx.session.user?.servers as number[]
-
         const g = ctx.session.user?.groups as number[]
+
         const _groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: g } } })
         for (let i = 0; i < _groups.rows.length; i++) {
             const element = _groups.rows[i];
