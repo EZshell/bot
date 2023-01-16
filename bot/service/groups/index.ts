@@ -24,9 +24,9 @@ class GroupsService {
     private query: { rows: Groups[]; count: number; } | undefined;
     private keyboard = async (ctx: MyContext) => {
         const keyboard = new InlineKeyboard()
-        this.query!.rows.forEach(({ name, id }) => {
+        this.query!.rows.forEach(({ name, id, servers }) => {
             keyboard
-                .text("🗂 " + name, "group:" + id)
+                .text(`🗂 ${name} (${servers.length})`, "group:" + id)
                 .row()
         })
 

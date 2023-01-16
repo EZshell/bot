@@ -28,7 +28,7 @@ class MenuService {
         for (let i = 0; i < _groups.rows.length; i++) {
             const element = _groups.rows[i];
             keyboard
-                .text(`🗂 ${element.name}`, "group:" + element.id + ":openGroup")
+                .text(`🗂 ${element.name} (${element.servers.length})`, "group:" + element.id + ":openGroup")
                 .row()
 
             const __s = element.servers as number[]
@@ -47,9 +47,9 @@ class MenuService {
 
 
         keyboard
-            .text("🖥 Manage Servers", "servers")
+            .text(`🖥 Manage Servers`, "servers")
             .row()
-            .text("🗂 Manage Groups", "groups")
+            .text(`🗂 Manage Groups`, "groups")
             .text("📌 Manage Snippets", "snippets")
             .row()
             .url("💬 Support", "EZshellAdmin.t.me")
