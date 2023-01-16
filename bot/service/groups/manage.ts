@@ -135,7 +135,7 @@ class ManageGroupService {
         if (!group) return await ctx.answerCallbackQuery("Not Found")
         await ctx.answerCallbackQuery()
 
-        const text = `2You can see all <b>👥 Members</b> of this group & manage them.
+        const text = `3You can see all <b>👥 Members</b> of this group & manage them.
 
 <i>For join people to this group, ask theme to search group name in add group</i>`
 
