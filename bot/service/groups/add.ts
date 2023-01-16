@@ -61,11 +61,11 @@ class AddGroupService {
                 servers: [],
                 owner: ctx.session.user!.id!,
             })
-            // const groups = ctx.session.user!.groups as number[]
-            // groups.push(d.id)
-            // await ctx.reply(JSON.stringify(groups))
-            const u = ctx.session.user!.update({ groups: [1, 5, 6] })
-            await ctx.reply(";mmmm;")
+            const groups = ctx.session.user!.groups as number[]
+            groups.push(d.id)
+            await ctx.reply(JSON.stringify(groups))
+            const u = ctx.session.user!.update({ groups: JSON.parse(JSON.stringify(groups)) })
+            await ctx.reply(";ppp;")
             await ctx.reply(JSON.stringify(u))
             await ctx.reply("✅ Group added:\n/groups", { reply_to_message_id: ctx.message?.message_id })
         }
