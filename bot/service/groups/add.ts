@@ -64,8 +64,8 @@ class AddGroupService {
             const groups = ctx.session.user!.groups as number[]
             groups.push(d.id)
             await ctx.reply(JSON.stringify(groups))
-            const u = await ctx.session.user!.update({ groups: groups })
-            await ctx.reply(";:;")
+            const u = ctx.session.user!.update({ groups: JSON.stringify(groups) })
+            await ctx.reply(";uuu;")
             await ctx.reply(JSON.stringify(u))
             await ctx.reply("✅ Group added:\n/groups", { reply_to_message_id: ctx.message?.message_id })
         }
