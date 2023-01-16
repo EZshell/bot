@@ -137,10 +137,7 @@ class ManageGroupService {
 
         const text = `You can see all <b>👥 Members</b> of this group & manage them.
 
-<i>For add people to this group, send bellow link for theme & ask to open it</i>
-t.me/${ctx.me.username}?start=join_group_${group.id}
-<i>After that you must confirm</i>
-`
+<i>For join people to this group, ask theme to search group name in add group</i>`
 
         const keyboard = new InlineKeyboard()
         // const members = group.members as number[]
@@ -150,7 +147,7 @@ t.me/${ctx.me.username}?start=join_group_${group.id}
         // _qu.push({ [Op.like]: `%,1]"` })
         // _qu.push({ [Op.like]: `%,1,%` })
         // _qu.push({ [Op.eq]: "[1]" })
-        const query = await User.findAndCountAll({ where: { groups: { [Op.eq]: "[1]" } } })
+        const query = await User.findAndCountAll({ where: { groups: "[1]" } })
         query!.rows.forEach(({ first_name, id }) => {
             keyboard
                 .text(first_name, "group:" + group.id + ":member:" + id)
