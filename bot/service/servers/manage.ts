@@ -31,7 +31,7 @@ class ManageServerService {
             this.response
         )
 
-        this.bot.inlineQuery(/^server:([0-9]+):addToGroup$/, this.addToGroup)
+        this.bot.inlineQuery(/^server:([0-9]+):addToGroup: (.*)$/, this.addToGroup)
 
 
         new ShellService(this.bot).run()
@@ -64,7 +64,7 @@ class ManageServerService {
             .text("✏️ Port", "server:" + server.id + ":edit:port")
             .text("✏️ Desc", "server:" + server.id + ":edit:desc")
             .row()
-            .switchInlineCurrent("Add to group", "server:" + server.id + ":addToGroup")
+            .switchInlineCurrent("Add to group", "server:" + server.id + ":addToGroup: ")
             .row()
             .text("↪️", "servers")
             .text("🏠", "menu")
@@ -174,12 +174,12 @@ __ <pre>${server.description}</pre>`
 
 
     private addToGroup = async (ctx: MyContext) => {
-        // const match = ctx.match!
-        // const serverID = parseInt(match[1]);
+        const match = ctx.match!
+        const serverID = parseInt(match[1]);
+        const search = match[2]
         // ctx.reply("HIIIIII")
         // try {
         //     const myGroups = ctx.session.user?.groups as number[]
-
         //     const groups = await Groups.findAndCountAll({
         //         where: {
         //             [Op.and]: [
