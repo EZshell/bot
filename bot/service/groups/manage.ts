@@ -28,6 +28,8 @@ class ManageGroupService {
 
         this.bot.callbackQuery(/^group:([0-9]+):members$/, this.groupMembers)
         this.bot.callbackQuery(/^group:([0-9]+):servers$/, this.groupServers)
+
+        this.bot.callbackQuery(/^group:([0-9]+):openGroup$/, this.openGroup)
     }
 
 
@@ -187,6 +189,35 @@ t.me/${ctx.me.username}?start=join_group_${group.id}
 
         keyboard
             .text("↪️", "group:" + group.id)
+            .text("🏠", "menu")
+
+        await ctx.editMessageText(text, { parse_mode: 'HTML', reply_markup: keyboard })
+    }
+
+
+    private async openGroup(ctx: MyContext) {
+        const match = ctx.match!
+        const groupID = parseInt(match[1]);
+
+        const group = await Group.findByPk(groupID)
+        if (!group) return await ctx.answerCallbackQuery("Not Found")
+        await ctx.answerCallbackQuery()
+
+
+
+        const text = `🗂 <b>${group.name}</b>
+🔻 List of your servers:\nTotal: ${group.servers.length}`
+
+        const keyboard = new InlineKeyboard()
+        const servers = group.servers as number[]
+        const query = await Server.findAndCountAll({ where: { id: { [Op.in]: servers } } })
+        query!.rows.forEach(({ name, id }) => {
+            keyboard
+                .text(`📟 ${name}`, "server:" + id + ":openShell")
+                .row()
+        })
+
+        keyboard
             .text("🏠", "menu")
 
         await ctx.editMessageText(text, { parse_mode: 'HTML', reply_markup: keyboard })
