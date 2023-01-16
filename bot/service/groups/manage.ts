@@ -38,12 +38,16 @@ class ManageGroupService {
 
     private keyboard = async (group: Group | null) => {
         if (!group) return new InlineKeyboard()
+
+        const membersCount = await User.count({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), group.id), 1) })
+        const serversCount = await Server.findAndCountAll({ where: { id: { [Op.in]: group.servers as number[] } } })
+
         const keyboard = new InlineKeyboard()
             .text("❌ Delete", "group:" + group.id + ":delete")
             .text("✏️ Name", "group:" + group.id + ":edit:name")
             .row()
-            .text(`👥 Members ()`, "group:" + group.id + ":members")
-            .text(`📟 Servers (${group.servers.length})`, "group:" + group.id + ":servers")
+            .text(`👥 Members (${membersCount})`, "group:" + group.id + ":members")
+            .text(`📟 Servers (${serversCount})`, "group:" + group.id + ":servers")
             .row()
             .text("↪️", "groups")
             .text("🏠", "menu")
@@ -136,7 +140,7 @@ class ManageGroupService {
         if (!group) return await ctx.answerCallbackQuery("Not Found")
         await ctx.answerCallbackQuery()
 
-        const query = await User.findAndCountAll({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), '2'), 1) })
+        const query = await User.findAndCountAll({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), group.id), 1) })
 
         const text = `You can see all <b>👥 Members</b> of this group & manage them.
 <b>Total:</b> ${query!.count}
