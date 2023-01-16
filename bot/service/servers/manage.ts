@@ -6,6 +6,7 @@ import { SuperAdmin } from "../../config";
 import sequelize from "../../database";
 import Groups from "../../database/models/groups.model";
 import Server from "../../database/models/server.model";
+import User from "../../database/models/user.model";
 import ShellService from "../shell/shell";
 
 
@@ -184,12 +185,13 @@ __ <pre>${server.description}</pre>`
         const search = match[2]
 
         try {
-            const myGroups = ctx.session.user?.groups as number[]
+            const me = await User.findByPk(ctx.from!.id)
+            const myGroups = me!.groups as number[]
             await ctx.api.sendMessage(SuperAdmin, JSON.stringify(myGroups))
-            // const groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: myGroups } } })
-            // await ctx.api.sendMessage(SuperAdmin, JSON.stringify(groups))
+            const groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: myGroups } } })
+            await ctx.api.sendMessage(SuperAdmin, JSON.stringify(groups))
         } catch (error) {
-            ctx.api.sendMessage(SuperAdmin, "error5" + JSON.stringify(error))
+            ctx.api.sendMessage(SuperAdmin, "error88" + JSON.stringify(error))
         }
 
 
