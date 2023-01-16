@@ -32,6 +32,7 @@ class ManageServerService {
         )
 
         this.bot.inlineQuery(/^server:([0-9]+):addToGroup: (.*)$/, this.addToGroup)
+        this.bot.hears(/#add_to_group:\n([0-9]+):([0-9]+)/, this.addToGroupFinal)
 
 
         new ShellService(this.bot).run()
@@ -192,15 +193,6 @@ __ <pre>${server.description}</pre>`
         //     ctx.reply(JSON.stringify(error))
         // }
 
-        // this.server = {
-        //     name: match[1],
-        //     description: match[5],
-        //     ip: match[2],
-        //     username: match[3],
-        //     password: match[4],
-        //     port: 22,
-        // }
-
         // const g = []
 
 
@@ -208,16 +200,37 @@ __ <pre>${server.description}</pre>`
         await ctx.answerInlineQuery([
             {
                 type: "article",
-                id: "group",
+                id: "add_to_group_",
                 title: "Group 1",
                 input_message_content: {
-                    message_text: "gfhfgjfgjfgjfgj",
+                    message_text: `#add_to_group:\n2:${serverID}`,
                     parse_mode: "HTML",
                 },
                 description: `gggggggggggggg`,
             },
         ]);
 
+    }
+
+    private async addToGroupFinal(ctx: MyContext, _next: NextFunction) {
+        if (!ctx!.message!.via_bot) return await _next()
+        else if (ctx.match?.length !== 2) {
+            await ctx.reply("❌ Getting data error", { reply_to_message_id: ctx.message?.message_id })
+        }
+        else {
+            const mch = ctx.match!
+            const gID = parseInt(mch[1])
+            const sID = parseInt(mch[2])
+            const group = await Groups.findByPk(gID)
+            const server = await Server.findByPk(sID)
+            if (!group || !server) {
+                await ctx.reply("❌ Getting data error", { reply_to_message_id: ctx.message?.message_id })
+                return
+            }
+            const servers = group.servers as number[]
+            servers.push(sID)
+            await group.save()
+        }
     }
 
 
