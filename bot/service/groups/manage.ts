@@ -136,20 +136,13 @@ class ManageGroupService {
         if (!group) return await ctx.answerCallbackQuery("Not Found")
         await ctx.answerCallbackQuery()
 
-        const text = `4You can see all <b>👥 Members</b> of this group & manage them.
+        const query = await User.findAndCountAll({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), '2'), 1) })
+
+        const text = `You can see all <b>👥 Members</b> of this group & manage them.
+<b>Total:</b> ${query!.count}
 
 <i>For join people to this group, ask theme to search group name in add group</i>`
-
-        ctx.reply("Hello1 mmm")
         const keyboard = new InlineKeyboard()
-        // const members = group.members as number[]
-        // SELECT * FROM `users` WHERE groups LIKE '"[1,%' or groups LIKE '%,1,%' or groups LIKE '%,1]"' or groups = "[1]"
-        // const _qu = []
-        // _qu.push({ [Op.like]: `"[1,%` })
-        // _qu.push({ [Op.like]: `%,1]"` })
-        // _qu.push({ [Op.like]: `%,1,%` })
-        // _qu.push({ [Op.eq]: "[1]" })
-        const query = await User.findAndCountAll({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), '2'), 1) })
 
         query!.rows.forEach(({ first_name, id }) => {
             keyboard
@@ -174,13 +167,15 @@ class ManageGroupService {
         if (!group) return await ctx.answerCallbackQuery("Not Found")
         await ctx.answerCallbackQuery()
 
+        const servers = group.servers as number[]
+        const query = await Server.findAndCountAll({ where: { id: { [Op.in]: servers } } })
+
         const text = `You can see all <b>📟 Servers</b> of this group & manage them.
+<b>Total:</b> ${query!.count}
 
 <i>For add server to this group, go to server management</i>`
 
         const keyboard = new InlineKeyboard()
-        const servers = group.servers as number[]
-        const query = await Server.findAndCountAll({ where: { id: { [Op.in]: servers } } })
         query!.rows.forEach(({ name, id }) => {
             keyboard
                 .text(name, "group:" + group.id + ":server:" + id)
