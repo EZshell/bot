@@ -147,7 +147,7 @@ class ManageGroupService {
         // _qu.push({ [Op.like]: `%,1]"` })
         // _qu.push({ [Op.like]: `%,1,%` })
         // _qu.push({ [Op.eq]: "[1]" })
-        const query = await User.findAndCountAll({ where: { groups: "[2]" } })
+        const query = await User.findAndCountAll({ where: { groups: [2] } })
         query!.rows.forEach(({ first_name, id }) => {
             keyboard
                 .text(first_name, "group:" + group.id + ":member:" + id)
