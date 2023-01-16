@@ -184,30 +184,23 @@ __ <pre>${server.description}</pre>`
 
         const search = match[2]
 
-        try {
-            const me = await User.findByPk(ctx.from!.id)
-            const myGroups = me!.groups as number[]
-            await ctx.api.sendMessage(SuperAdmin, JSON.stringify(myGroups))
-            const groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: myGroups } } })
-            await ctx.api.sendMessage(SuperAdmin, JSON.stringify(groups))
-        } catch (error) {
-            ctx.api.sendMessage(SuperAdmin, "error88" + JSON.stringify(error))
-        }
+        const me = await User.findByPk(ctx.from!.id)
+        const myGroups = me!.groups as number[]
+        const groups = await Groups.findAndCountAll({ where: { id: { [Op.in]: myGroups } } })
 
-
-        // const g: InlineQueryResult[] = []
-        // groups.rows.forEach(({ id, name }) => {
-        //     g.push({
-        //         type: "article",
-        //         id: "add_to_group_" + id,
-        //         title: name,
-        //         input_message_content: {
-        //             message_text: `#add_to_group:\n${id}:${serverID}`,
-        //             parse_mode: "HTML",
-        //         },
-        //         description: `Add ${server?.name} to ${name}`,
-        //     })
-        // })
+        const g: InlineQueryResult[] = []
+        groups.rows.forEach(({ id, name }) => {
+            g.push({
+                type: "article",
+                id: "add_to_group_" + id,
+                title: name,
+                input_message_content: {
+                    message_text: `#add_to_group:\n${id}:${serverID}`,
+                    parse_mode: "HTML",
+                },
+                description: `Add ${server?.name} to ${name}`,
+            })
+        })
 
         ctx.api.sendMessage(SuperAdmin, JSON.stringify("pppppppppppp"))
 
