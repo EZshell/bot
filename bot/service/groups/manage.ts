@@ -80,6 +80,14 @@ class ManageGroupService {
         const groupID = parseInt(match[1]);
         const group = await Group.findByPk(groupID)
         if (!group) return await ctx.answerCallbackQuery("Not Found")
+
+        // const itsServers = group.servers
+        // await User.update(
+        //     {},
+        //     { where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), group.id.toString()), 1) }
+        // )
+
+
         await group.destroy()
         await ctx.answerCallbackQuery(`Deleted`)
         await _next()
@@ -141,12 +149,13 @@ class ManageGroupService {
         if (!group) return await ctx.answerCallbackQuery("Not Found")
         await ctx.answerCallbackQuery()
 
-        const query = await User.findAndCountAll({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), group.id), 1) })
+
+        const query = await User.findAndCountAll({ where: sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('groups'), group.id.toString()), 1) })
 
         const text = `You can see all <b>👥 Members</b> of this group & manage them.
-<b>Total:</b> ${query!.count}
+        <b>Total:</b> ${query!.count}
 
-<i>For join people to this group, ask theme to search group name in add group</i>`
+        <i>For join people to this group, ask theme to search group name in add group</i>`
         const keyboard = new InlineKeyboard()
 
         query!.rows.forEach(({ first_name, id }) => {

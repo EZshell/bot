@@ -1,5 +1,8 @@
 import { Bot, InlineKeyboard, NextFunction } from "grammy";
+import { Op } from "sequelize";
 import { MyContext } from "../..";
+import sequelize from "../../database";
+import Groups from "../../database/models/groups.model";
 import Server from "../../database/models/server.model";
 import ShellService from "../shell/shell";
 
@@ -27,6 +30,9 @@ class ManageServerService {
             ],
             this.response
         )
+
+        this.bot.inlineQuery(/^server:([0-9]+):addToGroup$/, this.addToGroup)
+
 
         new ShellService(this.bot).run()
     }
@@ -57,6 +63,8 @@ class ManageServerService {
             .row()
             .text("✏️ Port", "server:" + server.id + ":edit:port")
             .text("✏️ Desc", "server:" + server.id + ":edit:desc")
+            .row()
+            .switchInlineCurrent("Add to group", "server:" + server.id + ":addToGroup")
             .row()
             .text("↪️", "servers")
             .text("🏠", "menu")
@@ -161,6 +169,52 @@ __ <pre>${server.description}</pre>`
             { reply_markup: await this.keyboard(_server), parse_mode: "HTML" }
         )
         ctx.session.inputState = null
+    }
+
+
+
+    private addToGroup = async (ctx: MyContext) => {
+        const match = ctx.match!
+        const serverID = parseInt(match[1]);
+
+        const myGroups = ctx.session.user?.groups as number[]
+        try {
+            const groups = await Groups.findAndCountAll({
+                where: {
+                    [Op.and]: [
+                        { id: { [Op.in]: myGroups }, },
+                        sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('servers'), serverID.toString()), 0)
+                    ]
+                }
+            })
+        } catch (error) {
+            ctx.reply(JSON.stringify(error))
+        }
+
+        // this.server = {
+        //     name: match[1],
+        //     description: match[5],
+        //     ip: match[2],
+        //     username: match[3],
+        //     password: match[4],
+        //     port: 22,
+        // }
+
+        // const g = []
+        // {
+        //     type: "article",
+        //     id: "group",
+        //     title: this.server.name,
+        //     input_message_content: {
+        //         message_text: await this.text(ctx),
+        //         parse_mode: "HTML",
+        //     },
+        //     description: `${this.server.username}@${this.server.ip} -p ${this.server.port} \n` + `${this.server.description || ""}`,
+        // },
+
+
+        await ctx.answerInlineQuery([], { cache_time: 0, });
+
     }
 
 
