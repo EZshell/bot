@@ -134,6 +134,10 @@ class ShellService {
         })
 
 
+        await ctx.api.sendMessage(ctx.chat?.id!, "$$$$")
+        await ctx.api.sendMessage(ctx.chat?.id!, JSON.stringify(snips))
+
+
         const g: InlineQueryResult[] = []
         snips.forEach(({ id, label, script }) => {
             g.push({
