@@ -122,36 +122,44 @@ class ShellService {
         const match = ctx.match!
         const search = parseInt(match[1]);
 
+        await ctx.api.sendMessage(SuperAdmin, "RRRR")
+
         const me = await User.findByPk(ctx.from!.id)
+
+        await ctx.api.sendMessage(SuperAdmin, JSON.stringify(me))
+
+
         const mySnippets = me!.snippets as number[]
 
-        const tyu = [
-            { id: { [Op.in]: mySnippets } },
-            { name: { [Op.like]: `%${search}%` } },
-        ]
 
-        const snips = await Snippet.findAll({
-            where: { [Op.and]: tyu }
-        })
+        await ctx.api.sendMessage(SuperAdmin, JSON.stringify(mySnippets))
+
+        // const tyu = [
+        //     { id: { [Op.in]: mySnippets } },
+        //     { name: { [Op.like]: `%${search}%` } },
+        // ]
+
+        // const snips = await Snippet.findAll({
+        //     where: { [Op.and]: tyu }
+        // })
 
 
-        await ctx.api.sendMessage(SuperAdmin, "$$$$")
-        await ctx.api.sendMessage(SuperAdmin, JSON.stringify(snips))
+
 
 
         const g: InlineQueryResult[] = []
-        snips.forEach(({ id, label, script }) => {
-            g.push({
-                type: "article",
-                id: "run_snippet" + id,
-                title: label,
-                input_message_content: {
-                    message_text: this.standardOutput(script),
-                    parse_mode: "HTML",
-                },
-                description: this.standardOutput(script),
-            })
-        })
+        // snips.forEach(({ id, label, script }) => {
+        //     g.push({
+        //         type: "article",
+        //         id: "run_snippet" + id,
+        //         title: label,
+        //         input_message_content: {
+        //             message_text: this.standardOutput(script),
+        //             parse_mode: "HTML",
+        //         },
+        //         description: this.standardOutput(script),
+        //     })
+        // })
 
         await ctx.answerInlineQuery(g, { cache_time: 0 });
     }
