@@ -232,9 +232,10 @@ __ <pre>${server.description}</pre>`
                 await ctx.reply("❌ Getting data error", { reply_to_message_id: ctx.message?.message_id })
                 return
             }
-            const servers = group.servers as number[]
-            servers.push(sID)
-            await group.save()
+            const servers = [...group.servers as number[], sID]
+            await group.update({ servers })
+
+            await ctx.reply(`✅ Done`, { reply_to_message_id: ctx.message?.message_id })
         }
     }
 
