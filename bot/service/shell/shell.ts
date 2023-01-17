@@ -221,7 +221,6 @@ class ShellService {
                         this.openShellSession(ctx, ssh, serverID, messageID)
                     }
                     else {
-
                         await ctx.api.editMessageText(
                             ctx.chat!.id,
                             ctx.session.inputState?.messageID!,
@@ -318,22 +317,14 @@ class ShellService {
 
         let command = ctx.message?.text!
         const _ssh = ctx.session.ssh!
-
         try {
             await ctx.deleteMessage()
-            // const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n`
-            // await ctx.api.editMessageReplyMarkup(
-            //     ctx.chat?.id!,
-            //     ctx.session.inputState?.messageID!,
-            //     { reply_markup: new InlineKeyboard() }
-            // )
 
-            // const messageID = (await ctx.reply(text, this.shellResponseOptions(ctx))).message_id
-            // this.openShellSession(ctx, _ssh, server.id, messageID)
             if (_ssh.getAutoEnter()) command += "\n"
-
-            _ssh.writeCommand(command)
-
+            else if (_ssh.getCrtlPressed() && _ssh.getAltPressed()) command = "^" + command
+            else if (_ssh.getCrtlPressed()) command = "^" + command
+            else if (_ssh.getAltPressed()) command = "^" + command
+            else _ssh.writeCommand(command)
         } catch (error) {
             console.log("writeCommand", error)
         }
@@ -393,16 +384,16 @@ class ShellService {
                 break;
 
             case 'left':
-                _ssh.writeCommand("\n")
+                _ssh.writeCommand("^[[D")
                 break;
             case 'up':
-                _ssh.writeCommand("\n")
+                _ssh.writeCommand("^[[A")
                 break;
             case 'bottom':
-                _ssh.writeCommand("\n")
+                _ssh.writeCommand("^[[B")
                 break;
             case 'right':
-                _ssh.writeCommand("\n")
+                _ssh.writeCommand("^[[C")
                 break;
         }
 
