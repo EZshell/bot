@@ -122,7 +122,7 @@ class ShellService {
         const match = ctx.match!
         const search = parseInt(match[1]);
 
-        await ctx.api.sendMessage(SuperAdmin, "RRRR")
+        await ctx.api.sendMessage(SuperAdmin, "MMMMMMMMMM")
 
         const me = await User.findByPk(ctx.from!.id)
 
@@ -134,16 +134,16 @@ class ShellService {
 
         await ctx.api.sendMessage(SuperAdmin, JSON.stringify(mySnippets))
 
-        // const tyu = [
-        //     { id: { [Op.in]: mySnippets } },
-        //     { name: { [Op.like]: `%${search}%` } },
-        // ]
+        const tyu = [
+            { id: { [Op.in]: mySnippets } },
+            { name: { [Op.like]: `%${search}%` } },
+        ]
 
-        // const snips = await Snippet.findAll({
-        //     where: { [Op.and]: tyu }
-        // })
+        const snips = await Snippet.findAll({
+            where: { [Op.and]: tyu }
+        })
 
-
+        await ctx.api.sendMessage(SuperAdmin, JSON.stringify(snips))
 
 
 
