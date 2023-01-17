@@ -269,35 +269,20 @@ class ShellService {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
 
-
         try {
-
             const mch = ctx.match!
             const tempName = Date.now()
 
-            await ctx.reply("uuuu")
-
-
             const filePath = mch[1];
             const ffm = filePath.split("/");
+            const fileName = ffm[ffm.length - 1]
             const saveTo = `temp/${tempName}@${ffm[ffm.length - 1]}`
 
+            await ctx.session.ssh!.downloadFile(saveTo, filePath)
 
-            await ctx.reply("mmmmmmmmmmmm")
-
-            await ctx.reply(saveTo)
-
-            await ctx.reply("Hello6655")
-            const ff = await ctx.session.ssh!.downloadFile(saveTo, filePath)
-
-            await ctx.reply("rrtytu")
-            await ctx.reply(JSON.stringify(ff))
-
-            // await ctx.replyWithDocument(new InputFile(saveTo))
-
-            // const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n`
+            await ctx.replyWithDocument(new InputFile(saveTo, fileName))
         } catch (error) {
-            await ctx.reply(JSON.stringify(error))
+            await ctx.reply("❌ File not found or path is invalid:\n" + error)
         }
     }
 
