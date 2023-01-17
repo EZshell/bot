@@ -50,11 +50,20 @@ class EZssh {
     }
 
 
-    public async openSftp() {
-        // this.sftp?.close()
-        this.sftp = await this.client.requestSFTP()
-
+    // #################
+    public async uploadFile(local: string, remote: string) {
+        return await this.client.putFile(local, remote)
     }
+
+
+    public async downloadFile(local: string, remote: string) {
+        return await this.client.getFile(local, remote)
+    }
+
+    // public exitSftp() {
+    //     if (!this.sftp) return false
+    //     // this.sftp.fastPut()
+    // }
 }
 
 

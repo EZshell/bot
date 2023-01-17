@@ -20,7 +20,12 @@ class ShellService {
         this.bot.callbackQuery(/^server:([0-9]+):sshCheck$/, this.sshCheck)
         this.bot.callbackQuery(/^server:([0-9]+):openShell$/, this.openShell)
 
+
+        this.bot.hears(/getFile:(.*)>(.*)$/, this.getFile)
+
         this.bot.on("message:text", this.writeCommand)
+
+        this.bot.callbackQuery("shell:password", this.shellPassword)
         this.bot.callbackQuery("shell:exit", this.shellExit)
         this.bot.callbackQuery("shell:reload", this.shellReload)
         this.bot.callbackQuery("shell:cancel", this.shellCancel)
@@ -30,11 +35,11 @@ class ShellService {
         this.bot
             .on(["message", "callback_query"], async (ctx, _next) => {
                 if (ctx.session.ssh && ctx.session.ssh.isConnected()) {
-                    await ctx?.answerCallbackQuery("Shell is open")
+                    if (ctx.answerCallbackQuery) await ctx?.answerCallbackQuery("❌ Error")
+                    else await ctx.reply("❌ Error", { reply_to_message_id: ctx.message?.message_id })
                 }
                 else return await _next()
             })
-
     }
 
     // ############################
@@ -74,7 +79,7 @@ class ShellService {
         //     .row()
 
         _keyboard
-            .text("📂", "shell:sftp")
+            .text("🔐", "shell:password")
             .text("🔄", "shell:reload")
             .text("⛔️", "shell:cancel")
             .text("🕹", "shell:exit")
@@ -84,6 +89,7 @@ class ShellService {
         return _keyboard
     }
 
+
     shellResponseOptions = (ctx: MyContext) => {
         return {
             parse_mode: "HTML" as ParseMode,
@@ -91,6 +97,7 @@ class ShellService {
             disable_web_page_preview: true
         }
     }
+
 
     openShellSession = (ctx: MyContext, ssh: EZssh, serverID: number, messageID: number) => {
         ctx.session.inputState = {
@@ -102,6 +109,8 @@ class ShellService {
         }
         ctx.session.ssh = ssh
     }
+
+
     exitCurrentShell = async (ctx: MyContext) => {
         ctx.session.ssh?.exitShell()
         ctx.session.ssh = null
@@ -122,18 +131,8 @@ class ShellService {
         const match = ctx.match!
         const search = parseInt(match[1]);
 
-        await ctx.api.sendMessage(SuperAdmin, "ttt")
-
         const me = await User.findByPk(ctx.from!.id)
-
-        await ctx.api.sendMessage(SuperAdmin, JSON.stringify(me))
-
-
         const mySnippets = me!.snippets as number[]
-
-
-        await ctx.api.sendMessage(SuperAdmin, JSON.stringify(mySnippets))
-
         const tyu = [
             { id: { [Op.in]: mySnippets } },
             // { label: { [Op.like]: `%${search}%` } },
@@ -142,10 +141,6 @@ class ShellService {
         const snips = await Snippet.findAll({
             where: { [Op.and]: tyu }
         })
-
-        await ctx.api.sendMessage(SuperAdmin, JSON.stringify(snips))
-
-
 
         const g: InlineQueryResult[] = []
         snips.forEach(({ id, label, script }) => {
@@ -233,8 +228,6 @@ class ShellService {
     }
 
 
-
-
     checkShellStatus = async (ctx: MyContext, _next: NextFunction) => {
         if (!ctx.session.inputState) {
             await _next()
@@ -258,9 +251,13 @@ class ShellService {
         }
         return server
     }
+
+
     writeCommand = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
+
+        const command = ctx.message?.text!
 
         try {
             const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n`
@@ -269,15 +266,61 @@ class ShellService {
                 ctx.session.inputState?.messageID!,
                 { reply_markup: new InlineKeyboard() }
             )
+
             const messageID = (await ctx.reply(text, this.shellResponseOptions(ctx))).message_id
             this.openShellSession(ctx, ctx.session.ssh!, server.id, messageID)
             // 
-            ctx.session.ssh!.writeCommand(ctx.message?.text! + "\n")
+            ctx.session.ssh!.writeCommand(command + "\n")
             // if (!canWrite) await ctx.deleteMessage()
         } catch (error) {
             console.log("writeCommand", error)
         }
     }
+
+    getFile = async (ctx: MyContext, _next: NextFunction) => {
+        const server = await this.checkShellStatus(ctx, _next)
+        if (!server) return;
+
+        const mch = ctx.match!
+        const local = mch[1]
+        const remote = mch[2]
+
+
+        try {
+            await ctx.api.editMessageReplyMarkup(
+                ctx.chat?.id!,
+                ctx.session.inputState?.messageID!,
+                { reply_markup: new InlineKeyboard() }
+            )
+            await ctx.reply("Hello")
+            const ff = await ctx.session.ssh!.downloadFile(local, remote)
+
+            await ctx.reply(JSON.stringify(ff))
+
+            // const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n`
+
+
+            // const messageID = (await ctx.reply(text, this.shellResponseOptions(ctx))).message_id
+            // this.openShellSession(ctx, ctx.session.ssh!, server.id, messageID)
+            // 
+            // ctx.session.ssh!.writeCommand(command + "\n")
+            // if (!canWrite) await ctx.deleteMessage()
+        } catch (error) {
+            console.log("getFile", error)
+        }
+    }
+
+
+    shellPassword = async (ctx: MyContext, _next: NextFunction) => {
+        const server = await this.checkShellStatus(ctx, _next)
+        if (!server) return;
+        try {
+            ctx.session.ssh!.writeCommand(server.password)
+        } catch (error) {
+            console.log("shellCancel", error)
+        }
+    }
+
 
     shellExit = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
@@ -311,6 +354,17 @@ class ShellService {
             console.log("shellReload", error)
         }
     }
+
+    uploadFile = async (ctx: MyContext, _next: NextFunction) => {
+        const server = await this.checkShellStatus(ctx, _next)
+        if (!server) return;
+        try {
+            ctx.session.ssh!.writeCommand("\n")
+        } catch (error) {
+            console.log("shellReload", error)
+        }
+    }
+
 }
 
 
