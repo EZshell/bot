@@ -78,7 +78,7 @@ class ShellService {
             .text("⛔️", "shell:cancel")
             .text("🕹", "shell:exit")
             .row()
-            .switchInlineCurrent("📌 ssSnippets", "snippets:run: ")
+            .switchInlineCurrent("📌 Snippets", "snippets:run: ")
 
         return _keyboard
     }
@@ -119,10 +119,7 @@ class ShellService {
 
     runSnippet = async (ctx: MyContext) => {
         const match = ctx.match!
-        const serverID = parseInt(match[1]);
-        const server = await Server.findByPk(serverID)
-
-        const search = match[2]
+        const search = parseInt(match[1]);
 
         const me = await User.findByPk(ctx.from!.id)
         const mySnippets = me!.snippets as number[]
