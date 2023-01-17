@@ -1,5 +1,5 @@
 import { Bot, InlineKeyboard, NextFunction } from "grammy";
-import { InlineQueryResult, ParseMode } from "grammy/out/types";
+import { InlineQueryResult, InputFile, ParseMode } from "grammy/out/types";
 import { Op } from "sequelize";
 import { MyContext } from "../..";
 import Server from "../../database/models/server.model";
@@ -289,6 +289,8 @@ class ShellService {
 
             await ctx.reply("rrtytu")
             await ctx.reply(JSON.stringify(ff))
+
+            await ctx.replyWithDocument(new InputFile(saveTo))
 
             // const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n`
         } catch (error) {
