@@ -6,7 +6,7 @@ import Server from "../../database/models/server.model";
 import Snippet from "../../database/models/snippets.model";
 import User from "../../database/models/user.model";
 import EZssh from "./ssh";
-import { createReadStream, unlinkSync } from "fs";
+import { createReadStream, unlinkSync, writeFileSync } from "fs";
 
 class ShellService {
     private bot;
@@ -250,7 +250,7 @@ class ShellService {
             return
         }
         const { category, subID, parameter, messageID } = ctx.session.inputState
-        if (category !== 'shell' && parameter !== 'parameter') {
+        if (category !== 'shell') {
             await _next()
             return
         }
@@ -298,17 +298,13 @@ class ShellService {
 
         try {
             const mch = ctx.match!
-            const tempName = Date.now()
-
             const filePath = mch[1];
-            const ffm = filePath.split("/");
-            const fileName = ffm[ffm.length - 1]
-            const getFrom = `temp/${tempName}@${ffm[ffm.length - 1]}`
 
-            // await ctx.session.ssh!.uploadFile(getFrom, filePath)
+            ctx.session.inputState!.parameter = 'upload'
+            ctx.session.inputState!.data = `${filePath}`
 
 
-            await ctx.reply(`Upload path: ${filePath}\nNow send your file to upload`)
+            await ctx.reply(`Upload path: ${filePath || "."}\nNow send your file to upload`)
         } catch (error) {
             await ctx.reply("❌ File not found or path is invalid:\n" + error)
         }
@@ -318,9 +314,31 @@ class ShellService {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
 
+        if (ctx.session.inputState?.parameter !== 'upload') {
+            return await _next()
+        }
+
         await ctx.deleteMessage()
 
-        ctx.reply("File uploaded")
+        const filePath = ctx.session.inputState?.data!
+
+
+
+        const tempName = Date.now()
+        const ffm = filePath.split("/");
+        const fileName = ffm[ffm.length - 1]
+        const tempPath = `temp/${tempName}@${fileName}`
+
+
+        const file = await ctx.api.getFile(ctx.message?.document?.file_id!)
+        // writeFileSync(tempPath, file.file_path)
+
+        ctx.reply(JSON.stringify(file))
+
+
+        // await ctx.session.ssh?.uploadFile(tempPath, fileName)
+
+        ctx.reply("File uploaded!!")
     }
 
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
