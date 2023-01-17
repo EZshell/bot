@@ -2,8 +2,6 @@ import { Bot, InlineKeyboard, NextFunction } from "grammy";
 import { InlineQueryResult, ParseMode } from "grammy/out/types";
 import { Op } from "sequelize";
 import { MyContext } from "../..";
-import { SuperAdmin } from "../../config";
-import sequelize from "../../database";
 import Server from "../../database/models/server.model";
 import Snippet from "../../database/models/snippets.model";
 import User from "../../database/models/user.model";
@@ -27,7 +25,7 @@ class ShellService {
 
         this.bot.callbackQuery("shell:password", this.shellPassword)
         this.bot.callbackQuery("shell:exit", this.shellExit)
-        this.bot.callbackQuery("shell:reload", this.shellReload)
+        this.bot.callbackQuery("shell:enter", this.shellEnter)
         this.bot.callbackQuery("shell:cancel", this.shellCancel)
 
         this.bot.inlineQuery(/^snippets:run:(.*)$/, this.runSnippet)
@@ -79,8 +77,8 @@ class ShellService {
         //     .row()
 
         _keyboard
+            .text("⏩", "shell:enter")
             .text("🔐", "shell:password")
-            .text("🔄", "shell:reload")
             .text("⛔️", "shell:cancel")
             .text("🕹", "shell:exit")
             .row()
@@ -292,7 +290,7 @@ class ShellService {
                 ctx.session.inputState?.messageID!,
                 { reply_markup: new InlineKeyboard() }
             )
-            await ctx.reply("Hello")
+            await ctx.reply("Hello66")
             const ff = await ctx.session.ssh!.downloadFile(local, remote)
 
             await ctx.reply(JSON.stringify(ff))
@@ -306,7 +304,17 @@ class ShellService {
             // ctx.session.ssh!.writeCommand(command + "\n")
             // if (!canWrite) await ctx.deleteMessage()
         } catch (error) {
-            console.log("getFile", error)
+            await ctx.reply(JSON.stringify(error))
+        }
+    }
+
+    uploadFile = async (ctx: MyContext, _next: NextFunction) => {
+        const server = await this.checkShellStatus(ctx, _next)
+        if (!server) return;
+        try {
+            ctx.session.ssh!.writeCommand("\n")
+        } catch (error) {
+            console.log("shellReload", error)
         }
     }
 
@@ -345,7 +353,7 @@ class ShellService {
         }
     }
 
-    shellReload = async (ctx: MyContext, _next: NextFunction) => {
+    shellEnter = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
         try {
@@ -355,15 +363,7 @@ class ShellService {
         }
     }
 
-    uploadFile = async (ctx: MyContext, _next: NextFunction) => {
-        const server = await this.checkShellStatus(ctx, _next)
-        if (!server) return;
-        try {
-            ctx.session.ssh!.writeCommand("\n")
-        } catch (error) {
-            console.log("shellReload", error)
-        }
-    }
+
 
 }
 
