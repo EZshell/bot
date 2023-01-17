@@ -406,13 +406,7 @@ class ShellService {
                 break;
         }
 
-
-
-        try {
-            ctx.session.ssh!.writeCommand(server.password)
-        } catch (error) {
-            console.log("shellCancel", error)
-        }
+        await ctx.answerCallbackQuery()
     }
 
 
