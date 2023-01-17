@@ -282,6 +282,8 @@ class ShellService {
 
             await ctx.reply("Hello1")
 
+            await ctx.replyWithDocument("temp/1673987235694@gg.yml")
+
             // const m = new InputFile("temp/1673987235694@gg.yml")
         } catch (error) {
             await ctx.reply("❌ File not found or path is invalid:\n" + error)
