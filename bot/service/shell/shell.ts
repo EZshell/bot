@@ -19,7 +19,7 @@ class ShellService {
         this.bot.callbackQuery(/^server:([0-9]+):openShell$/, this.openShell)
 
 
-        this.bot.hears(/getFile:(.*)>(.*)$/, this.getFile)
+        this.bot.hears(/getFile:(.*)$/, this.getFile)
         this.bot.on("message:text", this.writeCommand)
 
         this.bot.callbackQuery("shell:terminate", this.shellTerminate)
@@ -270,8 +270,12 @@ class ShellService {
         if (!server) return;
 
         const mch = ctx.match!
-        const local = mch[1]
-        const remote = mch[2]
+        const tempName = Date.now()
+
+
+        const filePath = mch[2]
+        const ff = filePath.split("/")
+        const saveTo = `temp/${tempName}@${ff[ff.length - 1]}`
 
 
         try {
@@ -280,19 +284,13 @@ class ShellService {
                 ctx.session.inputState?.messageID!,
                 { reply_markup: new InlineKeyboard() }
             )
-            await ctx.reply("Hello66")
-            const ff = await ctx.session.ssh!.downloadFile(local, remote)
+            await ctx.reply("Hello6655")
+            const ff = await ctx.session.ssh!.downloadFile(saveTo, filePath)
 
+            await ctx.reply("rrtytu")
             await ctx.reply(JSON.stringify(ff))
 
             // const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n`
-
-
-            // const messageID = (await ctx.reply(text, this.shellResponseOptions(ctx))).message_id
-            // this.openShellSession(ctx, ctx.session.ssh!, server.id, messageID)
-            // 
-            // ctx.session.ssh!.writeCommand(command + "\n")
-            // if (!canWrite) await ctx.deleteMessage()
         } catch (error) {
             await ctx.reply(JSON.stringify(error))
         }
