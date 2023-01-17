@@ -187,35 +187,32 @@ __ <pre>${server.description}</pre>`
         const me = await User.findByPk(ctx.from!.id)
         const myGroups = me!.groups as number[]
 
-        ctx.api.sendMessage(SuperAdmin, JSON.stringify("hhhh"))
-        try {
-            const groups = await Groups.findAndCountAll({
-                where: {
-                    [Op.and]: [
-                        { id: { [Op.in]: myGroups } },
-                        sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('servers'), serverID.toString()), 0)
-                    ]
-                }
-            })
-            ctx.api.sendMessage(SuperAdmin, JSON.stringify(groups))
+        const tyu = [
+            { id: { [Op.in]: myGroups } },
+            { name: { [Op.like]: `%${search}%` } },
+            sequelize.where(sequelize.fn('JSON_CONTAINS', sequelize.literal('servers'), serverID.toString()), 0),
+        ]
 
-        } catch (error) {
-            ctx.api.sendMessage(SuperAdmin, JSON.stringify(error))
-        }
+        const groups = await Groups.findAndCountAll({
+            where: {
+                [Op.and]: tyu
+            }
+        })
+
 
         const g: InlineQueryResult[] = []
-        // groups.rows.forEach(({ id, name }) => {
-        //     g.push({
-        //         type: "article",
-        //         id: "add_to_group_" + id,
-        //         title: name,
-        //         input_message_content: {
-        //             message_text: `#add_to_group:\n${id}:${serverID}`,
-        //             parse_mode: "HTML",
-        //         },
-        //         description: `Add ${server?.name} to ${name}`,
-        //     })
-        // })
+        groups.rows.forEach(({ id, name }) => {
+            g.push({
+                type: "article",
+                id: "add_to_group_" + id,
+                title: name,
+                input_message_content: {
+                    message_text: `#add_to_group:\n${id}:${serverID}`,
+                    parse_mode: "HTML",
+                },
+                description: `Add ${server?.name} to ${name}`,
+            })
+        })
 
         await ctx.answerInlineQuery(g, { cache_time: 0 });
     }
