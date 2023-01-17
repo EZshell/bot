@@ -1,5 +1,5 @@
-import { Bot, InlineKeyboard, NextFunction } from "grammy";
-import { InlineQueryResult, InputFile, ParseMode } from "grammy/out/types";
+import { Bot, InlineKeyboard, NextFunction, InputFile } from "grammy";
+import { InlineQueryResult, ParseMode } from "grammy/out/types";
 import { Op } from "sequelize";
 import { MyContext } from "../..";
 import Server from "../../database/models/server.model";
