@@ -6,7 +6,7 @@ import Server from "../../database/models/server.model";
 import Snippet from "../../database/models/snippets.model";
 import User from "../../database/models/user.model";
 import EZssh from "./ssh";
-import { createReadStream } from "fs";
+import { createReadStream, unlinkSync } from "fs";
 
 class ShellService {
     private bot;
@@ -18,7 +18,7 @@ class ShellService {
         this.bot.callbackQuery(/^server:([0-9]+):sshCheck$/, this.sshCheck)
         this.bot.callbackQuery(/^server:([0-9]+):openShell$/, this.openShell)
 
-
+        this.bot.inlineQuery(/^getFile:(.*)$/, this.getFileInline)
         this.bot.hears(/getFile:(.*)$/, this.getFile)
         this.bot.on("message:text", this.writeCommand)
 
@@ -265,9 +265,34 @@ class ShellService {
 
 
     // =================================> file
+    getFileInline = async (ctx: MyContext) => {
+        const match = ctx.match!
+
+        const filePath = match[1];
+        const ff = filePath.split("/")
+        const fileName = ff[ff.length - 1]
+
+
+        const g: InlineQueryResult[] = []
+        g.push({
+            type: "article",
+            id: "get_file" + filePath,
+            title: fileName,
+            input_message_content: {
+                message_text: "getFile:" + filePath,
+            },
+            description: filePath
+        })
+
+        await ctx.answerInlineQuery(g, { cache_time: 0 });
+    }
+
+
     getFile = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
+
+        await ctx.deleteMessage()
 
         try {
             const mch = ctx.match!
@@ -280,8 +305,10 @@ class ShellService {
 
             await ctx.session.ssh!.downloadFile(saveTo, filePath)
 
+
             await ctx.reply("📥 File received:")
             await ctx.replyWithDocument(new InputFile(createReadStream(saveTo), fileName))
+            unlinkSync(saveTo)
         } catch (error) {
             await ctx.reply("❌ File not found or path is invalid:\n" + error)
         }
