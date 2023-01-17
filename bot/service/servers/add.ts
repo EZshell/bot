@@ -75,9 +75,8 @@ class AddServerService {
                 owner: ctx.session.user!.id!,
                 is_active: true
             })
-            const servers = ctx.session.user!.servers as number[]
-            servers.push(d.id)
-            ctx.session.user!.update({ servers })
+            const servers = [...ctx.session.user!.servers as number[], d.id]
+            await ctx.session.user!.update({ servers })
             await ctx.reply("✅ Server added:\n/servers", { reply_to_message_id: ctx.message?.message_id })
         }
     }

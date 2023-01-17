@@ -9,9 +9,9 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare is_bot: boolean;
     declare is_premium: boolean;
     declare is_active: boolean;
-    declare servers: number[] | string;
-    declare snippets: number[] | string;
-    declare groups: number[] | string;
+    declare servers: number[];
+    declare snippets: number[];
+    declare groups: number[];
 }
 
 User.init(
@@ -50,30 +50,15 @@ User.init(
         },
         groups: {
             type: DataTypes.JSON,
-            // get: function () {
-            //     return JSON.parse(this.getDataValue('groups').toString());
-            // },
-            // set: function (value) {
-            //     this.setDataValue('groups', JSON.stringify(value));
-            // },
+            allowNull: false
         },
         servers: {
             type: DataTypes.JSON,
-            // get: function () {
-            //     return JSON.parse(this.getDataValue('servers').toString());
-            // },
-            // set: function (value) {
-            //     this.setDataValue('servers', JSON.stringify(value));
-            // },
+            allowNull: false
         },
         snippets: {
             type: DataTypes.JSON,
-            // get: function () {
-            //     return JSON.parse(this.getDataValue('snippets').toString());
-            // },
-            // set: function (value) {
-            //     this.setDataValue('snippets', JSON.stringify(value));
-            // },
+            allowNull: false
         },
     },
     {

@@ -63,9 +63,8 @@ class AddSnippetService {
                 label: mch[1],
                 script: mch[2]
             })
-            const snippets = ctx.session.user!.snippets as number[]
-            snippets.push(d.id)
-            ctx.session.user!.update({ snippets })
+            const snippets = [...ctx.session.user!.snippets as number[], d.id]
+            await ctx.session.user!.update({ snippets })
             await ctx.reply("✅ Snippet added:\n/snippets", { reply_to_message_id: ctx.message?.message_id })
         }
     }

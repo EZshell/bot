@@ -22,15 +22,9 @@ Groups.init(
         owner: {
             type: DataTypes.INTEGER,
         },
-
         servers: {
             type: DataTypes.JSON,
-            // get: function () {
-            //     return JSON.parse(this.getDataValue('servers').toString());
-            // },
-            // set: function (value) {
-            //     this.setDataValue('servers', JSON.stringify(value));
-            // },
+            allowNull: false
         },
     },
     {
