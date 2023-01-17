@@ -77,6 +77,7 @@ class GroupsService {
             subID: 0,
             data: null
         }
+        await ctx.answerCallbackQuery()
         await ctx.reply(`Send group code to join:`, { parse_mode: 'HTML' })
     }
 
