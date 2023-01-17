@@ -7,7 +7,9 @@ class EZssh {
     private client;
     private config;
     private shell: ClientChannel | null = null;
-    private sftp: SFTPWrapper | null = null
+
+
+
 
     constructor(config: Config) {
         this.config = config
@@ -47,6 +49,33 @@ class EZssh {
     public writeCommand(command: string) {
         if (!this.shell) return false
         this.shell.write(command)
+    }
+
+    // @@@@@@@@@@@@@@
+    private isAutoEnter: boolean = true;
+    public setAutoEnter() {
+        this.isAutoEnter = !this.isAutoEnter
+    }
+    public getAutoEnter() {
+        return this.isAutoEnter
+    }
+
+    // @@@@@@@@@@@@@@
+    private isCrtlPressed: boolean = false;
+    public setCrtlPressed() {
+        this.isCrtlPressed = !this.isCrtlPressed
+    }
+    public getCrtlPressed() {
+        return this.isCrtlPressed
+    }
+
+    // @@@@@@@@@@@@@@
+    private isAltPressed: boolean = false;
+    public setAltPressed() {
+        this.isAltPressed = !this.isAltPressed
+    }
+    public getAltPressed() {
+        return this.isAltPressed
     }
 
 

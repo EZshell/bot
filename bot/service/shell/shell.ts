@@ -20,13 +20,11 @@ class ShellService {
 
 
         this.bot.hears(/getFile:(.*)>(.*)$/, this.getFile)
-
         this.bot.on("message:text", this.writeCommand)
 
-        this.bot.callbackQuery("shell:password", this.shellPassword)
-        this.bot.callbackQuery("shell:exit", this.shellExit)
-        this.bot.callbackQuery("shell:enter", this.shellEnter)
-        this.bot.callbackQuery("shell:cancel", this.shellCancel)
+        this.bot.callbackQuery("shell:terminate", this.shellTerminate)
+
+        this.bot.callbackQuery(/^shell:([0-9]+)$/, this.shellCommands)
 
         this.bot.inlineQuery(/^snippets:run:(.*)$/, this.runSnippet)
 
@@ -72,15 +70,31 @@ class ShellService {
                 .text("CONNECTING...")
             return _keyboard
         }
-        // _keyboard
-        //     .text("WAIT UNTIL COMPLETED (⛔️|🔚)")
-        //     .row()
+
+        const isAuto = ctx.session.ssh.getAutoEnter()
+        const isCrtl = ctx.session.ssh.getCrtlPressed()
+        const isAlt = ctx.session.ssh.getAltPressed()
+
 
         _keyboard
-            .text("⏩", "shell:enter")
-            .text("🔐", "shell:password")
-            .text("⛔️", "shell:cancel")
-            .text("🕹", "shell:exit")
+            .text("🕹 Terminate", "shell:terminate")
+            .row()
+            .text(`${isAuto ? "🟢" : "⚪️"} Auto Enter`, "shell:autoEnter")
+            .text("⏩ Enter", "shell:enter")
+            .row()
+
+            .text(`${isCrtl ? "🟢" : "⚪️"} CRTL`, "shell:crtl")
+            .text(`${isAlt ? "🟢" : "⚪️"} ALT`, "shell:alt")
+            .text("🔜 Tab", "shell:tab")
+            .text("🔑 Pass", "shell:password")
+
+            .row()
+
+            .text("◀️", "shell:left")
+            .text("🔼", "shell:up")
+            .text("🔽", "shell:bottom")
+            .text("▶️", "shell:right")
+
             .row()
             .switchInlineCurrent("📌 Snippets", "snippets:run: ")
 
@@ -251,30 +265,7 @@ class ShellService {
     }
 
 
-    writeCommand = async (ctx: MyContext, _next: NextFunction) => {
-        const server = await this.checkShellStatus(ctx, _next)
-        if (!server) return;
-
-        const command = ctx.message?.text!
-
-        try {
-            const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n`
-            await ctx.api.editMessageReplyMarkup(
-                ctx.chat?.id!,
-                ctx.session.inputState?.messageID!,
-                { reply_markup: new InlineKeyboard() }
-            )
-
-            const messageID = (await ctx.reply(text, this.shellResponseOptions(ctx))).message_id
-            this.openShellSession(ctx, ctx.session.ssh!, server.id, messageID)
-            // 
-            ctx.session.ssh!.writeCommand(command + "\n")
-            // if (!canWrite) await ctx.deleteMessage()
-        } catch (error) {
-            console.log("writeCommand", error)
-        }
-    }
-
+    // =================================> file
     getFile = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
@@ -317,11 +308,106 @@ class ShellService {
             console.log("shellReload", error)
         }
     }
+    // =================================> file
 
 
-    shellPassword = async (ctx: MyContext, _next: NextFunction) => {
+    // =================================> command
+    writeCommand = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
+
+        let command = ctx.message?.text!
+        const _ssh = ctx.session.ssh!
+
+        try {
+            await ctx.deleteMessage()
+            // const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n`
+            // await ctx.api.editMessageReplyMarkup(
+            //     ctx.chat?.id!,
+            //     ctx.session.inputState?.messageID!,
+            //     { reply_markup: new InlineKeyboard() }
+            // )
+
+            // const messageID = (await ctx.reply(text, this.shellResponseOptions(ctx))).message_id
+            // this.openShellSession(ctx, _ssh, server.id, messageID)
+            if (_ssh.getAutoEnter()) command += "\n"
+
+            _ssh.writeCommand(command)
+
+        } catch (error) {
+            console.log("writeCommand", error)
+        }
+    }
+
+
+
+    shellTerminate = async (ctx: MyContext, _next: NextFunction) => {
+        const server = await this.checkShellStatus(ctx, _next)
+        if (!server) return;
+        try {
+            await this.exitCurrentShell(ctx)
+            const _keyboard = new InlineKeyboard().text("❌ Closed")
+            await ctx.editMessageReplyMarkup({ reply_markup: _keyboard })
+        } catch (error) {
+            console.log("shellTerminate", error)
+        }
+    }
+
+
+    // ####
+
+
+    shellCommands = async (ctx: MyContext, _next: NextFunction) => {
+        const server = await this.checkShellStatus(ctx, _next)
+        if (!server) return;
+
+        const command = ctx.match![1]
+        const _ssh = ctx.session.ssh!
+
+        switch (command) {
+            case 'enter':
+                _ssh.writeCommand("\n")
+                break;
+
+            case 'autoEnter':
+                _ssh.setAutoEnter()
+                _ssh.writeCommand("\n")
+                break;
+
+            case 'crtl':
+                _ssh.setCrtlPressed()
+                _ssh.writeCommand("\n")
+                break;
+
+            case 'alt':
+                _ssh.setAltPressed()
+                _ssh.writeCommand("\n")
+                break;
+
+            case 'tab':
+                _ssh.writeCommand("\n")
+                break;
+
+            case 'password':
+                _ssh.writeCommand(server.password)
+                break;
+
+            case 'left':
+                _ssh.writeCommand("\n")
+                break;
+            case 'up':
+                _ssh.writeCommand("\n")
+                break;
+            case 'bottom':
+                _ssh.writeCommand("\n")
+                break;
+            case 'right':
+                _ssh.writeCommand("\n")
+                break;
+        }
+
+
+
         try {
             ctx.session.ssh!.writeCommand(server.password)
         } catch (error) {
@@ -330,17 +416,7 @@ class ShellService {
     }
 
 
-    shellExit = async (ctx: MyContext, _next: NextFunction) => {
-        const server = await this.checkShellStatus(ctx, _next)
-        if (!server) return;
-        try {
-            await this.exitCurrentShell(ctx)
-            const _keyboard = new InlineKeyboard().text("❌ Closed")
-            await ctx.editMessageReplyMarkup({ reply_markup: _keyboard })
-        } catch (error) {
-            console.log("shellExit", error)
-        }
-    }
+
 
 
     shellCancel = async (ctx: MyContext, _next: NextFunction) => {
@@ -350,16 +426,6 @@ class ShellService {
             ctx.session.ssh!.writeCommand("\x03")
         } catch (error) {
             console.log("shellCancel", error)
-        }
-    }
-
-    shellEnter = async (ctx: MyContext, _next: NextFunction) => {
-        const server = await this.checkShellStatus(ctx, _next)
-        if (!server) return;
-        try {
-            ctx.session.ssh!.writeCommand("\n")
-        } catch (error) {
-            console.log("shellReload", error)
         }
     }
 
