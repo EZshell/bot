@@ -280,9 +280,8 @@ class ShellService {
 
             await ctx.session.ssh!.downloadFile(saveTo, filePath)
 
-            await ctx.reply("Hello4")
-
-            await ctx.replyWithDocument(new InputFile(createReadStream("temp/1673987235694@gg.yml")))
+            await ctx.reply("📥 File received:")
+            await ctx.replyWithDocument(new InputFile(createReadStream(saveTo), fileName))
         } catch (error) {
             await ctx.reply("❌ File not found or path is invalid:\n" + error)
         }
