@@ -324,7 +324,7 @@ class ShellService {
             else if (_ssh.getCrtlPressed() && _ssh.getAltPressed()) command = "^" + command
             else if (_ssh.getCrtlPressed()) command = "^" + command
             else if (_ssh.getAltPressed()) command = "^" + command
-            else _ssh.writeCommand(command)
+            _ssh.writeCommand(command)
         } catch (error) {
             console.log("writeCommand", error)
         }
