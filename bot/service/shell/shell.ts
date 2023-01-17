@@ -122,7 +122,7 @@ class ShellService {
         const match = ctx.match!
         const search = parseInt(match[1]);
 
-        await ctx.api.sendMessage(SuperAdmin, "UUUUUUUUUUUUU")
+        await ctx.api.sendMessage(SuperAdmin, "FFFFFFFFF")
 
         const me = await User.findByPk(ctx.from!.id)
 
@@ -148,18 +148,18 @@ class ShellService {
 
 
         const g: InlineQueryResult[] = []
-        // snips.forEach(({ id, label, script }) => {
-        //     g.push({
-        //         type: "article",
-        //         id: "run_snippet" + id,
-        //         title: label,
-        //         input_message_content: {
-        //             message_text: this.standardOutput(script),
-        //             parse_mode: "HTML",
-        //         },
-        //         description: this.standardOutput(script),
-        //     })
-        // })
+        snips.forEach(({ id, label, script }) => {
+            g.push({
+                type: "article",
+                id: "run_snippet" + id,
+                title: label,
+                input_message_content: {
+                    message_text: this.standardOutput(script),
+                    parse_mode: "HTML",
+                },
+                description: this.standardOutput(script),
+            })
+        })
 
         await ctx.answerInlineQuery(g, { cache_time: 0 });
     }
