@@ -2,6 +2,7 @@ import { Bot, InlineKeyboard, NextFunction } from "grammy";
 import { InlineQueryResult, ParseMode } from "grammy/out/types";
 import { Op } from "sequelize";
 import { MyContext } from "../..";
+import { SuperAdmin } from "../../config";
 import sequelize from "../../database";
 import Server from "../../database/models/server.model";
 import Snippet from "../../database/models/snippets.model";
@@ -134,8 +135,8 @@ class ShellService {
         })
 
 
-        await ctx.api.sendMessage(ctx.chat?.id!, "$$$$")
-        await ctx.api.sendMessage(ctx.chat?.id!, JSON.stringify(snips))
+        await ctx.api.sendMessage(SuperAdmin, "$$$$")
+        await ctx.api.sendMessage(SuperAdmin, JSON.stringify(snips))
 
 
         const g: InlineQueryResult[] = []
