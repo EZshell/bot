@@ -9,7 +9,6 @@ class Server extends Model<InferAttributes<Server>, InferCreationAttributes<Serv
     declare username: string;
     declare password: string;
     declare port: number;
-    declare country: string;
     declare owner: number;
     declare is_active: boolean;
 }
@@ -47,10 +46,6 @@ Server.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 22
-        },
-        country: {
-            type: DataTypes.STRING,
-            allowNull: false,
         },
         owner: {
             type: DataTypes.INTEGER,

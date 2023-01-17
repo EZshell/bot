@@ -71,7 +71,6 @@ class AddServerService {
                 password: mch[5],
                 port: parseInt(mch[4]),
                 description: mch[6],
-                country: "Unknown",
                 owner: ctx.session.user!.id!,
                 is_active: true
             })
