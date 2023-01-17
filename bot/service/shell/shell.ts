@@ -269,22 +269,24 @@ class ShellService {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
 
-        const mch = ctx.match!
-        const tempName = Date.now()
-
-        await ctx.reply("tttttttttt")
-
-
-        const filePath = mch[2]
-        const ff = filePath.split("/")
-        const saveTo = `temp/${tempName}@${ff[ff.length - 1]}`
-
-
-        await ctx.reply("mmmmmmmmmmmm")
-
-        await ctx.reply(saveTo)
 
         try {
+
+            const mch = ctx.match!
+            const tempName = Date.now()
+
+            await ctx.reply("tttttttttt")
+
+
+            const filePath = mch[2];
+            const ffm = filePath.split("/");
+            const saveTo = `temp/${tempName}@${ffm[ffm.length - 1]}`
+
+
+            await ctx.reply("mmmmmmmmmmmm")
+
+            await ctx.reply(saveTo)
+
             await ctx.reply("Hello6655")
             const ff = await ctx.session.ssh!.downloadFile(saveTo, filePath)
 
