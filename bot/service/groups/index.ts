@@ -1,4 +1,4 @@
-import { Bot, InlineKeyboard } from "grammy";
+import { Bot, InlineKeyboard, NextFunction } from "grammy";
 import { Op } from "sequelize";
 import { MyContext } from "../..";
 import Groups from "../../database/models/groups.model";
@@ -16,6 +16,8 @@ class GroupsService {
     public run() {
         this.bot.command("groups", this.response)
         this.bot.callbackQuery("groups", this.response)
+        this.bot.callbackQuery("groups:join", this.join)
+        this.bot.on("message", this.joinFinal)
         // 
         new AddGroupService(this.bot).run()
         new ManageGroupService(this.bot).run()
@@ -35,6 +37,7 @@ class GroupsService {
 
         keyboard
             .switchInlineCurrent("➕ Add New", "groups:add:\nMyGroup")
+            .text("📲 Join group", "groups:join")
             .row()
             .text("🔄", "groups")
             .text("🏠", "menu")
@@ -63,6 +66,39 @@ class GroupsService {
         );
     }
 
+    // #######
+
+    private join = async (ctx: MyContext) => {
+        ctx.session.inputState = {
+            category: 'group',
+            parameter: 'join',
+            messageID: null,
+            subID: 0,
+            data: null
+        }
+        await ctx.reply(`Send group code to join:`, { parse_mode: 'HTML' })
+    }
+
+
+    private joinFinal = async (ctx: MyContext, _next: NextFunction) => {
+        if (!ctx.session.inputState) {
+            await _next()
+            return
+        }
+        const { category, subID, parameter, messageID } = ctx.session.inputState
+        if (category !== 'group' || parameter !== 'join') {
+            await _next()
+            return
+        }
+
+        const d = await Groups.findOne({ where: { name: ctx.message?.text! } })
+        if (!d) await ctx.reply("Group not found")
+        else {
+            const groups = [...ctx.session.user!.groups as number[], d.id]
+            await ctx.session.user!.update({ groups })
+            await ctx.reply(`Now you have access to this group\n/groups`)
+        }
+    }
 }
 
 

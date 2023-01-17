@@ -155,7 +155,7 @@ class ManageGroupService {
         const text = `You can see all <b>👥 Members</b> of this group & manage them.
 <b>Total:</b> ${query!.count}
 
-ℹ️ <i>For join people to this group, ask theme to search group name in add group</i>`
+ℹ️ <i>For join people to this group, ask theme to enter group code in join group</i>`
         const keyboard = new InlineKeyboard()
 
         query!.rows.forEach(({ first_name, id }) => {
