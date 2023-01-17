@@ -25,7 +25,15 @@ class ShellService {
         this.bot.callbackQuery("shell:cancel", this.shellCancel)
 
         this.bot.inlineQuery(/^snippets:run:(.*)$/, this.runSnippet)
-        // this.bot.hears(/#snippet\n(.*)\n(.*)/, this.saveSnippet)
+
+        this.bot
+            .on(["message", "callback_query"], async (ctx, _next) => {
+                if (ctx.session.ssh && ctx.session.ssh.isConnected()) {
+                    await ctx?.answerCallbackQuery("Shell is open")
+                }
+                else return await _next()
+            })
+
     }
 
     // ############################

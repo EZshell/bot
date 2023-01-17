@@ -12,6 +12,7 @@ import { apiThrottler, bypassThrottler } from '@grammyjs/transformer-throttler';
 import { run } from "@grammyjs/runner";
 import SnippetsService from "./service/snippets";
 import GroupsService from "./service/groups";
+import ShellService from "./service/shell/shell";
 
 
 interface InputState {
@@ -123,15 +124,9 @@ bot.command("start", async (ctx) => {
 });
 
 
-// Handle other messages.
-bot
-    .on(["message", "callback_query"])
-    .filter((ctx) => ctx.session.ssh?.isConnected() || false)
-    .use((ctx, _next) => {
-        // 
-    });
 
 // services
+new ShellService(bot).run()
 new MenuService(bot).run();
 new ServersService(bot).run();
 new SnippetsService(bot).run();

@@ -38,7 +38,7 @@ class ManageServerService {
         this.bot.hears(/#add_to_group:\n([0-9]+):([0-9]+)/, this.addToGroupFinal)
 
 
-        new ShellService(this.bot).run()
+
     }
 
 
