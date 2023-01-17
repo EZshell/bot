@@ -80,6 +80,7 @@ class ShellService {
 
         _keyboard
             .text("🔐", "shell:password")
+            .text("🔐", "shell:password")
             .text("🔄", "shell:reload")
             .text("⛔️", "shell:cancel")
             .text("🕹", "shell:exit")
