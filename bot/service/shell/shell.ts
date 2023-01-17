@@ -272,18 +272,19 @@ class ShellService {
         const mch = ctx.match!
         const tempName = Date.now()
 
+        await ctx.reply("tttttttttt")
+
 
         const filePath = mch[2]
         const ff = filePath.split("/")
         const saveTo = `temp/${tempName}@${ff[ff.length - 1]}`
 
 
+        await ctx.reply("mmmmmmmmmmmm")
+
+        await ctx.reply(saveTo)
+
         try {
-            await ctx.api.editMessageReplyMarkup(
-                ctx.chat?.id!,
-                ctx.session.inputState?.messageID!,
-                { reply_markup: new InlineKeyboard() }
-            )
             await ctx.reply("Hello6655")
             const ff = await ctx.session.ssh!.downloadFile(saveTo, filePath)
 
