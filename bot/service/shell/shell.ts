@@ -136,7 +136,7 @@ class ShellService {
 
         const tyu = [
             { id: { [Op.in]: mySnippets } },
-            { label: { [Op.like]: `%${search}%` } },
+            // { label: { [Op.like]: `%${search}%` } },
         ]
 
         const snips = await Snippet.findAll({
