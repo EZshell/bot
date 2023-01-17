@@ -6,7 +6,7 @@ import Server from "../../database/models/server.model";
 import Snippet from "../../database/models/snippets.model";
 import User from "../../database/models/user.model";
 import EZssh from "./ssh";
-
+import { createReadStream } from "fs";
 
 class ShellService {
     private bot;
@@ -282,9 +282,9 @@ class ShellService {
 
             await ctx.reply("Hello2")
 
-            await ctx.replyWithDocument("temp/1673987235694@gg.yml")
+            // await ctx.replyWithDocument("temp/1673987235694@gg.yml")
 
-            // const m = new InputFile("temp/1673987235694@gg.yml")
+            const m = new InputFile(createReadStream("temp/1673987235694@gg.yml"))
         } catch (error) {
             await ctx.reply("❌ File not found or path is invalid:\n" + error)
         }
