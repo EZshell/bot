@@ -37,6 +37,7 @@ class GroupsService {
 
         keyboard
             .switchInlineCurrent("➕ Add New", "groups:add:\nMyGroup")
+            .row()
             .text("📲 Join group", "groups:join")
             .row()
             .text("🔄", "groups")
@@ -92,11 +93,13 @@ class GroupsService {
         }
 
         const d = await Groups.findOne({ where: { name: ctx.message?.text! } })
-        if (!d) await ctx.reply("Group not found")
+        if (!d) await ctx.reply("Group not found\nSend again or /start")
         else {
             const groups = [...ctx.session.user!.groups as number[], d.id]
             await ctx.session.user!.update({ groups })
             await ctx.reply(`Now you have access to this group\n/groups`)
+
+            ctx.session.inputState = null
         }
     }
 }
