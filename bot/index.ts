@@ -92,6 +92,9 @@ bot
     });
 
 
+
+
+
 bot.use(session({ initial }));
 bot
     .filter((ctx) => ctx.message !== undefined || ctx.callbackQuery !== undefined)
@@ -118,6 +121,15 @@ bot.command("start", async (ctx) => {
     _text += `\n\nPress /menu`
     await ctx.reply(_text, { parse_mode: "HTML" })
 });
+
+
+// Handle other messages.
+bot
+    .on(["message", "callback_query"])
+    .filter((ctx) => ctx.session.ssh?.isConnected() || false)
+    .use((ctx, _next) => {
+        // 
+    });
 
 // services
 new MenuService(bot).run();

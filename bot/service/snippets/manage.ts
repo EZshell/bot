@@ -43,10 +43,14 @@ class ManageSnippetService {
         return keyboard
     }
 
+    standardOutput = (data: string) => {
+        return data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
+    }
+
     private text = async (snippet: Snippet | null) => {
         if (!snippet) return '<i>Snippet deleted or not found</i>'
         return `📌 <b>${snippet.label}</b>
-<code>${snippet.script}</code>`
+<code>${this.standardOutput(snippet.script)}</code>`
     }
 
 

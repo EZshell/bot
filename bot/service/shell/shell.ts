@@ -1,7 +1,11 @@
 import { Bot, InlineKeyboard, NextFunction } from "grammy";
-import { ParseMode } from "grammy/out/types";
+import { InlineQueryResult, ParseMode } from "grammy/out/types";
+import { Op } from "sequelize";
 import { MyContext } from "../..";
+import sequelize from "../../database";
 import Server from "../../database/models/server.model";
+import Snippet from "../../database/models/snippets.model";
+import User from "../../database/models/user.model";
 import EZssh from "./ssh";
 
 
@@ -19,6 +23,9 @@ class ShellService {
         this.bot.callbackQuery("shell:exit", this.shellExit)
         this.bot.callbackQuery("shell:reload", this.shellReload)
         this.bot.callbackQuery("shell:cancel", this.shellCancel)
+
+        this.bot.inlineQuery(/^snippets:run:(.*)$/, this.runSnippet)
+        // this.bot.hears(/#snippet\n(.*)\n(.*)/, this.saveSnippet)
     }
 
     // ############################
@@ -100,6 +107,43 @@ class ShellService {
         return new Promise((resolve, reject) => {
             setTimeout(func, time)
         })
+    }
+
+    runSnippet = async (ctx: MyContext) => {
+        const match = ctx.match!
+        const serverID = parseInt(match[1]);
+        const server = await Server.findByPk(serverID)
+
+        const search = match[2]
+
+        const me = await User.findByPk(ctx.from!.id)
+        const mySnippets = me!.snippets as number[]
+
+        const tyu = [
+            { id: { [Op.in]: mySnippets } },
+            { name: { [Op.like]: `%${search}%` } },
+        ]
+
+        const snips = await Snippet.findAll({
+            where: { [Op.and]: tyu }
+        })
+
+
+        const g: InlineQueryResult[] = []
+        snips.forEach(({ id, label, script }) => {
+            g.push({
+                type: "article",
+                id: "run_snippet" + id,
+                title: label,
+                input_message_content: {
+                    message_text: this.standardOutput(script),
+                    parse_mode: "HTML",
+                },
+                description: this.standardOutput(script),
+            })
+        })
+
+        await ctx.answerInlineQuery(g, { cache_time: 0 });
     }
 
 

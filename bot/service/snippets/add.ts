@@ -18,11 +18,15 @@ class AddSnippetService {
 
     private snippet: SnippetInputType | undefined;
 
+    standardOutput = (data: string) => {
+        return data.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;")
+    }
+
     private text = async (ctx: MyContext) => {
         const snippet = this.snippet!
-        return `#new_snippet
+        return this.standardOutput(`#new_snippet
 <b>${snippet.label}</b>
-<code>${snippet.script}</code>`
+<code>${snippet.script}</code>`)
     }
 
     private response = async (ctx: MyContext) => {
