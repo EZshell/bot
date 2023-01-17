@@ -78,7 +78,7 @@ class ShellService {
             .text("⛔️", "shell:cancel")
             .text("🕹", "shell:exit")
             .row()
-            .switchInlineCurrent("📌 Snippets", "snippets:run: ")
+            .switchInlineCurrent("📌 ssSnippets", "snippets:run: ")
 
         return _keyboard
     }
