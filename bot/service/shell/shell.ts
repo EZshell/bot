@@ -18,6 +18,10 @@ class ShellService {
         this.bot.callbackQuery(/^server:([0-9]+):sshCheck$/, this.sshCheck)
         this.bot.callbackQuery(/^server:([0-9]+):openShell$/, this.openShell)
 
+        this.bot.inlineQuery(/^sendFile:(.*)$/, this.sendFileInline)
+        this.bot.hears(/sendFile:(.*)$/, this.sendFile)
+        this.bot.on("message:document", this.uploadFile)
+
         this.bot.inlineQuery(/^getFile:(.*)$/, this.getFileInline)
         this.bot.hears(/getFile:(.*)$/, this.getFile)
         this.bot.on("message:text", this.writeCommand)
@@ -88,15 +92,16 @@ class ShellService {
             .text("📝 Tab", "shell:tab")
             .text("🔑 Pass", "shell:password")
 
-            .row()
-
-            .text("◀️", "shell:left")
-            .text("🔼", "shell:up")
-            .text("🔽", "shell:bottom")
-            .text("▶️", "shell:right")
+            // .row()
+            // .text("◀️", "shell:left")
+            // .text("🔼", "shell:up")
+            // .text("🔽", "shell:bottom")
+            // .text("▶️", "shell:right")
 
             .row()
             .switchInlineCurrent("📌 Snippets", "snippets:run: ")
+            .switchInlineCurrent("📥 Receive", "getFile:path")
+            .switchInlineCurrent("📤 Send", "sendFile:path")
 
         return _keyboard
     }
@@ -265,6 +270,61 @@ class ShellService {
 
 
     // =================================> file
+    sendFileInline = async (ctx: MyContext) => {
+        const match = ctx.match!
+
+        const filePath = match[1];
+        const ff = filePath.split("/")
+        const fileName = ff[ff.length - 1]
+
+        const g: InlineQueryResult[] = []
+        g.push({
+            type: "article",
+            id: "send_file" + filePath,
+            title: "📤 " + fileName,
+            input_message_content: {
+                message_text: "sendFile:" + filePath,
+            },
+            description: "PATH: " + filePath
+        })
+        await ctx.answerInlineQuery(g, { cache_time: 0 });
+    }
+
+    sendFile = async (ctx: MyContext, _next: NextFunction) => {
+        const server = await this.checkShellStatus(ctx, _next)
+        if (!server) return;
+
+        await ctx.deleteMessage()
+
+        try {
+            const mch = ctx.match!
+            const tempName = Date.now()
+
+            const filePath = mch[1];
+            const ffm = filePath.split("/");
+            const fileName = ffm[ffm.length - 1]
+            const getFrom = `temp/${tempName}@${ffm[ffm.length - 1]}`
+
+            // await ctx.session.ssh!.uploadFile(getFrom, filePath)
+
+
+            await ctx.reply(`Upload path: ${filePath}\nNow send your file to upload`)
+        } catch (error) {
+            await ctx.reply("❌ File not found or path is invalid:\n" + error)
+        }
+    }
+
+    uploadFile = async (ctx: MyContext, _next: NextFunction) => {
+        const server = await this.checkShellStatus(ctx, _next)
+        if (!server) return;
+
+        await ctx.deleteMessage()
+
+        ctx.reply("File uploaded")
+    }
+
+    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
     getFileInline = async (ctx: MyContext) => {
         const match = ctx.match!
 
@@ -272,18 +332,16 @@ class ShellService {
         const ff = filePath.split("/")
         const fileName = ff[ff.length - 1]
 
-
         const g: InlineQueryResult[] = []
         g.push({
             type: "article",
             id: "get_file" + filePath,
-            title: fileName,
+            title: "📥 " + fileName,
             input_message_content: {
                 message_text: "getFile:" + filePath,
             },
-            description: filePath
+            description: "PATH: " + filePath
         })
-
         await ctx.answerInlineQuery(g, { cache_time: 0 });
     }
 
@@ -314,15 +372,7 @@ class ShellService {
         }
     }
 
-    uploadFile = async (ctx: MyContext, _next: NextFunction) => {
-        const server = await this.checkShellStatus(ctx, _next)
-        if (!server) return;
-        try {
-            ctx.session.ssh!.writeCommand("\n")
-        } catch (error) {
-            console.log("shellReload", error)
-        }
-    }
+
     // =================================> file
 
 
