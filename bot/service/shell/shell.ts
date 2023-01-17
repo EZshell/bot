@@ -275,10 +275,10 @@ class ShellService {
             const mch = ctx.match!
             const tempName = Date.now()
 
-            await ctx.reply("tttttttttt")
+            await ctx.reply("uuuu")
 
 
-            const filePath = mch[2];
+            const filePath = mch[1];
             const ffm = filePath.split("/");
             const saveTo = `temp/${tempName}@${ffm[ffm.length - 1]}`
 
