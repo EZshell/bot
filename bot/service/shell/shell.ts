@@ -290,7 +290,7 @@ class ShellService {
             await ctx.reply("rrtytu")
             await ctx.reply(JSON.stringify(ff))
 
-            await ctx.replyWithDocument(new InputFile(saveTo))
+            // await ctx.replyWithDocument(new InputFile(saveTo))
 
             // const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n`
         } catch (error) {
