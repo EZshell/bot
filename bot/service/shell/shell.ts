@@ -24,7 +24,7 @@ class ShellService {
 
         this.bot.callbackQuery("shell:terminate", this.shellTerminate)
 
-        this.bot.callbackQuery(/^shell:([0-9]+)$/, this.shellCommands)
+        this.bot.callbackQuery(/^shell:(.*)$/, this.shellCommands)
 
         this.bot.inlineQuery(/^snippets:run:(.*)$/, this.runSnippet)
 
@@ -85,7 +85,7 @@ class ShellService {
 
             .text(`${isCrtl ? "🟢" : "⚪️"} CRTL`, "shell:crtl")
             .text(`${isAlt ? "🟢" : "⚪️"} ALT`, "shell:alt")
-            .text("🔜 Tab", "shell:tab")
+            .text("📝 Tab", "shell:tab")
             .text("🔑 Pass", "shell:password")
 
             .row()
