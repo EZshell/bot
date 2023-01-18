@@ -103,7 +103,7 @@ class ShellService {
 
             .text(`${isCrtl ? "🟢" : "⚪️"} CRTL`, "shell:crtl")
             .text(`${isAlt ? "🟢" : "⚪️"} ALT`, "shell:alt")
-            .text("📝 Tab", "shell:tab")
+            .text("📝 tTab", "shell:tab")
             .text("🔑 Pass", "shell:password")
 
             // .row()
@@ -529,11 +529,11 @@ class ShellService {
 
             case 'alt':
                 _ssh.setAltPressed()
-                _ssh.writeCommand("\x08")
+                _ssh.writeCommand("\x127")
                 break;
 
             case 'backspace':
-                _ssh.writeCommand("\x08")
+                _ssh.writeCommand("\x7F")
                 break;
 
             case 'tab':
