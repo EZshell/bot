@@ -303,8 +303,7 @@ class ShellService {
             const mch = ctx.match!
             const filePath = mch[1];
 
-            ctx.session.inputState!.parameter = 'upload'
-            ctx.session.inputState!.data = `${filePath}`
+            ctx.session.inputState!.parameter = `upload->${filePath}`
 
 
             await ctx.reply(`Upload path: ${filePath || "."}\nNow send your file to upload`)
@@ -317,13 +316,14 @@ class ShellService {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
 
-        if (ctx.session.inputState?.parameter !== 'upload') {
+        const t = ctx.session.inputState?.parameter.split("-")
+        if (t.length !== 2 || t[0] !== 'upload') {
             return await _next()
         }
 
         await ctx.deleteMessage()
 
-        const filePath = ctx.session.inputState?.data!
+        const filePath = t[1]
 
 
         const file = await ctx.getFile()
@@ -333,7 +333,6 @@ class ShellService {
         await ctx.session.ssh?.uploadFile(path, filePath)
 
         ctx.session.inputState!.parameter = 'command'
-        ctx.session.inputState!.data = ''
 
         ctx.reply("File uploaded :))")
     }
