@@ -6,7 +6,10 @@ import Server from "../../database/models/server.model";
 import Snippet from "../../database/models/snippets.model";
 import User from "../../database/models/user.model";
 import EZssh from "./ssh";
-import { createReadStream, unlinkSync, writeFileSync } from "fs";
+import { createReadStream, createWriteStream, unlinkSync, writeFileSync } from "fs";
+import http from "http"
+import { BotToken } from "../../config";
+
 
 class ShellService {
     private bot;
@@ -310,6 +313,21 @@ class ShellService {
         }
     }
 
+
+    downFileUrl = async (fileUrl: string, path: string) => {
+        return new Promise((resolve, reject) => {
+            var _file = createWriteStream(path);
+            http.get(fileUrl, function (response) {
+                response.pipe(_file);
+                _file.on('finish', async function () {
+                    _file.close(() => {
+                        resolve(true)
+                    });
+                });
+            });
+        })
+    }
+
     uploadFile = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
@@ -330,15 +348,16 @@ class ShellService {
         const tempPath = `temp/${tempName}@${fileName}`
 
 
-        const file = await ctx.api.getFile(ctx.message?.document?.file_id!)
-        // writeFileSync(tempPath, file.file_path)
+        const file = await ctx.getFile()
+        const fileUrl = `https://api.telegram.org/file/bot${BotToken}/${file.file_path}`
+        await this.downFileUrl(fileUrl, tempPath)
 
         ctx.reply(JSON.stringify(file))
 
 
-        // await ctx.session.ssh?.uploadFile(tempPath, fileName)
+        await ctx.session.ssh?.uploadFile(tempPath, filePath)
 
-        ctx.reply("File uploaded!!")
+        ctx.reply("File uploaded :))")
     }
 
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
