@@ -526,11 +526,11 @@ class ShellService {
 
             case 'alt':
                 _ssh.setAltPressed()
-                _ssh.writeCommand("\n")
+                _ssh.writeCommand("")
                 break;
 
             case 'tab':
-                _ssh.writeCommand("\n")
+                _ssh.writeCommand("tab")
                 break;
 
             case 'password':
