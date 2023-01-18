@@ -98,6 +98,7 @@ class ShellService {
             .row()
             .text(`${isAuto ? "🟢" : "⚪️"} Auto Enter`, "shell:autoEnter")
             .text("⏩ Enter", "shell:enter")
+            .text("⬅️ Del", "shell:backspace")
             .row()
 
             .text(`${isCrtl ? "🟢" : "⚪️"} CRTL`, "shell:crtl")
@@ -528,6 +529,10 @@ class ShellService {
 
             case 'alt':
                 _ssh.setAltPressed()
+                _ssh.writeCommand("\x08")
+                break;
+
+            case 'backspace':
                 _ssh.writeCommand("\x08")
                 break;
 
