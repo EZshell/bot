@@ -39,7 +39,7 @@ class ShellService {
 
         this.bot.on("message", async (ctx, _next) => {
             if (ctx.session.ssh && ctx.session.ssh.isConnected()) {
-                await ctx.reply("❌ Errorrr")
+                await ctx.deleteMessage()
                 return
             }
             return await _next()
