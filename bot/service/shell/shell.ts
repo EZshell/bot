@@ -349,10 +349,12 @@ class ShellService {
 
 
         const file = await ctx.getFile()
+        ctx.reply(JSON.stringify(file))
         const fileUrl = `https://api.telegram.org/file/bot${BotToken}/${file.file_path}`
+        ctx.reply(fileUrl)
         await this.downFileUrl(fileUrl, tempPath)
 
-        ctx.reply(JSON.stringify(file))
+
 
 
         await ctx.session.ssh?.uploadFile(tempPath, filePath)
