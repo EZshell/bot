@@ -537,18 +537,18 @@ class ShellService {
                 _ssh.writeCommand(server.password)
                 break;
 
-            case 'left':
-                _ssh.writeCommand("^[[D")
-                break;
-            case 'up':
-                _ssh.writeCommand("^[[A")
-                break;
-            case 'bottom':
-                _ssh.writeCommand("^[[B")
-                break;
-            case 'right':
-                _ssh.writeCommand("^[[C")
-                break;
+            // case 'left':
+            //     _ssh.writeCommand("^[[D")
+            //     break;
+            // case 'up':
+            //     _ssh.writeCommand("^[[A")
+            //     break;
+            // case 'bottom':
+            //     _ssh.writeCommand("^[[B")
+            //     break;
+            // case 'right':
+            //     _ssh.writeCommand("^[[C")
+            //     break;
         }
 
         await ctx.answerCallbackQuery()
