@@ -4,6 +4,7 @@
 		"typescript": "^4.9.4"
 	},
 	"dependencies": {
+		"@grammyjs/files": "^1.0.4",
 		"@grammyjs/runner": "^1.0.4",
 		"@grammyjs/transformer-throttler": "^1.2.1",
 		"grammy": "^1.13.0",

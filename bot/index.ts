@@ -13,6 +13,7 @@ import { run } from "@grammyjs/runner";
 import SnippetsService from "./service/snippets";
 import GroupsService from "./service/groups";
 import ShellService from "./service/shell/shell";
+import { FileFlavor, hydrateFiles } from "@grammyjs/files";
 
 
 interface InputState {
@@ -31,7 +32,7 @@ interface SessionData {
     ssh: EZssh | null;
     delay: number
 }
-export type MyContext = Context & SessionFlavor<SessionData>;
+export type MyContext = Context & SessionFlavor<SessionData> & FileFlavor<Context>;
 
 
 
@@ -74,6 +75,11 @@ const bot = new Bot<MyContext>(BotToken);
 
 const throttler = apiThrottler({ global: globalConfig, group: groupConfig, out: outConfig });
 bot.api.config.use(throttler);
+
+
+// Use the plugin.
+bot.api.config.use(hydrateFiles(bot.token));
+
 
 
 // Handle the /update command.

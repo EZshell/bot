@@ -313,21 +313,6 @@ class ShellService {
         }
     }
 
-
-    downFileUrl = async (fileUrl: string, path: string) => {
-        return new Promise((resolve, reject) => {
-            var _file = createWriteStream(path);
-            http.get(fileUrl, function (response) {
-                response.pipe(_file);
-                _file.on('finish', async function () {
-                    _file.close(() => {
-                        resolve(true)
-                    });
-                });
-            });
-        })
-    }
-
     uploadFile = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
@@ -341,23 +326,11 @@ class ShellService {
         const filePath = ctx.session.inputState?.data!
 
 
-
-        const tempName = Date.now()
-        const ffm = filePath.split("/");
-        const fileName = ffm[ffm.length - 1]
-        const tempPath = `temp/${tempName}@${fileName}`
-
-
         const file = await ctx.getFile()
-        ctx.reply(JSON.stringify(file))
-        const fileUrl = `https://api.telegram.org/file/bot${BotToken}/${file.file_path}`
-        ctx.reply(fileUrl)
-        await this.downFileUrl(fileUrl, tempPath)
+        const path = await file.download();
 
 
-
-
-        await ctx.session.ssh?.uploadFile(tempPath, filePath)
+        await ctx.session.ssh?.uploadFile(path, filePath)
 
         ctx.reply("File uploaded :))")
     }
