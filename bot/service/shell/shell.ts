@@ -39,7 +39,7 @@ class ShellService {
             .on(["message", "callback_query"], async (ctx, _next) => {
                 if (ctx.session.ssh && ctx.session.ssh.isConnected()) {
                     if (ctx.answerCallbackQuery) await ctx?.answerCallbackQuery("❌ Error")
-                    else await ctx.reply("❌ Error", { reply_to_message_id: ctx.message?.message_id })
+                    else await ctx.reply("❌ Errorrr", { reply_to_message_id: ctx.message?.message_id })
                 }
                 else return await _next()
             })
