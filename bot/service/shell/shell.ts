@@ -332,6 +332,9 @@ class ShellService {
 
         await ctx.session.ssh?.uploadFile(path, filePath)
 
+        ctx.session.inputState!.parameter = 'command'
+        ctx.session.inputState!.data = ''
+
         ctx.reply("File uploaded :))")
     }
 
