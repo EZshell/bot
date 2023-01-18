@@ -21,6 +21,7 @@ class ShellService {
         this.bot.callbackQuery(/^server:([0-9]+):sshCheck$/, this.sshCheck)
         this.bot.callbackQuery(/^server:([0-9]+):openShell$/, this.openShell)
 
+        this.bot.callbackQuery(/^sendFile:cancel$/, this.sendFileCancel)
         this.bot.inlineQuery(/^sendFile:(.*)$/, this.sendFileInline)
         this.bot.hears(/sendFile:(.*)$/, this.sendFile)
         this.bot.on("message:document", this.uploadFile)
@@ -309,10 +310,20 @@ class ShellService {
         await ctx.deleteMessage()
 
         try {
+            const t = ctx.session.inputState?.parameter.split("->")
+            if (t.length === 3 && t[0] === 'upload') {
+                await ctx.api.deleteMessage(ctx.chat?.id!, t[2])
+            }
+        } catch (error) { }
+
+
+        try {
             const mch = ctx.match!
             const filePath = mch[1];
 
-            const msg = (await ctx.reply(`Upload path: ${filePath || "."}\nNow send your file to upload`)).message_id
+            const _keyboard = new InlineKeyboard()
+                .text("❌ Cancel", "sendFile:cancel")
+            const msg = (await ctx.reply(`Upload path: ${filePath || "."}\nNow send your file to upload`, { reply_markup: _keyboard })).message_id
 
             ctx.session.inputState!.parameter = `upload->${filePath}->${msg}`
 
@@ -321,6 +332,22 @@ class ShellService {
             setTimeout(async () => {
                 await ctx.api.deleteMessage(ctx.chat?.id!, msg)
             }, 5000)
+        }
+    }
+
+
+    sendFileCancel = async (ctx: MyContext, _next: NextFunction) => {
+        const server = await this.checkShellStatus(ctx, _next)
+        if (!server) return;
+
+        try {
+            const t = ctx.session.inputState?.parameter.split("->")
+            if (t.length === 3 && t[0] === 'upload') {
+                await ctx.api.deleteMessage(ctx.chat?.id!, t[2])
+                ctx.session.inputState!.parameter = 'command'
+            }
+        } catch (error) {
+
         }
     }
 
@@ -335,23 +362,31 @@ class ShellService {
 
         await ctx.deleteMessage()
 
-        const filePath = t[1]
+        try {
+
+            const filePath = t[1]
+
+            const file = await ctx.getFile()
+            const path = await file.download()
 
 
-        const file = await ctx.getFile()
-        const path = await file.download()
+            await ctx.session.ssh?.uploadFile(path, filePath)
 
+            ctx.session.inputState!.parameter = 'command'
 
-        await ctx.session.ssh?.uploadFile(path, filePath)
+            const msg = (await ctx.reply("✅ File uploaded")).message_id
 
-        ctx.session.inputState!.parameter = 'command'
-
-        const msg = (await ctx.reply("✅ File uploaded")).message_id
-
-        setTimeout(async () => {
-            await ctx.api.deleteMessage(ctx.chat?.id!, msg)
-            await ctx.api.deleteMessage(ctx.chat?.id!, t[2])
-        }, 5000)
+            setTimeout(async () => {
+                await ctx.api.deleteMessage(ctx.chat?.id!, msg)
+                await ctx.api.deleteMessage(ctx.chat?.id!, t[2])
+            }, 5000)
+        }
+        catch (error) {
+            const msg = await ctx.reply("❌ Error uploading or path is invalid:\n" + error)
+            setTimeout(async () => {
+                await ctx.api.deleteMessage(ctx.chat?.id!, msg.message_id)
+            }, 5000)
+        }
     }
 
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -400,7 +435,7 @@ class ShellService {
             unlinkSync(saveTo)
             setTimeout(async () => {
                 await ctx.api.deleteMessage(ctx.chat?.id!, msg1.message_id)
-                await ctx.api.deleteMessage(ctx.chat?.id!, msg2.message_id)
+                // await ctx.api.deleteMessage(ctx.chat?.id!, msg2.message_id)
             }, 5000)
         } catch (error) {
             const msg = await ctx.reply("❌ File not found or path is invalid:\n" + error)
@@ -418,6 +453,11 @@ class ShellService {
     writeCommand = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
+
+        const t = ctx.session.inputState?.parameter
+        if (t !== 'command') {
+            return await _next()
+        }
 
         let command = ctx.message?.text!
         const _ssh = ctx.session.ssh!
