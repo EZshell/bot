@@ -27,6 +27,8 @@ class ShellService {
 
         this.bot.inlineQuery(/^getFile:(.*)$/, this.getFileInline)
         this.bot.hears(/getFile:(.*)$/, this.getFile)
+
+
         this.bot.on("message:text", this.writeCommand)
 
         this.bot.callbackQuery("shell:terminate", this.shellTerminate)
@@ -39,7 +41,7 @@ class ShellService {
             .on(["message", "callback_query"], async (ctx, _next) => {
                 if (ctx.session.ssh && ctx.session.ssh.isConnected()) {
                     if (ctx.answerCallbackQuery) await ctx?.answerCallbackQuery("❌ Error")
-                    else await ctx.reply("❌ Errorrr", { reply_to_message_id: ctx.message?.message_id })
+                    else await ctx.reply("❌ Errorrr")
                 }
                 else return await _next()
             })
