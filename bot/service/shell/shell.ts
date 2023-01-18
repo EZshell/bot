@@ -37,14 +37,21 @@ class ShellService {
 
         this.bot.inlineQuery(/^snippets:run:(.*)$/, this.runSnippet)
 
-        this.bot
-            .on(["message", "callback_query"], async (ctx, _next) => {
-                if (ctx.session.ssh && ctx.session.ssh.isConnected()) {
-                    if (ctx.answerCallbackQuery) await ctx?.answerCallbackQuery("❌ Error")
-                    else await ctx.reply("❌ Errorrr")
-                }
-                else return await _next()
-            })
+        this.bot.on("message", async (ctx, _next) => {
+            if (ctx.session.ssh && ctx.session.ssh.isConnected()) {
+                await ctx.reply("❌ Errorrr")
+                return
+            }
+            return await _next()
+        })
+
+        this.bot.on("callback_query", async (ctx, _next) => {
+            if (ctx.session.ssh && ctx.session.ssh.isConnected()) {
+                await ctx.answerCallbackQuery("❌ Error")
+                return
+            }
+            return await _next()
+        })
     }
 
     // ############################
