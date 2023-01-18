@@ -47,7 +47,7 @@ class ShellService {
 
         this.bot.on("callback_query", async (ctx, _next) => {
             if (ctx.session.ssh && ctx.session.ssh.isConnected()) {
-                await ctx.answerCallbackQuery("❌ Error")
+                await ctx.answerCallbackQuery("❌ Error: Shell is open")
                 return
             }
             return await _next()
@@ -312,12 +312,15 @@ class ShellService {
             const mch = ctx.match!
             const filePath = mch[1];
 
-            ctx.session.inputState!.parameter = `upload->${filePath}`
+            const msg = (await ctx.reply(`Upload path: ${filePath || "."}\nNow send your file to upload`)).message_id
 
+            ctx.session.inputState!.parameter = `upload->${filePath}->${msg}`
 
-            await ctx.reply(`Upload path: ${filePath || "."}\nNow send your file to upload`)
         } catch (error) {
-            await ctx.reply("❌ File not found or path is invalid:\n" + error)
+            const msg = (await ctx.reply("❌ File not found or path is invalid:\n" + error)).message_id
+            setTimeout(async () => {
+                await ctx.api.deleteMessage(ctx.chat?.id!, msg)
+            }, 5000)
         }
     }
 
@@ -325,8 +328,8 @@ class ShellService {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
 
-        const t = ctx.session.inputState?.parameter.split("-")
-        if (t.length !== 2 || t[0] !== 'upload') {
+        const t = ctx.session.inputState?.parameter.split("->")
+        if (t.length !== 3 || t[0] !== 'upload') {
             return await _next()
         }
 
@@ -336,14 +339,19 @@ class ShellService {
 
 
         const file = await ctx.getFile()
-        const path = await file.download();
+        const path = await file.download()
 
 
         await ctx.session.ssh?.uploadFile(path, filePath)
 
         ctx.session.inputState!.parameter = 'command'
 
-        ctx.reply("File uploaded :))")
+        const msg = (await ctx.reply("✅ File uploaded")).message_id
+
+        setTimeout(async () => {
+            await ctx.api.deleteMessage(ctx.chat?.id!, msg)
+            await ctx.api.deleteMessage(ctx.chat?.id!, t[2])
+        }, 5000)
     }
 
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -387,11 +395,18 @@ class ShellService {
             await ctx.session.ssh!.downloadFile(saveTo, filePath)
 
 
-            await ctx.reply("📥 File received:")
-            await ctx.replyWithDocument(new InputFile(createReadStream(saveTo), fileName))
+            const msg1 = await ctx.reply("📥 File received:")
+            const msg2 = await ctx.replyWithDocument(new InputFile(createReadStream(saveTo), fileName))
             unlinkSync(saveTo)
+            setTimeout(async () => {
+                await ctx.api.deleteMessage(ctx.chat?.id!, msg1.message_id)
+                await ctx.api.deleteMessage(ctx.chat?.id!, msg2.message_id)
+            }, 5000)
         } catch (error) {
-            await ctx.reply("❌ File not found or path is invalid:\n" + error)
+            const msg = await ctx.reply("❌ File not found or path is invalid:\n" + error)
+            setTimeout(async () => {
+                await ctx.api.deleteMessage(ctx.chat?.id!, msg.message_id)
+            }, 5000)
         }
     }
 
