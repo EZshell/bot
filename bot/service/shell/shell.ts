@@ -464,8 +464,7 @@ class ShellService {
         try {
             await ctx.deleteMessage()
 
-            if (_ssh.getAutoEnter()) command += "\n"
-            else if (_ssh.getCrtlPressed() && _ssh.getAltPressed()) {
+            if (_ssh.getCrtlPressed() && _ssh.getAltPressed()) {
                 command = "^" + command
                 _ssh.setCrtlPressed()
                 _ssh.setAltPressed()
@@ -478,6 +477,9 @@ class ShellService {
                 command = "^" + command
                 _ssh.setAltPressed()
             }
+
+            if (_ssh.getAutoEnter()) command += "\n"
+
             _ssh.writeCommand(command)
         } catch (error) {
             console.log("writeCommand", error)
