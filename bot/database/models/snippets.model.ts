@@ -19,7 +19,7 @@ Snippet.init(
             allowNull: false,
         },
         script: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: false
         },
     },
