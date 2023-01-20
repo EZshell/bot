@@ -103,7 +103,7 @@ class ShellService {
 
             .text(`${isCrtl ? "🟢" : "⚪️"} CRTL`, "shell:crtl")
             .text(`${isAlt ? "🟢" : "⚪️"} ALT`, "shell:alt")
-            .text("📝 Tab3", "shell:tab")
+            .text("📝 Tab4", "shell:tab")
             .text("🔑 Pass", "shell:password")
 
             // .row()
@@ -144,8 +144,6 @@ class ShellService {
 
     exitCurrentShell = async (ctx: MyContext) => {
         ctx.session.ssh?.exitShell()
-        ctx.session.ssh = null
-        ctx.session.inputState = null
     }
 
     standardOutput = (data: string) => {
@@ -221,17 +219,22 @@ class ShellService {
             this.openShellSession(ctx, ssh, serverID, messageID)
 
             await ssh.openShell(async (data) => {
-                if (data === "Exit") {
-                    const _keyboard = new InlineKeyboard().text("❌ Closed")
-                    await ctx.api.editMessageReplyMarkup(
-                        ctx.chat!.id,
-                        ctx.session.inputState?.messageID!,
-                        { reply_markup: _keyboard }
-                    );
-                    return
-                }
+
 
                 try {
+
+                    if (data === "Exit") {
+                        const _keyboard = new InlineKeyboard().text("❌ Closed")
+                        await ctx.api.editMessageReplyMarkup(
+                            ctx.chat!.id,
+                            ctx.session.inputState?.messageID!,
+                            { reply_markup: _keyboard }
+                        );
+                        ctx.session.ssh = null
+                        ctx.session.inputState = null
+                        return
+                    }
+
                     const _data = this.standardOutput(data)
                     if (!ctx.session.inputState || !ctx.session.ssh) return
                     ctx.session.inputState.data += _data
