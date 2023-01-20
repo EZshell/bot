@@ -7,8 +7,6 @@ import Snippet from "../../database/models/snippets.model";
 import User from "../../database/models/user.model";
 import EZssh from "./ssh";
 import { createReadStream, createWriteStream, unlinkSync, writeFileSync } from "fs";
-import http from "http"
-import { BotToken } from "../../config";
 
 
 class ShellService {
@@ -33,6 +31,7 @@ class ShellService {
         this.bot.on("message:text", this.writeCommand)
 
         this.bot.callbackQuery("shell:terminate", this.shellTerminate)
+        this.bot.callbackQuery("shell:crtl:c", this.shellCancel)
 
         this.bot.callbackQuery(/^shell:(.*)$/, this.shellCommands)
 
@@ -95,6 +94,7 @@ class ShellService {
 
         _keyboard
             .text("🕹 Terminate", "shell:terminate")
+            .text("❌ Cancel", "shell:crtl:c")
             .row()
             .text(`${isAuto ? "🟢" : "⚪️"} Auto Enter`, "shell:autoEnter")
             .text("⏩ Enter", "shell:enter")
@@ -103,7 +103,7 @@ class ShellService {
 
             .text(`${isCrtl ? "🟢" : "⚪️"} CRTL`, "shell:crtl")
             .text(`${isAlt ? "🟢" : "⚪️"} ALT`, "shell:alt")
-            .text("📝 Tab95", "shell:tab")
+            .text("📝 Tab", "shell:tab")
             .text("🔑 Pass", "shell:password")
 
             // .row()
@@ -474,9 +474,44 @@ class ShellService {
 
     // =================================> command
     specialCommands = (command: string, crtl = false, alt = false) => {
-        // const withCrtl: { string: string } = {
-        //     'Ahhh': "\x01"
-        // }
+        if (crtl && command.length === 1) {
+            command = command.toUpperCase()
+            let withCrtl: { [key: string]: string } = {
+                "@": "\x00",
+                "A": "\x01",
+                "B": "\x02",
+                "C": "\x03",
+                "D": "\x04",
+                "E": "\x05",
+                "F": "\x06",
+                "G": "\x07",
+                "H": "\x08",
+                "I": "\x09",
+                "J": "\x10",
+                "K": "\x11",
+                "L": "\x12",
+                "M": "\x13",
+                "N": "\x14",
+                "O": "\x15",
+                "P": "\x16",
+                "Q": "\x17",
+                "R": "\x18",
+                "S": "\x19",
+                "T": "\x20",
+                "U": "\x21",
+                "V": "\x22",
+                "W": "\x23",
+                "X": "\x24",
+                "Y": "\x25",
+                "Z": "\x26",
+                "[": "\x27",
+                "\\": "\x28",
+                "]": "\x29",
+                "^": "\x30",
+                "_": "\x31",
+            }
+            return withCrtl[command];
+        }
         return command
     }
     writeCommand = async (ctx: MyContext, _next: NextFunction) => {
@@ -526,7 +561,16 @@ class ShellService {
             console.log("shellTerminate", error)
         }
     }
-
+    shellCancel = async (ctx: MyContext, _next: NextFunction) => {
+        const server = await this.checkShellStatus(ctx, _next)
+        if (!server) return;
+        const _ssh = ctx.session.ssh!
+        try {
+            _ssh.writeCommand("\x03")
+        } catch (error) {
+            console.log("shellCancel", error)
+        }
+    }
 
     // ####
 
