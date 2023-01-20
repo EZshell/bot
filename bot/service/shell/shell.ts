@@ -321,9 +321,9 @@ class ShellService {
         await ctx.deleteMessage()
 
         try {
-            const t = ctx.session.inputState?.parameter.split("->")
+            const t = ctx.session.inputState!.parameter.split("->")
             if (t.length === 3 && t[0] === 'upload') {
-                await ctx.api.deleteMessage(ctx.chat?.id!, t[2])
+                await ctx.api.deleteMessage(ctx.chat?.id!, parseInt(t[2]))
             }
         } catch (error) { }
 
@@ -352,9 +352,9 @@ class ShellService {
         if (!server) return;
 
         try {
-            const t = ctx.session.inputState?.parameter.split("->")
+            const t = ctx.session.inputState!.parameter.split("->")
             if (t.length === 3 && t[0] === 'upload') {
-                await ctx.api.deleteMessage(ctx.chat?.id!, t[2])
+                await ctx.api.deleteMessage(ctx.chat?.id!, parseInt(t[2]))
                 ctx.session.inputState!.parameter = 'command'
             }
         } catch (error) {
@@ -366,7 +366,7 @@ class ShellService {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
 
-        const t = ctx.session.inputState?.parameter.split("->")
+        const t = ctx.session.inputState!.parameter.split("->")
         if (t.length !== 3 || t[0] !== 'upload') {
             return await _next()
         }
@@ -376,21 +376,24 @@ class ShellService {
         try {
 
             const filePath = t[1]
-
+            const mID = parseInt(t[2])
             const file = await ctx.getFile()
             const path = await file.download()
 
 
-            await ctx.session.ssh?.uploadFile(path, filePath)
+            await ctx.session.ssh?.uploadFile(path!, filePath)
 
-            ctx.session.inputState!.parameter = 'command'
+
 
             const msg = (await ctx.reply("✅ File uploaded")).message_id
 
             setTimeout(async () => {
                 await ctx.api.deleteMessage(ctx.chat?.id!, msg)
-                await ctx.api.deleteMessage(ctx.chat?.id!, t[2])
+                await ctx.api.deleteMessage(ctx.chat?.id!, mID)
+
             }, 5000)
+
+            ctx.session.inputState!.parameter = 'command'
         }
         catch (error) {
             const msg = await ctx.reply("❌ Error uploading or path is invalid:\n" + error)
