@@ -103,7 +103,7 @@ class ShellService {
 
             .text(`${isCrtl ? "🟢" : "⚪️"} CRTL`, "shell:crtl")
             .text(`${isAlt ? "🟢" : "⚪️"} ALT`, "shell:alt")
-            .text("📝 Tab85", "shell:tab")
+            .text("📝 Tab95", "shell:tab")
             .text("🔑 Pass", "shell:password")
 
             // .row()
@@ -237,14 +237,14 @@ class ShellService {
                         return
                     }
 
-                    else if (_data.trim() === "[K") {
-                        _data = _data.slice(0, -1);
-                        ctx.reply("aaaaaaaaaaaaaaaaaaaa")
+                    else if (_data.includes("[K")) {
+                        ctx.session.inputState.data = ctx.session.inputState.data!.slice(0, -1);
+                    }
+                    else {
+                        ctx.session.inputState.data += _data
                     }
 
-                    ctx.reply("cc" + _data + "mm" + _data.trim() + "nn")
 
-                    ctx.session.inputState.data += _data
                     const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState.data}</code>`
                     if (text.length > 4000) {
                         await ctx.api.editMessageReplyMarkup(
