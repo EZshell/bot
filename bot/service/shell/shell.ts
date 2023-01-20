@@ -103,7 +103,7 @@ class ShellService {
 
             .text(`${isCrtl ? "🟢" : "⚪️"} CRTL`, "shell:crtl")
             .text(`${isAlt ? "🟢" : "⚪️"} ALT`, "shell:alt")
-            .text("📝 Tab2", "shell:tab")
+            .text("📝 Tab3", "shell:tab")
             .text("🔑 Pass", "shell:password")
 
             // .row()
@@ -189,7 +189,7 @@ class ShellService {
     }
 
 
-    openShell = async (ctx: MyContext) => {
+    openShell = async (ctx: MyContext, _next: NextFunction) => {
         try {
             await this.exitCurrentShell(ctx)
         } catch (error) {
@@ -221,6 +221,16 @@ class ShellService {
             this.openShellSession(ctx, ssh, serverID, messageID)
 
             await ssh.openShell(async (data) => {
+                if (data === "Exit") {
+                    const _keyboard = new InlineKeyboard().text("❌ Closed")
+                    await ctx.api.editMessageReplyMarkup(
+                        ctx.chat!.id,
+                        ctx.session.inputState?.messageID!,
+                        { reply_markup: _keyboard }
+                    );
+                    return
+                }
+
                 try {
                     const _data = this.standardOutput(data)
                     if (!ctx.session.inputState || !ctx.session.ssh) return
@@ -455,8 +465,7 @@ class ShellService {
         // const withCrtl: { string: string } = {
         //     'Ahhh': "\x01"
         // }
-        // return withCrtl[command]
-
+        return command
     }
     writeCommand = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
@@ -501,8 +510,6 @@ class ShellService {
         if (!server) return;
         try {
             await this.exitCurrentShell(ctx)
-            const _keyboard = new InlineKeyboard().text("❌ Closed")
-            await ctx.editMessageReplyMarkup({ reply_markup: _keyboard })
         } catch (error) {
             console.log("shellTerminate", error)
         }
@@ -541,6 +548,7 @@ class ShellService {
 
             case 'backspace':
                 _ssh.writeCommand("\x7F")
+                _ssh.writeCommand("\x08")
                 break;
 
             case 'tab':
@@ -566,20 +574,6 @@ class ShellService {
         }
 
         await ctx.answerCallbackQuery()
-    }
-
-
-
-
-
-    shellCancel = async (ctx: MyContext, _next: NextFunction) => {
-        const server = await this.checkShellStatus(ctx, _next)
-        if (!server) return;
-        try {
-            ctx.session.ssh!.writeCommand("\x03")
-        } catch (error) {
-            console.log("shellCancel", error)
-        }
     }
 
 
