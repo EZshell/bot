@@ -103,7 +103,7 @@ class ShellService {
 
             .text(`${isCrtl ? "🟢" : "⚪️"} CRTL`, "shell:crtl")
             .text(`${isAlt ? "🟢" : "⚪️"} ALT`, "shell:alt")
-            .text("📝 Tab5", "shell:tab")
+            .text("📝 Tab66", "shell:tab")
             .text("🔑 Pass", "shell:password")
 
             // .row()
@@ -220,6 +220,11 @@ class ShellService {
 
             await ssh.openShell(async (data) => {
                 try {
+                    if (!ctx.session.inputState || !ctx.session.ssh) return
+                    let _data = this.standardOutput(data)
+
+
+
                     if (data === "Exit") {
                         const _keyboard = new InlineKeyboard().text("❌ Closed")
                         await ctx.api.editMessageReplyMarkup(
@@ -231,11 +236,11 @@ class ShellService {
                         ctx.session.inputState = null
                         return
                     }
-                    await ctx.reply(`oo${data}oo`)
-                    const _data = this.standardOutput(data)
-                    if (!ctx.session.inputState || !ctx.session.ssh) return
-                    ctx.session.inputState.data += _data
+                    if (_data.trim() === "[K") {
+                        _data = _data.slice(0, -1);
+                    }
 
+                    ctx.session.inputState.data += _data
                     const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState.data}</code>`
                     if (text.length > 4000) {
                         await ctx.api.editMessageReplyMarkup(
