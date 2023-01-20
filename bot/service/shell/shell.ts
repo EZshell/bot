@@ -219,10 +219,7 @@ class ShellService {
             this.openShellSession(ctx, ssh, serverID, messageID)
 
             await ssh.openShell(async (data) => {
-
-
                 try {
-
                     if (data === "Exit") {
                         const _keyboard = new InlineKeyboard().text("❌ Closed")
                         await ctx.api.editMessageReplyMarkup(
@@ -234,7 +231,7 @@ class ShellService {
                         ctx.session.inputState = null
                         return
                     }
-
+                    await ctx.reply(`oo${data}oo`)
                     const _data = this.standardOutput(data)
                     if (!ctx.session.inputState || !ctx.session.ssh) return
                     ctx.session.inputState.data += _data

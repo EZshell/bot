@@ -110,9 +110,7 @@ bot
 
 // Handle the /start command.
 bot.command("start", async (ctx) => {
-    ctx.session.inputState = null
     ctx.session.ssh?.exitShell()
-    ctx.session.ssh = null
 
     // 
     const { user, isNew } = ctx.session
