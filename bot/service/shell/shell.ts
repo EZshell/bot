@@ -103,7 +103,7 @@ class ShellService {
 
             .text(`${isCrtl ? "🟢" : "⚪️"} CRTL`, "shell:crtl")
             .text(`${isAlt ? "🟢" : "⚪️"} ALT`, "shell:alt")
-            .text("📝 tTab", "shell:tab")
+            .text("📝 Tab2", "shell:tab")
             .text("🔑 Pass", "shell:password")
 
             // .row()
@@ -451,6 +451,13 @@ class ShellService {
 
 
     // =================================> command
+    specialCommands = (command: string, crtl = false, alt = false) => {
+        // const withCrtl: { string: string } = {
+        //     'Ahhh': "\x01"
+        // }
+        // return withCrtl[command]
+
+    }
     writeCommand = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
@@ -466,16 +473,16 @@ class ShellService {
             await ctx.deleteMessage()
 
             if (_ssh.getCrtlPressed() && _ssh.getAltPressed()) {
-                command = "^" + command
+                command = this.specialCommands(command, true, true)
                 _ssh.setCrtlPressed()
                 _ssh.setAltPressed()
             }
             else if (_ssh.getCrtlPressed()) {
-                command = "^" + command
+                command = this.specialCommands(command, true, false)
                 _ssh.setCrtlPressed()
             }
             else if (_ssh.getAltPressed()) {
-                command = "^" + command
+                command = this.specialCommands(command, false, true)
                 _ssh.setAltPressed()
             }
 
@@ -519,17 +526,17 @@ class ShellService {
 
             case 'autoEnter':
                 _ssh.setAutoEnter()
-                _ssh.writeCommand("\n")
+                _ssh.writeCommand("\x00")
                 break;
 
             case 'crtl':
                 _ssh.setCrtlPressed()
-                _ssh.writeCommand("\n")
+                _ssh.writeCommand("\x00")
                 break;
 
             case 'alt':
                 _ssh.setAltPressed()
-                _ssh.writeCommand("\x127")
+                _ssh.writeCommand("\x00")
                 break;
 
             case 'backspace':
