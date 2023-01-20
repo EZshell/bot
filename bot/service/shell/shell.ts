@@ -103,7 +103,7 @@ class ShellService {
 
             .text(`${isCrtl ? "🟢" : "⚪️"} CRTL`, "shell:crtl")
             .text(`${isAlt ? "🟢" : "⚪️"} ALT`, "shell:alt")
-            .text("📝 Tab66", "shell:tab")
+            .text("📝 Tab85", "shell:tab")
             .text("🔑 Pass", "shell:password")
 
             // .row()
@@ -236,9 +236,12 @@ class ShellService {
                         ctx.session.inputState = null
                         return
                     }
-                    if (_data.trim() === "[K") {
+
+                    else if (_data.trim() === "[K") {
                         _data = _data.slice(0, -1);
                     }
+
+                    ctx.reply("cc" + _data + "mm" + _data.trim() + "nn")
 
                     ctx.session.inputState.data += _data
                     const text = `<b>${server.name}</b> 📟\n\n<i>Response:</i>\n<code>${ctx.session.inputState.data}</code>`
@@ -526,7 +529,13 @@ class ShellService {
 
     // ####
 
-
+    refreshKeyboards = async (ctx: MyContext) => {
+        await ctx.api.editMessageReplyMarkup(
+            ctx.chat!.id,
+            ctx.session.inputState?.messageID!,
+            { reply_markup: this.shellKeyboard(ctx) }
+        )
+    }
     shellCommands = async (ctx: MyContext, _next: NextFunction) => {
         const server = await this.checkShellStatus(ctx, _next)
         if (!server) return;
@@ -541,22 +550,22 @@ class ShellService {
 
             case 'autoEnter':
                 _ssh.setAutoEnter()
-                _ssh.writeCommand("\x00")
+                this.refreshKeyboards(ctx)
                 break;
 
             case 'crtl':
                 _ssh.setCrtlPressed()
-                _ssh.writeCommand("\x00")
+                this.refreshKeyboards(ctx)
                 break;
 
             case 'alt':
                 _ssh.setAltPressed()
-                _ssh.writeCommand("\x00")
+                this.refreshKeyboards(ctx)
                 break;
 
             case 'backspace':
-                // _ssh.writeCommand("\x7F")
-                _ssh.writeCommand("\x08")
+                _ssh.writeCommand("\x7F")
+                // _ssh.writeCommand("\x08")
                 break;
 
             case 'tab':
@@ -566,19 +575,6 @@ class ShellService {
             case 'password':
                 _ssh.writeCommand(server.password)
                 break;
-
-            // case 'left':
-            //     _ssh.writeCommand("^[[D")
-            //     break;
-            // case 'up':
-            //     _ssh.writeCommand("^[[A")
-            //     break;
-            // case 'bottom':
-            //     _ssh.writeCommand("^[[B")
-            //     break;
-            // case 'right':
-            //     _ssh.writeCommand("^[[C")
-            //     break;
         }
 
         await ctx.answerCallbackQuery()
