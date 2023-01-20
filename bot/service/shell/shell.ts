@@ -239,6 +239,7 @@ class ShellService {
 
                     else if (_data.trim() === "[K") {
                         _data = _data.slice(0, -1);
+                        ctx.reply("aaaaaaaaaaaaaaaaaaaa")
                     }
 
                     ctx.reply("cc" + _data + "mm" + _data.trim() + "nn")
